@@ -21,6 +21,7 @@
 		<module>grpc-secure</module>
 		<module>grpc-oauth2</module>
 		<module>grpc-reactive</module>
+		<module>grpc-server-kotlin</module>
 		<module>grpc-server-netty-shaded</module>
 		<module>grpc-tomcat</module>
 		<module>grpc-tomcat-secure</module>
