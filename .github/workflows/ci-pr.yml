@@ -10,7 +10,7 @@ on:
 jobs:
   build_and_verify:
     name: Build and Verify
-    if: github.repository == 'spring-projects/spring-grpc'
+    if: ${{ github.repository == 'spring-projects/spring-grpc' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,11 +21,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build and test
-        env:
-          signing_key: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
-          echo "${signing_key}" > private.asc
-          gpg --import --batch --no-tty private.asc
           ./mvnw -B clean install
       - name: Capture Test Results
         if: failure()
