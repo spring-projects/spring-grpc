@@ -15,24 +15,13 @@
  */
 package org.springframework.grpc.client;
 
-import org.springframework.core.Ordered;
-
 import io.grpc.stub.AbstractBlockingStub;
 
-public class BlockingStubFactory extends AbstractStubFactory<AbstractBlockingStub<?>> implements Ordered {
+public class BlockingStubFactory extends AbstractStubFactory<AbstractBlockingStub<?>> {
 
-	public BlockingStubFactory() {
-		super(AbstractBlockingStub.class);
-	}
-
-	@Override
-	public boolean supports(Class<?> type) {
-		return super.supports(type) && !type.getSimpleName().contains("BlockingV2");
-	}
-
-	@Override
-	public int getOrder() {
-		return SimpleStubFactory.SIMPLE_STUB_ORDER - 30;
+	public static boolean supports(Class<?> type) {
+		return AbstractStubFactory.supports(AbstractBlockingStub.class, type)
+				&& !type.getSimpleName().contains("BlockingV2");
 	}
 
 	@Override

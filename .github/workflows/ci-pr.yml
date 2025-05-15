@@ -21,7 +21,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build and test
+        env:
+          signing_key: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
+          echo "${signing_key}" > private.asc
+          gpg --import --batch --no-tty private.asc
           ./mvnw -B clean install
       - name: Capture Test Results
         if: failure()

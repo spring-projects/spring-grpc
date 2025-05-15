@@ -17,6 +17,7 @@ package org.springframework.grpc.internal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -34,6 +35,9 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.ClassFormatException;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.ClassUtils;
 
 public class ClasspathScanner implements ResourceLoaderAware {
@@ -55,12 +59,30 @@ public class ClasspathScanner implements ResourceLoaderAware {
 	}
 
 	public Set<Class<?>> scan(String basePackage, Class<?> type) {
-		Set<Class<?>> candidates = new LinkedHashSet<>();
 		boolean debugEnabled = logger.isDebugEnabled();
-		boolean traceEnabled = logger.isTraceEnabled();
 		if (debugEnabled) {
 			logger.debug("Scanning " + basePackage + " for classes of type " + type.getName());
 		}
+		return scan(basePackage, new AssignableTypeFilter(type));
+	}
+
+	public Set<Class<?>> annotated(String basePackage, Class<?> type) {
+		boolean debugEnabled = logger.isDebugEnabled();
+		if (debugEnabled) {
+			logger.debug("Scanning " + basePackage + " for annotations of type " + type.getName());
+		}
+		@SuppressWarnings("unchecked")
+		Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
+		return scan(basePackage, new AnnotationTypeFilter(annotationType));
+	}
+
+	public Set<Class<?>> scan(String basePackage, TypeFilter filter) {
+		Set<Class<?>> candidates = new LinkedHashSet<>();
+		if (filter == null) {
+			return candidates;
+		}
+		boolean debugEnabled = logger.isDebugEnabled();
+		boolean traceEnabled = logger.isTraceEnabled();
 		try {
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
 					+ resolveBasePackage(basePackage) + '/' + this.resourcePattern;
@@ -76,14 +98,14 @@ public class ClasspathScanner implements ResourceLoaderAware {
 				}
 				try {
 					MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
-					if (isCandidateComponent(metadataReader, type)) {
+					if (filter.match(metadataReader, getMetadataReaderFactory())) {
 						Class<?> sbd = ClassUtils.forName(metadataReader.getClassMetadata().getClassName(), null);
 						logger.debug("Identified candidate component class: " + resource);
 						candidates.add(sbd);
 					}
 					else {
 						if (debugEnabled) {
-							logger.debug("Ignored because not a concrete top-level class: " + resource);
+							logger.debug("Ignored because not a candidate class: " + resource);
 						}
 					}
 				}
@@ -106,20 +128,6 @@ public class ClasspathScanner implements ResourceLoaderAware {
 			throw new BeanDefinitionStoreException("I/O failure during classpath scanning", ex);
 		}
 		return candidates;
-	}
-
-	private boolean isCandidateComponent(MetadataReader metadataReader, Class<?> type) {
-		try {
-			if (metadataReader.getClassMetadata().isConcrete()) {
-				if (type.isAssignableFrom(
-						ClassUtils.resolveClassName(metadataReader.getClassMetadata().getClassName(), null))) {
-					return true;
-				}
-			}
-		}
-		catch (Exception ex) {
-		}
-		return false;
 	}
 
 	private MetadataReaderFactory getMetadataReaderFactory() {

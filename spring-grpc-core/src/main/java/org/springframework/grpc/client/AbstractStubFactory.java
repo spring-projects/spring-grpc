@@ -23,20 +23,13 @@ import io.grpc.stub.AbstractStub;
 
 public abstract class AbstractStubFactory<T extends AbstractStub<?>> implements StubFactory<T> {
 
-	private final Class<? extends AbstractStub<?>> baseType;
-
-	@SuppressWarnings("unchecked")
-	protected AbstractStubFactory(Class<?> baseType) {
-		this.baseType = (Class<? extends AbstractStub<?>>) baseType;
+	protected static <S extends AbstractStub<?>> boolean supports(Class<S> baseType, Class<?> type) {
+		return baseType.isAssignableFrom(type);
 	}
 
 	@Override
-	public boolean supports(Class<?> type) {
-		return this.baseType.isAssignableFrom(type);
-	}
-
-	@Override
-	public T create(Supplier<ManagedChannel> channel, Class<? extends AbstractStub<?>> type) {
+	public T create(Supplier<ManagedChannel> channel, Class<? extends T> type) {
+		// All the generated stubs are static inner classes of the service
 		Class<?> factory = type.getEnclosingClass();
 		@SuppressWarnings("unchecked")
 		T stub = (T) createStub(channel, factory, methodName());

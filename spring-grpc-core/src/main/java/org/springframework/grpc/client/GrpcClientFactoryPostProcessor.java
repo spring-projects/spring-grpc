@@ -24,8 +24,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
-import io.grpc.stub.AbstractStub;
-
 /**
  * Post processor for {@link GrpcClientFactory} that applies the customizers and provides
  * a factory for client instances at runtime.
@@ -54,7 +52,7 @@ public class GrpcClientFactoryPostProcessor implements ApplicationContextAware {
 		}
 	}
 
-	<T extends AbstractStub<T>> T getClient(String target, Class<T> type, Class<?> factory) {
+	<T> T getClient(String target, Class<T> type, Class<?> factory) {
 		initialize(this.context);
 		return this.registry.getClient(target, (Class<T>) type, factory);
 	}

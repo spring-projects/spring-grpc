@@ -31,8 +31,10 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.core.MethodParameter;
+import org.springframework.grpc.client.GrpcClientFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -63,7 +65,14 @@ public class ClientBeanRegistrationsAotProcessor implements BeanFactoryInitializ
 		if (registrations.isEmpty()) {
 			return null;
 		}
-		return new ClientBeanRegistrationsAotContribution(registrations, resources);
+
+		Set<Type> factories = new HashSet<>();
+		if (beanFactory instanceof DefaultListableBeanFactory listable) {
+			HashSet<Class<?>> types = GrpcClientFactory.findStubFactoryTypes(listable);
+			factories.addAll(types);
+		}
+
+		return new ClientBeanRegistrationsAotContribution(registrations, factories, resources);
 	}
 
 	private Collection<Type> findMessageTypes(Class<?> beanClass) {
@@ -106,8 +115,11 @@ public class ClientBeanRegistrationsAotProcessor implements BeanFactoryInitializ
 
 		private Set<Class<?>> resources;
 
-		ClientBeanRegistrationsAotContribution(Set<Type> types, Set<Class<?>> resources) {
+		private Set<Type> factories;
+
+		ClientBeanRegistrationsAotContribution(Set<Type> types, Set<Type> factories, Set<Class<?>> resources) {
 			this.types = types;
+			this.factories = factories;
 			this.resources = resources;
 		}
 
@@ -119,6 +131,10 @@ public class ClientBeanRegistrationsAotProcessor implements BeanFactoryInitializ
 			// types will be used but it is simpler to register them all.
 			for (Type type : this.types) {
 				hints.registerType(TypeReference.of(type.getTypeName()), MemberCategory.INVOKE_PUBLIC_METHODS);
+			}
+			for (Type type : this.factories) {
+				hints.registerType(TypeReference.of(type.getTypeName()), MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 			}
 			ResourceHints resources = generationContext.getRuntimeHints().resources();
 			// We only really need this if we are scanning. Some stubs are not scanned

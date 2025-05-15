@@ -15,26 +15,16 @@
  */
 package org.springframework.grpc.client;
 
-import org.springframework.core.Ordered;
+import org.springframework.util.ReflectionUtils;
 
-import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractStub;
 
-public class SimpleStubFactory extends AbstractStubFactory<AbstractBlockingStub<?>> implements Ordered {
+public class SimpleStubFactory extends AbstractStubFactory<AbstractStub<?>> {
 
-	/**
-	 * Constant used to specify the order in which the factory should be considered or
-	 * applied. A lower value indicates higher priority.
-	 */
-	public static final int SIMPLE_STUB_ORDER = 0;
-
-	public SimpleStubFactory() {
-		super(AbstractStub.class);
-	}
-
-	@Override
-	public int getOrder() {
-		return SimpleStubFactory.SIMPLE_STUB_ORDER;
+	public static boolean supports(Class<?> type) {
+		Class<?> factory = type.getEnclosingClass();
+		return AbstractStubFactory.supports(AbstractStub.class, type) && factory != null
+				&& ReflectionUtils.findMethod(factory, "newStub", (Class<?>[]) null) != null;
 	}
 
 	@Override

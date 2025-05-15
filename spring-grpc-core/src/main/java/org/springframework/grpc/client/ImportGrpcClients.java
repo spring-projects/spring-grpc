@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import io.grpc.stub.AbstractStub;
-
 /**
  * Annotation to create gRPC client beans. If you want more control over the creation of
  * the clients, or you don't want to use the annotation, you can use a bean of type
@@ -60,7 +58,7 @@ public @interface ImportGrpcClients {
 	 * Concrete types of the stubs to create.
 	 * @return the types of the stubs
 	 */
-	Class<? extends AbstractStub<?>>[] types() default {};
+	Class<?>[] types() default {};
 
 	/**
 	 * The factory type to use to create the stubs. Only needed if you are scanning (with

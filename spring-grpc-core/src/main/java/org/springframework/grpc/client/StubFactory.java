@@ -18,12 +18,9 @@ package org.springframework.grpc.client;
 import java.util.function.Supplier;
 
 import io.grpc.ManagedChannel;
-import io.grpc.stub.AbstractStub;
 
-public interface StubFactory<T extends AbstractStub<?>> {
+public interface StubFactory<T> {
 
-	boolean supports(Class<?> type);
-
-	T create(Supplier<ManagedChannel> channel, Class<? extends AbstractStub<?>> type);
+	T create(Supplier<ManagedChannel> channel, Class<? extends T> type);
 
 }

@@ -21,28 +21,23 @@ import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.grpc.autoconfigure.client.ClientScanConfiguration.DefaultGrpcClientRegistrations;
 import org.springframework.grpc.autoconfigure.client.GrpcClientProperties.ChannelConfig;
 import org.springframework.grpc.client.AbstractGrpcClientRegistrar;
 import org.springframework.grpc.client.BlockingStubFactory;
-import org.springframework.grpc.client.GrpcClientFactory;
 import org.springframework.grpc.client.GrpcClientFactory.GrpcClientRegistrationSpec;
 import org.springframework.grpc.client.GrpcClientFactoryPostProcessor;
-import org.springframework.grpc.client.ImportGrpcClients;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(GrpcClientFactoryPostProcessor.class)
-@ImportGrpcClients
 @Import(DefaultGrpcClientRegistrations.class)
 public class ClientScanConfiguration {
 
