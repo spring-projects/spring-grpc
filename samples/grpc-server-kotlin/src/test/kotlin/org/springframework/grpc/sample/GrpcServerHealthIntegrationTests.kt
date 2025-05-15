@@ -50,7 +50,7 @@ import java.time.Duration
     properties = ["spring.grpc.server.port=0", "spring.grpc.client.channels.health-test.address=static://0.0.0.0:\${local.grpc.port}", "spring.grpc.client.channels.health-test.health.enabled=true", "spring.grpc.client.channels.health-test.health.service-name=my-service"]
 )
 @DirtiesContext
-internal class WithClientHealthEnabled {
+class WithClientHealthEnabled {
     @Test
     fun loadBalancerRespectsServerHealth(
         @Autowired channels: GrpcChannelFactory,
@@ -112,7 +112,7 @@ internal class WithClientHealthEnabled {
 )
 @AutoConfigureInProcessTransport
 @DirtiesContext
-internal class WithActuatorHealthAdapter {
+class WithActuatorHealthAdapter {
     @Test
     fun healthIndicatorsAdaptedToGrpcHealthStatus(
         @Autowired channels: GrpcChannelFactory,
@@ -158,7 +158,7 @@ internal class WithActuatorHealthAdapter {
         }
     }
 
-    internal class CustomHealthIndicator : HealthIndicator {
+    class CustomHealthIndicator : HealthIndicator {
         override fun health(): Health? {
             return if (SERVICE_IS_UP) Health.up().build() else Health.down().build()
         }

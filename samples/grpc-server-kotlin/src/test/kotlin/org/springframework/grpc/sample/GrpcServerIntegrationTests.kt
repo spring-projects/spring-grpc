@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest
 @AutoConfigureInProcessTransport
-internal class ServerWithInProcessChannel {
+class ServerWithInProcessChannel {
     @Test
     fun servesResponseToClient(@Autowired channels: GrpcChannelFactory) {
         assertThatResponseIsServedToChannel(channels.createChannel("0.0.0.0:0"))
@@ -62,7 +62,7 @@ internal class ServerWithInProcessChannel {
 
 @SpringBootTest
 @AutoConfigureInProcessTransport
-internal class ServerWithException {
+class ServerWithException {
 
     @Test
     fun specificErrorResponse(@Autowired channels: GrpcChannelFactory) {
@@ -81,7 +81,7 @@ internal class ServerWithException {
     @Test
     fun defaultErrorResponseIsUnknown(@Autowired channels: GrpcChannelFactory) {
         val client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"))
-        Assertions.assertThat<Status.Code?>(
+        Assertions.assertThat(
             Assert.assertThrows(
                 StatusRuntimeException::class.java
             ) { client.sayHello(HelloRequest.newBuilder().setName("internal").build()) }
@@ -94,14 +94,14 @@ internal class ServerWithException {
 
 @SpringBootTest
 @AutoConfigureInProcessTransport
-internal class ServerWithExceptionInInterceptorCall {
+class ServerWithExceptionInInterceptorCall {
     @Test
     fun specificErrorResponse(@Autowired channels: GrpcChannelFactory) {
         val client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"))
         Assertions.assertThat(
             Assert.assertThrows(
                 StatusRuntimeException::class.java
-            ) { client.sayHello(HelloRequest.newBuilder().setName("foo").build()) }
+            ) { client.sayHello(HelloRequest.newBuilder().setName("error").build()) }
                 .status
                 .code
         ).isEqualTo(Status.Code.INVALID_ARGUMENT)
@@ -129,7 +129,7 @@ internal class ServerWithExceptionInInterceptorCall {
 
 @SpringBootTest
 @AutoConfigureInProcessTransport
-internal class ServerWithExceptionInInterceptorListener {
+class ServerWithExceptionInInterceptorListener {
     @Test
     fun specificErrorResponse(
         @Autowired channels: GrpcChannelFactory,
@@ -150,7 +150,7 @@ internal class ServerWithExceptionInInterceptorListener {
     }
 
     @TestConfiguration
-    internal open class TestConfig {
+    open class TestConfig {
         companion object {
             var callCount: AtomicInteger = AtomicInteger()
             var messageCount: AtomicInteger = AtomicInteger()
@@ -206,7 +206,7 @@ internal class ServerWithExceptionInInterceptorListener {
 
 @SpringBootTest("spring.grpc.server.exception-handler.enabled=false")
 @AutoConfigureInProcessTransport
-internal class ServerWithUnhandledException {
+class ServerWithUnhandledException {
     @Test
     fun specificErrorResponse(@Autowired channels: GrpcChannelFactory) {
         val client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"))
@@ -236,7 +236,7 @@ internal class ServerWithUnhandledException {
 
 
 @SpringBootTest(properties = ["spring.grpc.server.host=0.0.0.0", "spring.grpc.server.port=0"])
-internal class ServerWithAnyIPv4AddressAndRandomPort {
+class ServerWithAnyIPv4AddressAndRandomPort {
     @Test
     fun servesResponseToClientWithAnyIPv4AddressAndRandomPort(
         @Autowired channels: GrpcChannelFactory,
@@ -248,7 +248,7 @@ internal class ServerWithAnyIPv4AddressAndRandomPort {
 
 
 @SpringBootTest(properties = ["spring.grpc.server.host=::", "spring.grpc.server.port=0"])
-internal class ServerWithAnyIPv6AddressAndRandomPort {
+class ServerWithAnyIPv6AddressAndRandomPort {
     @Test
     fun servesResponseToClientWithAnyIPv4AddressAndRandomPort(
         @Autowired channels: GrpcChannelFactory,
@@ -260,7 +260,7 @@ internal class ServerWithAnyIPv6AddressAndRandomPort {
 
 
 @SpringBootTest(properties = ["spring.grpc.server.host=127.0.0.1", "spring.grpc.server.port=0"])
-internal class ServerWithLocalhostAndRandomPort {
+class ServerWithLocalhostAndRandomPort {
     @Test
     fun servesResponseToClientWithLocalhostAndRandomPort(
         @Autowired channels: GrpcChannelFactory,
@@ -275,7 +275,7 @@ internal class ServerWithLocalhostAndRandomPort {
     properties = ["spring.grpc.server.port=0", "spring.grpc.client.channels.test-channel.address=static://0.0.0.0:\${local.grpc.port}"]
 )
 @DirtiesContext
-internal class ServerConfiguredWithStaticClientChannel {
+class ServerConfiguredWithStaticClientChannel {
     @Test
     fun servesResponseToClientWithConfiguredChannel(@Autowired channels: GrpcChannelFactory) {
         assertThatResponseIsServedToChannel(channels.createChannel("test-channel"))
@@ -285,7 +285,7 @@ internal class ServerConfiguredWithStaticClientChannel {
 
 @SpringBootTest(properties = ["spring.grpc.server.address=unix:unix-test-channel"])
 @EnabledOnOs(OS.LINUX)
-internal class ServerWithUnixDomain {
+class ServerWithUnixDomain {
     @Test
     fun clientChannelWithUnixDomain(@Autowired channels: GrpcChannelFactory) {
         assertThatResponseIsServedToChannel(
@@ -304,7 +304,7 @@ internal class ServerWithUnixDomain {
 )
 @ActiveProfiles("ssl")
 @DirtiesContext
-internal class ServerWithSsl {
+class ServerWithSsl {
     @Test
     fun clientChannelWithSsl(@Autowired channels: GrpcChannelFactory) {
         assertThatResponseIsServedToChannel(channels.createChannel("test-channel"))
@@ -317,7 +317,7 @@ internal class ServerWithSsl {
 )
 @ActiveProfiles("ssl")
 @DirtiesContext
-internal class ServerWithClientAuth {
+class ServerWithClientAuth {
     @Test
     fun clientChannelWithSsl(@Autowired channels: GrpcChannelFactory) {
         assertThatResponseIsServedToChannel(channels.createChannel("test-channel"))

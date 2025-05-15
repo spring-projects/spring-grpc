@@ -31,7 +31,8 @@ option java_outer_classname = "HelloWorldProto";
 // The greeting service definition.
 service Simple {
   // Sends a greeting
-  rpc SayHello(HelloRequest) returns (HelloReply) {}
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+  }
   rpc StreamHello(HelloRequest) returns (stream HelloReply) {}
 }
 

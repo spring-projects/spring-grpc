@@ -19,7 +19,7 @@ import org.springframework.grpc.test.AutoConfigureInProcessTransport
 
 @SpringBootTest
 @AutoConfigureInProcessTransport
-internal class NoAutowiredClients {
+class NoAutowiredClients {
 
     @Autowired
     private lateinit var context: ApplicationContext
@@ -36,7 +36,7 @@ internal class NoAutowiredClients {
 
 @SpringBootTest(properties = ["spring.grpc.client.default-channel.address=0.0.0.0:9090"])
 @AutoConfigureInProcessTransport
-internal class DefaultAutowiredClients {
+class DefaultAutowiredClients {
     @Autowired
     private lateinit var context: ApplicationContext
 
@@ -59,7 +59,7 @@ internal class DefaultAutowiredClients {
     properties = ["spring.grpc.client.default-channel.address=0.0.0.0:9090"]
 )
 @AutoConfigureInProcessTransport
-internal class SpecificAutowiredClients {
+class SpecificAutowiredClients {
     @Autowired
     private lateinit var context: ApplicationContext
 
