@@ -67,12 +67,13 @@ public class GrpcClientApplicationTests {
 			assertThat(context.containsBeanDefinition("simpleFutureStub")).isTrue();
 			assertThat(context.getBean(SimpleGrpc.SimpleFutureStub.class)).isNotNull();
 			assertThat(context.containsBeanDefinition("simpleStub")).isFalse();
-			assertThat(context.containsBeanDefinition("simpleBlockingStub")).isFalse();
-			assertThat(context.getBeanNamesForType(AbstractStub.class)).hasSize(1);
+			assertThat(context.containsBeanDefinition("simpleBlockingStub")).isTrue();
+			assertThat(context.getBeanNamesForType(AbstractStub.class)).hasSize(2);
 		}
 
 		@TestConfiguration
 		@ImportGrpcClients(basePackageClasses = SimpleGrpc.class, factory = FutureStubFactory.class)
+		@ImportGrpcClients(basePackageClasses = SimpleGrpc.class)
 		static class TestConfig {
 
 		}

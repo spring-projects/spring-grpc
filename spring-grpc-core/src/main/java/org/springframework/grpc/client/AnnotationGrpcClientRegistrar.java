@@ -44,7 +44,7 @@ public class AnnotationGrpcClientRegistrar extends AbstractGrpcClientRegistrar {
 		String[] basePackages = attr.getStringArray("basePackages");
 		Class<? extends StubFactory<?>> factory = attr.getClass("factory");
 		if (factory == UnspecifiedStubFactory.class) {
-			factory = null;
+			factory = BlockingStubFactory.class;
 		}
 		if (types.length == 0 && basePackageClasses.length == 0 && basePackages.length == 0) {
 			basePackages = new String[] { ClassUtils.getPackageName(meta.getClassName()) };
