@@ -84,6 +84,31 @@ public class GrpcClientApplicationTests {
 	}
 
 	@Nested
+	@SpringBootTest(properties = "spring.grpc.client.default-channel.address=0.0.0.0:9090")
+	@AutoConfigureInProcessTransport
+	class BLockingV2AutowiredClients {
+
+		@Autowired
+		private ApplicationContext context;
+
+		@Test
+		void stubOfCorrectTypeIsCreated() {
+			assertThat(context.containsBeanDefinition("simpleBlockingV2Stub")).isTrue();
+			assertThat(context.getBean(SimpleGrpc.SimpleBlockingV2Stub.class)).isNotNull();
+			assertThat(context.containsBeanDefinition("simpleStub")).isFalse();
+			assertThat(context.containsBeanDefinition("simpleBlockingStub")).isFalse();
+			assertThat(context.getBeanNamesForType(AbstractStub.class)).hasSize(1);
+		}
+
+		@TestConfiguration
+		@ImportGrpcClients(basePackageClasses = SimpleGrpc.class, factory = BlockingV2StubFactory.class)
+		static class TestConfig {
+
+		}
+
+	}
+
+	@Nested
 	@SpringBootTest
 	@AutoConfigureInProcessTransport
 	class ExplicitImportClientsWithNoFactory {
