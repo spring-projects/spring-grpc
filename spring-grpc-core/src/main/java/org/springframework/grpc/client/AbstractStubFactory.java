@@ -15,7 +15,10 @@
  */
 package org.springframework.grpc.client;
 
+import java.lang.reflect.Method;
 import java.util.function.Supplier;
+
+import org.springframework.util.ReflectionUtils;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -25,6 +28,15 @@ public abstract class AbstractStubFactory<T extends AbstractStub<?>> implements 
 
 	protected static <S extends AbstractStub<?>> boolean supports(Class<S> baseType, Class<?> type) {
 		return baseType.isAssignableFrom(type);
+	}
+
+	protected static boolean matchingType(Class<?> type, String methodName) {
+		Class<?> factory = type.getEnclosingClass();
+		if (factory != null) {
+			Method method = ReflectionUtils.findMethod(factory, methodName, Channel.class);
+			return method != null && method.getReturnType() == type;
+		}
+		return false;
 	}
 
 	@Override

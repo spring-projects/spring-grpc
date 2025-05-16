@@ -19,14 +19,16 @@ import io.grpc.stub.AbstractBlockingStub;
 
 public class BlockingStubFactory extends AbstractStubFactory<AbstractBlockingStub<?>> {
 
+	private static final String METHOD_NAME = "newBlockingStub";
+
 	public static boolean supports(Class<?> type) {
 		return AbstractStubFactory.supports(AbstractBlockingStub.class, type)
-				&& !type.getSimpleName().contains("BlockingV2");
+				&& type.getSimpleName().endsWith("BlockingStub") && matchingType(type, METHOD_NAME);
 	}
 
 	@Override
 	protected String methodName() {
-		return "newBlockingStub";
+		return METHOD_NAME;
 	}
 
 }

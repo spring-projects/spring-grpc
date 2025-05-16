@@ -20,13 +20,16 @@ import io.grpc.stub.AbstractFutureStub;
 
 public class FutureStubFactory extends AbstractStubFactory<AbstractBlockingStub<?>> {
 
+	private static final String METHOD_NAME = "newFutureStub";
+
 	public static boolean supports(Class<?> type) {
-		return AbstractStubFactory.supports(AbstractFutureStub.class, type);
+		return AbstractStubFactory.supports(AbstractFutureStub.class, type)
+				&& type.getSimpleName().endsWith("FutureStub") && matchingType(type, METHOD_NAME);
 	}
 
 	@Override
 	protected String methodName() {
-		return "newFutureStub";
+		return METHOD_NAME;
 	}
 
 }
