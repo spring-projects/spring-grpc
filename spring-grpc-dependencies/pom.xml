@@ -50,6 +50,7 @@
 
 	<properties>
 		<grpc.version>1.72.0</grpc.version>
+		<grpc-kotlin.version>1.4.3</grpc-kotlin.version>
 		<protobuf-java.version>4.30.2</protobuf-java.version>
 		<google-common-protos.version>2.54.1</google-common-protos.version>
 		<micrometer.version>1.13.6</micrometer.version>
@@ -100,6 +101,11 @@
 				<version>${grpc.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-kotlin-stub</artifactId>
+				<version>${grpc-kotlin.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.protobuf</groupId>

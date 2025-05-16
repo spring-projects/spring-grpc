@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractStub;
+import io.grpc.kotlin.AbstractCoroutineStub;
 
 public class GrpcClientFactoryTests {
 
@@ -88,6 +89,16 @@ public class GrpcClientFactoryTests {
 		assertThat(factory.getClient("local", OtherStub.class, null)).isNotNull();
 	}
 
+	@Test
+	void testCoroutineStubFactory() {
+		context.registerBean(CoroutineStubFactory.class, CoroutineStubFactory::new);
+		GrpcClientFactory.register(context,
+				GrpcClientRegistrationSpec.of("local")
+					.factory(CoroutineStubFactory.class)
+					.types(MyCoroutineStub.class));
+		assertThat(factory.getClient("local", MyCoroutineStub.class, null)).isNotNull();
+	}
+
 	static class OtherStubFactory implements StubFactory<OtherStub> {
 
 		@Override
@@ -131,6 +142,19 @@ public class GrpcClientFactoryTests {
 				return new MyStub(channel);
 			}
 
+		}
+
+	}
+
+	static class MyCoroutineStub extends AbstractCoroutineStub<MyCoroutineStub> {
+
+		public MyCoroutineStub(Channel channel, CallOptions callOptions) {
+			super(channel, callOptions);
+		}
+
+		@Override
+		protected MyCoroutineStub build(Channel channel, CallOptions callOptions) {
+			return new MyCoroutineStub(channel, callOptions);
 		}
 
 	}

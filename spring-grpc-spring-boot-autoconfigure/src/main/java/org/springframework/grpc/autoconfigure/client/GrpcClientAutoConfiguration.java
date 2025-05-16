@@ -18,13 +18,16 @@ package org.springframework.grpc.autoconfigure.client;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.grpc.autoconfigure.common.codec.GrpcCodecConfiguration;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
+import org.springframework.grpc.client.CoroutineStubFactory;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 
 import io.grpc.CompressorRegistry;
@@ -69,6 +72,18 @@ public class GrpcClientAutoConfiguration {
 	@Bean
 	ChannelBuilderCustomizers channelBuilderCustomizers(ObjectProvider<GrpcChannelBuilderCustomizer<?>> customizers) {
 		return new ChannelBuilderCustomizers(customizers.orderedStream().toList());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "io.grpc.kotlin.AbstractCoroutineStub")
+	static class GrpcClientCoroutineStubConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		CoroutineStubFactory coroutineStubFactory() {
+			return new CoroutineStubFactory();
+		}
+
 	}
 
 }

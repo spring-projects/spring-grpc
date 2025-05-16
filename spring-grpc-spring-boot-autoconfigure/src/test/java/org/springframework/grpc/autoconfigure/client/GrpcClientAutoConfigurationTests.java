@@ -50,6 +50,7 @@ import io.grpc.Codec;
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.kotlin.AbstractCoroutineStub;
 import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.AbstractStub;
 
@@ -71,6 +72,14 @@ class GrpcClientAutoConfigurationTests {
 		this.contextRunner()
 			.withClassLoader(new FilteredClassLoader(AbstractStub.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcClientAutoConfiguration.class));
+	}
+
+	@Test
+	void whenGrpcKotlinIsNotOnClasspathThenAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(AbstractCoroutineStub.class))
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(GrpcClientAutoConfiguration.GrpcClientCoroutineStubConfiguration.class));
 	}
 
 	@Test

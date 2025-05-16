@@ -94,6 +94,11 @@
 			<artifactId>proto-google-common-protos</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-kotlin-stub</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.salesforce.servicelibs</groupId>
 			<artifactId>reactor-grpc-stub</artifactId>
 			<optional>true</optional>
