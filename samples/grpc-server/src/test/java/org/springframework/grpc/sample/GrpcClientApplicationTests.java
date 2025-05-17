@@ -1,7 +1,7 @@
 package org.springframework.grpc.sample;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -86,7 +86,7 @@ public class GrpcClientApplicationTests {
 	@Nested
 	@SpringBootTest(properties = "spring.grpc.client.default-channel.address=0.0.0.0:9090")
 	@AutoConfigureInProcessTransport
-	class BLockingV2AutowiredClients {
+	class BlockingV2AutowiredClients {
 
 		@Autowired
 		private ApplicationContext context;

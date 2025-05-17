@@ -22,7 +22,8 @@ public class SimpleStubFactory extends AbstractStubFactory<AbstractStub<?>> {
 	private static final String METHOD_NAME = "newStub";
 
 	public static boolean supports(Class<?> type) {
-		return AbstractStubFactory.supports(AbstractStub.class, type) && matchingType(type, METHOD_NAME);
+		return AbstractStubFactory.supports(AbstractStub.class, type) && type.getSimpleName().endsWith("Stub")
+				&& matchingType(type, METHOD_NAME);
 	}
 
 	@Override

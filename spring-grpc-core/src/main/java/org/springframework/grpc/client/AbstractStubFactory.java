@@ -34,7 +34,7 @@ public abstract class AbstractStubFactory<T extends AbstractStub<?>> implements 
 		Class<?> factory = type.getEnclosingClass();
 		if (factory != null) {
 			Method method = ReflectionUtils.findMethod(factory, methodName, Channel.class);
-			return method != null && method.getReturnType() == type;
+			return method != null && method.getReturnType().isAssignableFrom(type);
 		}
 		return false;
 	}
