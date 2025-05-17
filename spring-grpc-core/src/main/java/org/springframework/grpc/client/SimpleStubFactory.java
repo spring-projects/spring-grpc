@@ -15,27 +15,20 @@
  */
 package org.springframework.grpc.client;
 
-import java.lang.reflect.Method;
-
-import org.springframework.util.ReflectionUtils;
-
 import io.grpc.stub.AbstractStub;
 
 public class SimpleStubFactory extends AbstractStubFactory<AbstractStub<?>> {
 
-	public static boolean supports(Class<?> type) {
-		Class<?> factory = type.getEnclosingClass();
-		return AbstractStubFactory.supports(AbstractStub.class, type) && factory != null && hasMethod(factory, type);
-	}
+	private static final String METHOD_NAME = "newStub";
 
-	private static boolean hasMethod(Class<?> factory, Class<?> type) {
-		Method method = ReflectionUtils.findMethod(factory, "newStub", (Class<?>[]) null);
-		return method != null && method.getReturnType().isAssignableFrom(type);
+	public static boolean supports(Class<?> type) {
+		return AbstractStubFactory.supports(AbstractStub.class, type) && type.getSimpleName().endsWith("Stub")
+				&& matchingType(type, METHOD_NAME);
 	}
 
 	@Override
 	protected String methodName() {
-		return "newStub";
+		return METHOD_NAME;
 	}
 
 }
