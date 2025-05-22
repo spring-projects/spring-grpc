@@ -4,9 +4,9 @@
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.5/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.5/maven-plugin/build-image.html)
-* [GraalVM Native Image Support](https://docs.spring.io/spring-boot/3.4.5/reference/packaging/native-image/introducing-graalvm-native-images.html)
+* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.0/maven-plugin)
+* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.0/maven-plugin/build-image.html)
+* [GraalVM Native Image Support](https://docs.spring.io/spring-boot/3.5.0/reference/packaging/native-image/introducing-graalvm-native-images.html)
 * [Spring gRPC [Experimental]](https://docs.spring.io/spring-grpc/reference/index.html)
 
 ### Additional Links

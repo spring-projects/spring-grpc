@@ -79,9 +79,9 @@
 		<maven.compiler.target>17</maven.compiler.target>
 
 		<!-- internal dependencies -->
-		<spring-boot.version>3.4.5</spring-boot.version>
-		<jackson.version>2.17.2</jackson.version>
-		<junit.version>5.10.5</junit.version>
+		<spring-boot.version>3.5.0</spring-boot.version>
+		<jackson.version>2.19.0</jackson.version>
+		<junit.version>5.12.2</junit.version>
 		<assertj.version>3.27.3</assertj.version>
 		<!-- documentation dependencies -->
 		<io.spring.maven.antora-version>0.0.4</io.spring.maven.antora-version>

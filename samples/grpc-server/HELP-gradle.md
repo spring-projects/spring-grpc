@@ -4,9 +4,9 @@
 For further reference, please consider the following sections:
 
 * [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.5/gradle-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.5/gradle-plugin/packaging-oci-image.html)
-* [GraalVM Native Image Support](https://docs.spring.io/spring-boot/3.4.5/reference/packaging/native-image/introducing-graalvm-native-images.html)
+* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.0/gradle-plugin)
+* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.0/gradle-plugin/packaging-oci-image.html)
+* [GraalVM Native Image Support](https://docs.spring.io/spring-boot/3.5.0/reference/packaging/native-image/introducing-graalvm-native-images.html)
 * [Spring gRPC [Experimental]](https://docs.spring.io/spring-grpc/reference/index.html)
 
 ### Additional Links

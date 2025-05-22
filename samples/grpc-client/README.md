@@ -11,7 +11,7 @@ $ ./mvnw spring-boot:run
  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.4.5)
+ :: Spring Boot ::                (v3.5.0)
 
 ...
 2025-02-27T09:21:19.515Z  INFO 1211091 --- [grpc-client] [           main] o.s.g.sample.GrpcClientApplication  : Started GrpcClientApplication in 0.909 seconds (process running for 1.172)

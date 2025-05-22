@@ -11,7 +11,7 @@ jobs:
       matrix:
         include:
           - javaVersion: 17
-            springBootVersion: "3.4.5"
+            springBootVersion: "3.5.0"
           - javaVersion: 17
             springBootVersion: "3.5.0-SNAPSHOT"
     runs-on: ubuntu-latest
