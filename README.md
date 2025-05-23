@@ -59,7 +59,7 @@ or
 ```
 
 You’ll get two new folders in the `target` directory: `target/target/generated-sources/protobuf/grpc-java` and `target/target/generated-sources/protobuf/java`. 
-(_For gradle_: `build/generated/source/proto/main/grpc` & `build/generated/source/proto/main/java`) 
+(_For gradle_, refer the `build` directory: `build/generated/source/proto/main/grpc` & `build/generated/source/proto/main/java`) 
 You may need to instruct your IDE to mark them as  source roots. In IntelliJ IDEA, you’d right-click the folder, choose `Mark Directory As` -> `Generated Source Root`. Eclipse or VSCode will add them automatically for you.
 
 Now you can implement a service based on the generated stubs:
