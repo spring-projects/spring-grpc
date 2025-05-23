@@ -25,7 +25,7 @@ Define a `.proto` service definition file `src/main/proto/hello.proto` with the 
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "org.springframework.grpc.sample.proto"; // !!IMP: change the package name to the one mentioned in spring initilizr
+option java_package = "org.springframework.grpc.sample.proto"; // !IMP: change the package name to the one you mentioned in spring initilizr
 option java_outer_classname = "HelloWorldProto";
 
 // The greeting service definition.
@@ -58,7 +58,8 @@ or
 ./gradlew build
 ```
 
-You’ll get two new folders in the `target` directory: `target/target/generated-sources/protobuf/grpc-java` and `target/target/generated-sources/protobuf/java`. (For gradle: `build/generated/source/proto/main/grpc` & `build/generated/source/proto/main/java`). 
+You’ll get two new folders in the `target` directory: `target/target/generated-sources/protobuf/grpc-java` and `target/target/generated-sources/protobuf/java`. 
+(_For gradle_: `build/generated/source/proto/main/grpc` & `build/generated/source/proto/main/java`) 
 You may need to instruct your IDE to mark them as  source roots. In IntelliJ IDEA, you’d right-click the folder, choose `Mark Directory As` -> `Generated Source Root`. Eclipse or VSCode will add them automatically for you.
 
 Now you can implement a service based on the generated stubs:
