@@ -27,6 +27,8 @@ import org.springframework.grpc.autoconfigure.client.ClientInterceptorsConfigura
 import org.springframework.grpc.autoconfigure.client.GrpcClientAutoConfiguration;
 import org.springframework.grpc.autoconfigure.server.GrpcServerFactoryAutoConfiguration;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
+import org.springframework.grpc.client.InProcessGrpcChannelFactory;
+import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 

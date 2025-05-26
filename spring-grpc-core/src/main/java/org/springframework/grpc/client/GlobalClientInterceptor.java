@@ -42,4 +42,9 @@ import io.grpc.ClientInterceptor;
 @Documented
 public @interface GlobalClientInterceptor {
 
+	/**
+	 * Whether to apply the interceptor to the {@link InProcessGrpcChannelFactory in-process} channel factory.
+	 * @return whether to apply the interceptor the in-process channel factory
+	 */
+	boolean includeInProcess() default true;
 }
