@@ -72,6 +72,8 @@ public class GrpcServerProperties {
 
 	private final KeepAlive keepAlive = new KeepAlive();
 
+	private final InProcess inProcess = new InProcess();
+
 	/**
 	 * The address to bind to. could be a host:port combination or a pseudo URL like
 	 * static://host:port. Can not be set if host or port are set independently.
@@ -141,6 +143,10 @@ public class GrpcServerProperties {
 
 	public KeepAlive getKeepAlive() {
 		return this.keepAlive;
+	}
+
+	public InProcess getInProcess() {
+		return this.inProcess;
 	}
 
 	public static class Health {
@@ -416,4 +422,19 @@ public class GrpcServerProperties {
 
 	}
 
+	public static class InProcess {
+
+		/**
+		 * The name of the in-process server or null to not start the in-process server.
+		 */
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
 }

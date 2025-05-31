@@ -16,26 +16,30 @@
 
 package org.springframework.grpc.autoconfigure.server;
 
-import java.util.List;
+import io.grpc.inprocess.InProcessServerBuilder;
+import io.grpc.netty.NettyServerBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
+import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
-
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.grpc.server.GrpcServerFactory;
+import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.ShadedNettyGrpcServerFactory;
+import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
-
-import io.grpc.netty.NettyServerBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 /**
  * Configurations for {@link GrpcServerFactory gRPC server factories}.
@@ -71,6 +75,12 @@ class GrpcServerFactoryConfigurations {
 			return factory;
 		}
 
+		@ConditionalOnBean(ShadedNettyGrpcServerFactory.class)
+		@Bean
+		GrpcServerLifecycle shadedNettyGrpcServerLifecycle(ShadedNettyGrpcServerFactory factory, GrpcServerProperties properties,
+				ApplicationEventPublisher eventPublisher) {
+			return new GrpcServerLifecycle(factory, properties.getShutdownGracePeriod(), eventPublisher);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -100,6 +110,36 @@ class GrpcServerFactoryConfigurations {
 			return factory;
 		}
 
+		@ConditionalOnBean(NettyGrpcServerFactory.class)
+		@Bean
+		GrpcServerLifecycle nettyGrpcServerLifecycle(NettyGrpcServerFactory factory, GrpcServerProperties properties,
+				ApplicationEventPublisher eventPublisher) {
+			return new GrpcServerLifecycle(factory, properties.getShutdownGracePeriod(), eventPublisher);
+		}
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.grpc.server.in-process", name = "name")
+	@ConditionalOnClass(InProcessGrpcServerFactory.class)
+	@EnableConfigurationProperties(GrpcServerProperties.class)
+	static class InProcessServerFactoryConfiguration {
+
+		@Bean
+		InProcessGrpcServerFactory inProcessGrpcServerFactory(GrpcServerProperties properties,
+				GrpcServiceDiscoverer grpcServicesDiscoverer, ServerBuilderCustomizers serverBuilderCustomizers) {
+			var mapper = new InProcessServerFactoryPropertyMapper(properties);
+			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List
+					.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
+			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInProcess().getName(), builderCustomizers);
+			grpcServicesDiscoverer.findServices().forEach(factory::addService);
+			return factory;
+		}
+
+		@ConditionalOnBean(InProcessGrpcServerFactory.class)
+		@Bean
+		GrpcServerLifecycle inProcessGrpcServerLifecycle(InProcessGrpcServerFactory factory, GrpcServerProperties properties,
+				ApplicationEventPublisher eventPublisher) {
+			return new GrpcServerLifecycle(factory, properties.getShutdownGracePeriod(), eventPublisher);
+		}
+	}
 }
