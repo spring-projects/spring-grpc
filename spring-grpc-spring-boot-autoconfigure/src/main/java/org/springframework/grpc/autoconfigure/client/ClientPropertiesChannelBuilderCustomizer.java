@@ -49,7 +49,7 @@ class ClientPropertiesChannelBuilderCustomizer<T extends ManagedChannelBuilder<T
 		ChannelConfig channel = this.properties.getChannel(authority);
 		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		mapper.from(channel.getUserAgent()).to(builder::userAgent);
-		if (!authority.startsWith("unix:")) {
+		if (!authority.startsWith("unix:") && !authority.startsWith("in-process:")) {
 			mapper.from(channel.getDefaultLoadBalancingPolicy()).to(builder::defaultLoadBalancingPolicy);
 		}
 		mapper.from(channel.getMaxInboundMessageSize()).asInt(DataSize::toBytes).to(builder::maxInboundMessageSize);

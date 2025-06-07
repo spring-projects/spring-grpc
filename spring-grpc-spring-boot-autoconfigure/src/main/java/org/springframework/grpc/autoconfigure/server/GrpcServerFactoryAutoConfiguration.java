@@ -67,7 +67,8 @@ public class GrpcServerFactoryAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@Import({ GrpcServerFactoryConfigurations.ShadedNettyServerFactoryConfiguration.class,
-				GrpcServerFactoryConfigurations.NettyServerFactoryConfiguration.class })
+				GrpcServerFactoryConfigurations.NettyServerFactoryConfiguration.class,
+				GrpcServerFactoryConfigurations.InProcessServerFactoryConfiguration.class })
 		static class NettyServerFactoryConfiguration {
 
 		}
@@ -101,6 +102,12 @@ public class GrpcServerFactoryAutoConfiguration {
 					servletServerBuilder.buildServlet());
 			servlet.setUrlMappings(paths);
 			return servlet;
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@Import(GrpcServerFactoryConfigurations.InProcessServerFactoryConfiguration.class)
+		static class InProcessConfiguration {
+
 		}
 
 	}

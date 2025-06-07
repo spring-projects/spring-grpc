@@ -26,6 +26,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerStartedEvent;
 
 public class ServerPortInfoApplicationContextInitializer implements
@@ -43,6 +44,9 @@ public class ServerPortInfoApplicationContextInitializer implements
 
 	@Override
 	public void onApplicationEvent(GrpcServerStartedEvent event) {
+		if (event.getSource().getFactory() instanceof InProcessGrpcServerFactory) {
+			return;
+		}
 		String propertyName = "local.grpc.port";
 		setPortProperty(applicationContext, propertyName, event.getPort());
 	}

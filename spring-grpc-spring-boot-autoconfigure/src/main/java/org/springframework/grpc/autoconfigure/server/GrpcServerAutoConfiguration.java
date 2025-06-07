@@ -64,13 +64,6 @@ public class GrpcServerAutoConfiguration {
 		this.properties = properties;
 	}
 
-	@ConditionalOnBean(GrpcServerFactory.class)
-	@ConditionalOnMissingBean
-	@Bean
-	GrpcServerLifecycle grpcServerLifecycle(GrpcServerFactory factory, ApplicationEventPublisher eventPublisher) {
-		return new GrpcServerLifecycle(factory, this.properties.getShutdownGracePeriod(), eventPublisher);
-	}
-
 	@ConditionalOnMissingBean
 	@Bean
 	ServerBuilderCustomizers serverBuilderCustomizers(ObjectProvider<ServerBuilderCustomizer<?>> customizers) {

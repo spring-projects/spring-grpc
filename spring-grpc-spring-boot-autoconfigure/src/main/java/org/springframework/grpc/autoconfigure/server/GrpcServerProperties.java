@@ -72,6 +72,8 @@ public class GrpcServerProperties {
 
 	private final KeepAlive keepAlive = new KeepAlive();
 
+	private final Inprocess inprocess = new Inprocess();
+
 	/**
 	 * The address to bind to. could be a host:port combination or a pseudo URL like
 	 * static://host:port. Can not be set if host or port are set independently.
@@ -141,6 +143,10 @@ public class GrpcServerProperties {
 
 	public KeepAlive getKeepAlive() {
 		return this.keepAlive;
+	}
+
+	public Inprocess getInprocess() {
+		return this.inprocess;
 	}
 
 	public static class Health {
@@ -412,6 +418,37 @@ public class GrpcServerProperties {
 
 		public boolean isSecure() {
 			return this.secure;
+		}
+
+	}
+
+	public static class Inprocess {
+
+		/**
+		 * The name of the in-process server or null to not start the in-process server.
+		 */
+		private String name;
+
+		/**
+		 * Whether the inprocess server factory should be the only server factory
+		 * available. When the value is true no other server factory will be configured.
+		 */
+		private Boolean exclusive;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Boolean getExclusive() {
+			return exclusive;
+		}
+
+		public void setExclusive(Boolean exclusive) {
+			this.exclusive = exclusive;
 		}
 
 	}

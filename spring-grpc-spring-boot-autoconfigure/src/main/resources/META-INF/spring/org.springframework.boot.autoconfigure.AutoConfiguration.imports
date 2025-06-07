@@ -1,3 +1,4 @@
+org.springframework.grpc.autoconfigure.client.CompositeChannelFactoryAutoConfiguration
 org.springframework.grpc.autoconfigure.client.GrpcClientAutoConfiguration
 org.springframework.grpc.autoconfigure.client.GrpcClientObservationAutoConfiguration
 org.springframework.grpc.autoconfigure.server.GrpcServerFactoryAutoConfiguration
