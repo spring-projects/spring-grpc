@@ -338,6 +338,23 @@ class GrpcServerIntegrationTests {
 
 	}
 
+	@Nested
+	@SpringBootTest(properties = { "spring.grpc.server.inprocess.name=foo", "spring.grpc.server.host=0.0.0.0",
+			"spring.grpc.server.port=0" })
+	class ServerWithRegularAndInProcessChannelsAndFactories {
+
+		@Test
+		void servesResponseToNonInProcessClient(@Autowired GrpcChannelFactory channels, @LocalGrpcPort int port) {
+			assertThatResponseIsServedToChannel(channels.createChannel("0.0.0.0:" + port));
+		}
+
+		@Test
+		void servesResponseToInProcessClient(@Autowired GrpcChannelFactory channels) {
+			assertThatResponseIsServedToChannel(channels.createChannel("in-process:foo"));
+		}
+
+	}
+
 	private void assertThatResponseIsServedToChannel(ManagedChannel clientChannel) {
 		SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(clientChannel);
 		HelloReply response = client.sayHello(HelloRequest.newBuilder().setName("Alien").build());

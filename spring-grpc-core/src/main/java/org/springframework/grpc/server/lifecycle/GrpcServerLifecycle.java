@@ -108,6 +108,14 @@ public class GrpcServerLifecycle implements SmartLifecycle {
 	}
 
 	/**
+	 * Gets the server factory used to create the server.
+	 * @return the server factory to create the server
+	 */
+	public GrpcServerFactory getFactory() {
+		return this.factory;
+	}
+
+	/**
 	 * Creates and starts the grpc server.
 	 * @throws IOException If the server is unable to bind the port.
 	 */
