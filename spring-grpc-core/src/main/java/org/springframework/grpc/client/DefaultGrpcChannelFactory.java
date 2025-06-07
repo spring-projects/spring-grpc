@@ -70,6 +70,18 @@ public class DefaultGrpcChannelFactory<T extends ManagedChannelBuilder<T>>
 		this.interceptorsConfigurer = interceptorsConfigurer;
 	}
 
+	/**
+	 * Whether this factory supports the given target string. The target can be either a
+	 * valid nameresolver-compliant URI, an authority string as described in
+	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}.
+	 * @param target the target string as described in method javadocs
+	 * @return true unless the target begins with 'in-process:'
+	 */
+	@Override
+	public boolean supports(String target) {
+		return !target.startsWith("in-process:");
+	}
+
 	public void setVirtualTargets(VirtualTargets targets) {
 		this.targets = targets;
 	}

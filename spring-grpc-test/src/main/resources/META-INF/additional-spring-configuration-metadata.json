@@ -2,10 +2,10 @@
   "groups": [],
   "properties": [
     {
-      "name": "spring.grpc.inprocess.enabled",
+      "name": "spring.grpc.test.inprocess.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable the in-process server and client for testing.",
-      "defaultValue": true
+      "defaultValue": false
     }
   ]
 }

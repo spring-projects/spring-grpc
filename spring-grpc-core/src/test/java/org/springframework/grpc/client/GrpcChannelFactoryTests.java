@@ -34,6 +34,7 @@ import org.mockito.ArgumentMatchers;
 import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.netty.NettyChannelBuilder;
 
 /**
@@ -157,6 +158,60 @@ class GrpcChannelFactoryTests {
 			assertThat(channel).isNotNull();
 			verify(customizer1).customize(anyString(), ArgumentMatchers.assertArg((builder) -> assertThat(builder)
 				.isInstanceOf(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)));
+		}
+
+		@Test
+		void inProcessChannelFactoryUsesInProcessChannelBuilder() {
+			var channelName = "in-process:foo";
+			var customizer1 = mock(GrpcChannelBuilderCustomizer.class);
+			var channelFactory = new InProcessGrpcChannelFactory(List.of(), mock());
+			channel = channelFactory.createChannel(channelName,
+					ChannelBuilderOptions.defaults().withCustomizer(customizer1));
+			assertThat(channel).isNotNull();
+			verify(customizer1).customize(anyString(),
+					ArgumentMatchers
+						.assertArg((builder) -> assertThat(builder).isInstanceOf(InProcessChannelBuilder.class)
+							.extracting("managedChannelImplBuilder.target")
+							.isEqualTo("directaddress:///foo")));
+			// NOTE: the impl target ending in foo proves the original target was stripped
+			// of 'in-process:' prefix
+		}
+
+	}
+
+	@Nested
+	class SupportsApiTests {
+
+		@Test
+		void defaultSupportsEverythingExceptInProcess() {
+			var channelFactory = new DefaultGrpcChannelFactory(List.of(), mock());
+			assertThat(channelFactory.supports("foo")).isTrue();
+			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
+			assertThat(channelFactory.supports("in-process:foo")).isFalse();
+		}
+
+		@Test
+		void nettySupportsEverythingExceptInProcess() {
+			var channelFactory = new NettyGrpcChannelFactory(List.of(), mock());
+			assertThat(channelFactory.supports("foo")).isTrue();
+			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
+			assertThat(channelFactory.supports("in-process:foo")).isFalse();
+		}
+
+		@Test
+		void shadedNettySupportsEverythingExceptInProcess() {
+			var channelFactory = new ShadedNettyGrpcChannelFactory(List.of(), mock());
+			assertThat(channelFactory.supports("foo")).isTrue();
+			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
+			assertThat(channelFactory.supports("in-process:foo")).isFalse();
+		}
+
+		@Test
+		void inProcessSupportsOnlyInProcess() {
+			var channelFactory = new InProcessGrpcChannelFactory(List.of(), mock());
+			assertThat(channelFactory.supports("foo")).isFalse();
+			assertThat(channelFactory.supports("static:127.0.0.1")).isFalse();
+			assertThat(channelFactory.supports("in-process:foo")).isTrue();
 		}
 
 	}

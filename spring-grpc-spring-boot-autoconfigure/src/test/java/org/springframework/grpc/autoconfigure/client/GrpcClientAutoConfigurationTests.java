@@ -43,13 +43,16 @@ import org.springframework.core.annotation.Order;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.GrpcChannelFactory;
+import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.client.NettyGrpcChannelFactory;
 import org.springframework.grpc.client.ShadedNettyGrpcChannelFactory;
+import org.springframework.grpc.server.GrpcServerFactory;
 
 import io.grpc.Codec;
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.kotlin.AbstractCoroutineStub;
 import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.AbstractStub;
@@ -65,6 +68,10 @@ class GrpcClientAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner() {
 		return new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GrpcClientAutoConfiguration.class, SslAutoConfiguration.class));
+	}
+
+	private ApplicationContextRunner contextRunnerWithoutInProcessChannelFactory() {
+		return this.contextRunner().withPropertyValues("spring.grpc.client.inprocess.enabled=false");
 	}
 
 	@Test
@@ -223,70 +230,167 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Test
-	void whenHasUserDefinedChannelFactoryDoesNotAutoConfigureBean() {
-		GrpcChannelFactory customChannelFactory = mock(GrpcChannelFactory.class);
+	void whenInProcessEnabledPropNotSetDoesAutoconfigureInProcess() {
 		this.contextRunner()
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.containsKey("inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenInProcessEnabledPropSetToTrueDoesAutoconfigureInProcess() {
+		this.contextRunner()
+			.withPropertyValues("spring.grpc.client.inprocess.enabled=true")
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.containsKey("inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenInProcessEnabledPropSetToFalseDoesNotAutoconfigureInProcess() {
+		this.contextRunner()
+			.withPropertyValues("spring.grpc.client.inprocess.enabled=false")
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.doesNotContainKey("inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenInProcessIsNotOnClasspathDoesNotAutoconfigureInProcess() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(InProcessChannelBuilder.class))
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.doesNotContainKey("inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenHasUserDefinedInProcessChannelFactoryDoesNotAutoConfigureBean() {
+		InProcessGrpcChannelFactory customChannelFactory = mock();
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
+					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
+			.withBean("customChannelFactory", InProcessGrpcChannelFactory.class, () -> customChannelFactory)
+			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class).isSameAs(customChannelFactory));
+	}
+
+	@Test
+	void whenHasUserDefinedChannelFactoryDoesNotAutoConfigureNettyOrShadedNetty() {
+		GrpcChannelFactory customChannelFactory = mock();
+		this.contextRunnerWithoutInProcessChannelFactory()
 			.withBean("customChannelFactory", GrpcChannelFactory.class, () -> customChannelFactory)
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class).isSameAs(customChannelFactory));
 	}
 
 	@Test
-	void whenShadedAndNonShadedNettyOnClasspathShadedNettyFactoryIsAutoConfigured() {
+	void userDefinedChannelFactoryWithInProcessChannelFactory() {
+		GrpcChannelFactory customChannelFactory = mock();
 		this.contextRunner()
+			.withBean("customChannelFactory", GrpcChannelFactory.class, () -> customChannelFactory)
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.containsOnlyKeys("customChannelFactory", "inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenShadedAndNonShadedNettyOnClasspathShadedNettyFactoryIsAutoConfigured() {
+		this.contextRunnerWithoutInProcessChannelFactory()
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(ShadedNettyGrpcChannelFactory.class));
 	}
 
 	@Test
-	void whenOnlyNonShadedNettyOnClasspathNonShadedNettyFactoryIsAutoConfigured() {
+	void shadedNettyWithInProcessChannelFactory() {
 		this.contextRunner()
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.containsOnlyKeys("shadedNettyGrpcChannelFactory", "inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenOnlyNonShadedNettyOnClasspathNonShadedNettyFactoryIsAutoConfigured() {
+		this.contextRunnerWithoutInProcessChannelFactory()
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(NettyGrpcChannelFactory.class));
 	}
 
 	@Test
-	void shadedNettyChannelFactoryAutoConfiguredAsExpected() {
-		channelFactoryAutoConfiguredAsExpected(this.contextRunner(), ShadedNettyGrpcChannelFactory.class);
-	}
-
-	@Test
-	void nettyChannelFactoryAutoConfiguredAsExpected() {
-		channelFactoryAutoConfiguredAsExpected(this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
-				NettyGrpcChannelFactory.class);
-	}
-
-	@Test
-	void noChannelFactoryAutoConfiguredAsExpected() {
+	void nonShadedNettyWithInProcessChannelFactory() {
 		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
+			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+				.containsOnlyKeys("nettyGrpcChannelFactory", "inProcessGrpcChannelFactory"));
+	}
+
+	@Test
+	void whenShadedNettyAndNettyNotOnClasspathNoChannelFactoryIsAutoConfigured() {
+		this.contextRunnerWithoutInProcessChannelFactory()
 			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
 					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcChannelFactory.class));
 	}
 
-	private void channelFactoryAutoConfiguredAsExpected(ApplicationContextRunner contextRunner,
-			Class<?> expectedChannelFactoryType) {
-		contextRunner.withPropertyValues("spring.grpc.server.port=0")
+	@Test
+	void noChannelFactoryWithInProcessChannelFactory() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
+					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
-				.isInstanceOf(expectedChannelFactoryType)
+				.isInstanceOf(InProcessGrpcChannelFactory.class));
+	}
+
+	@Test
+	void shadedNettyChannelFactoryAutoConfiguredAsExpected() {
+		this.contextRunnerWithoutInProcessChannelFactory()
+			.withPropertyValues("spring.grpc.server.port=0")
+			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
+				.isInstanceOf(ShadedNettyGrpcChannelFactory.class)
 				.hasFieldOrPropertyWithValue("credentials", context.getBean(NamedChannelCredentialsProvider.class))
 				.extracting("targets")
 				.isInstanceOf(GrpcClientProperties.class));
 	}
 
 	@Test
+	void nettyChannelFactoryAutoConfiguredAsExpected() {
+		this.contextRunnerWithoutInProcessChannelFactory()
+			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
+			.withPropertyValues("spring.grpc.server.port=0")
+			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
+				.isInstanceOf(NettyGrpcChannelFactory.class)
+				.hasFieldOrPropertyWithValue("credentials", context.getBean(NamedChannelCredentialsProvider.class))
+				.extracting("targets")
+				.isInstanceOf(GrpcClientProperties.class));
+	}
+
+	@Test
+	void inProcessChannelFactoryAutoConfiguredAsExpected() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
+					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
+			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
+				.isInstanceOf(InProcessGrpcChannelFactory.class)
+				.extracting("credentials")
+				.isSameAs(ChannelCredentialsProvider.INSECURE));
+	}
+
+	@Test
 	void shadedNettyChannelFactoryAutoConfiguredWithCustomizers() {
 		io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder builder = mock();
-		channelFactoryAutoConfiguredWithCustomizers(this.contextRunner(), builder, ShadedNettyGrpcChannelFactory.class);
+		channelFactoryAutoConfiguredWithCustomizers(this.contextRunnerWithoutInProcessChannelFactory(), builder,
+				ShadedNettyGrpcChannelFactory.class);
 	}
 
 	@Test
 	void nettyChannelFactoryAutoConfiguredWithCustomizers() {
 		NettyChannelBuilder builder = mock();
-		channelFactoryAutoConfiguredWithCustomizers(this.contextRunner()
+		channelFactoryAutoConfiguredWithCustomizers(this.contextRunnerWithoutInProcessChannelFactory()
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
 				builder, NettyGrpcChannelFactory.class);
+	}
+
+	@Test
+	void inProcessChannelFactoryAutoConfiguredWithCustomizers() {
+		InProcessChannelBuilder builder = mock();
+		channelFactoryAutoConfiguredWithCustomizers(
+				this.contextRunner()
+					.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
+							io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
+				builder, InProcessGrpcChannelFactory.class);
 	}
 
 	@SuppressWarnings("unchecked")

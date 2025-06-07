@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.grpc.test;
+package org.springframework.grpc.server;
 
 import java.util.List;
 
-import org.springframework.grpc.server.DefaultGrpcServerFactory;
-import org.springframework.grpc.server.ServerBuilderCustomizer;
-
 import io.grpc.inprocess.InProcessServerBuilder;
 
+/**
+ * {@link GrpcServerFactory} that can be used to create an in-process gRPC server.
+ *
+ * @author Chris Bono
+ */
 public class InProcessGrpcServerFactory extends DefaultGrpcServerFactory<InProcessServerBuilder> {
 
 	public InProcessGrpcServerFactory(String address,

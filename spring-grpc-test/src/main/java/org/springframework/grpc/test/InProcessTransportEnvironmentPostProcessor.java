@@ -17,6 +17,7 @@ package org.springframework.grpc.test;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.SpringApplication;
@@ -39,7 +40,8 @@ public class InProcessTransportEnvironmentPostProcessor implements EnvironmentPo
 			return;
 		}
 		MapPropertySource inProcessTransportPropertySource = new MapPropertySource("inProcessTransportPropertySource",
-				Collections.singletonMap("spring.grpc.inprocess.enabled", "true"));
+				Map.of("spring.grpc.test.inprocess.enabled", "true", "spring.grpc.client.inprocess.exclusive", "true",
+						"spring.grpc.server.inprocess.exclusive", "true"));
 		environment.getPropertySources().addFirst(inProcessTransportPropertySource);
 	}
 

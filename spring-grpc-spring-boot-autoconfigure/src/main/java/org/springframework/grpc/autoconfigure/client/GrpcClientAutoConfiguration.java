@@ -34,12 +34,13 @@ import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
 import io.grpc.ManagedChannelBuilder;
 
-@AutoConfiguration
+@AutoConfiguration(before = CompositeChannelFactoryAutoConfiguration.class)
 @ConditionalOnGrpcClientEnabled
 @EnableConfigurationProperties(GrpcClientProperties.class)
 @Import({ GrpcCodecConfiguration.class, ClientInterceptorsConfiguration.class,
 		GrpcChannelFactoryConfigurations.ShadedNettyChannelFactoryConfiguration.class,
-		GrpcChannelFactoryConfigurations.NettyChannelFactoryConfiguration.class, ClientScanConfiguration.class })
+		GrpcChannelFactoryConfigurations.NettyChannelFactoryConfiguration.class,
+		GrpcChannelFactoryConfigurations.InProcessChannelFactoryConfiguration.class, ClientScanConfiguration.class })
 public class GrpcClientAutoConfiguration {
 
 	@Bean

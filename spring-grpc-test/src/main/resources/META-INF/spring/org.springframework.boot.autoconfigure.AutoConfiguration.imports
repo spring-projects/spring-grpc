@@ -1,2 +1,1 @@
-org.springframework.grpc.test.InProcessGrpcServerFactoryAutoConfiguration
-
+org.springframework.grpc.test.InProcessTestAutoConfiguration
