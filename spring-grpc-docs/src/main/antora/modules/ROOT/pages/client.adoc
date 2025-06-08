@@ -131,6 +131,17 @@ dependencies {
 }
 ----
 
+[[in-process-channel]]
+== InProcess Channel
+You can communicate with an link:server.adoc#in-process-server[in-process server factory] (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath.
+
+In this mode, the in-process channel factory is auto-configured in *addition* to the regular channel factories (e.g. Netty).
+However, to prevent users from having to deal with multiple channel factory, a composite channel factory has been introduced which consults its composed factories to find the first one that supports the channel target.
+
+NOTE: To use the inprocess server the channel target must be set to `in-process://<in-process-name>`
+
+To disable the inprocess channel factory, you can set the `spring.grpc.client.inprocess.enabled` property to false.
+
 == Channel Configuration
 The channel factory provides an API to create channels.
 The channel creation process can be configured as follows.

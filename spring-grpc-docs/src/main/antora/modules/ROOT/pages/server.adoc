@@ -92,6 +92,16 @@ The native gRPC server (with netty etc.) will run happily inside a web applicati
 If you want to do that in any Spring Boot application, it should be sufficient *not* to include the `grpc-servlet-jakarta` dependency on your classpath.
 This dependency is only provided by the `spring-grpc-server-web-spring-boot-starter` (or if you include it explicitly yourself), but if you need to be explicit you can set `spring.grpc.server.servlet.enabled=false` in your application configuration.
 
+[[in-process-server]]
+== InProcess Server
+
+You can run an in-process server (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath and specifying the `spring.grpc.server.inprocess.name` property which is used as the identity of the server for clients to connect to.
+
+In this mode, the in-process server factory is auto-configured in *addition* to the regular server factory (e.g. Netty).
+
+NOTE: To use the inprocess server the channel target must be set to `in-process://<in-process-name>`
+
+
 [[server-interceptor]]
 == Server Interceptors
 
@@ -159,7 +169,10 @@ A `GrpcExceptionHandler` can be used to handle exceptions of a specific type, re
 
 If you include `spring-grpc-test` in your project, your gRPC server in a `@SpringBootTest` can be started in-process (i.e. not listening on a network port) by enabling the in-process server.
 All clients that connect to any server via the autoconfigured `GrpcChannelFactory` will be able to connect to it.
-You can switch the in-process server on by setting `spring.grpc.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
+You can switch the in-process server on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
+
+NOTE: When the in-process server is run in test mode (as opposed to <<in-process-server,running normally>>) it replaces the regular server and channel factories (e.g. Netty)
+
 
 == Security
 
