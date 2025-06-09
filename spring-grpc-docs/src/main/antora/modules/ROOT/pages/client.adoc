@@ -133,10 +133,11 @@ dependencies {
 
 [[in-process-channel]]
 == InProcess Channel
-You can communicate with an link:server.adoc#in-process-server[in-process server factory] (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath.
+You can communicate with an link:server.adoc#in-process-server[in-process server] (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath.
 
 In this mode, the in-process channel factory is auto-configured in *addition* to the regular channel factories (e.g. Netty).
-However, to prevent users from having to deal with multiple channel factory, a composite channel factory has been introduced which consults its composed factories to find the first one that supports the channel target.
+However, to prevent users from having to deal with multiple channel factories, a composite channel factory is configured as the primary channel factory bean.
+The composite consults its composed factories to find the first one that supports the channel target.
 
 NOTE: To use the inprocess server the channel target must be set to `in-process://<in-process-name>`
 
