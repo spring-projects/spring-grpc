@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import io.grpc.ManagedChannelBuilder;
  * Tests for {@link ClientInterceptorsConfigurer}.
  *
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 class ClientInterceptorsConfigurerTests {
 
@@ -164,6 +165,35 @@ class ClientInterceptorsConfigurerTests {
 					Collections.reverse(expectedInterceptorsReversed);
 					verify(builder).intercept(expectedInterceptorsReversed);
 				});
+		}
+
+	}
+
+	@Nested
+	class WithInterceptorFilters {
+
+		@Test
+		void whenFilterExcludesOneGlobalInterceptor_thenBuilderGetsOnlyAllowedOnes() {
+			ManagedChannelBuilder<?> builder = Mockito.mock();
+			ClientInterceptorsConfigurerTests.this.contextRunner()
+				.withUserConfiguration(GlobalClientInterceptorsConfig.class, FilterConfig.class)
+				.run(context -> {
+					var factory = Mockito.mock(GrpcChannelFactory.class);
+					var configurer = context.getBean(ClientInterceptorsConfigurer.class);
+					configurer.configureInterceptors(builder, List.of(), true, factory);
+					var expected = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR);
+					verify(builder).intercept(expected);
+				});
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class FilterConfig {
+
+			@Bean
+			ClientInterceptorFilter clientInterceptorFilter() {
+				return (interceptor, factory) -> interceptor == GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR;
+			}
+
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,15 @@ import io.grpc.ManagedChannelBuilder;
  * Configure a {@link ManagedChannelBuilder} with client interceptors.
  *
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 public class ClientInterceptorsConfigurer implements InitializingBean {
 
 	private final ApplicationContext applicationContext;
 
 	private List<ClientInterceptor> globalInterceptors;
+
+	private List<ClientInterceptorFilter> interceptorFilters;
 
 	public ClientInterceptorsConfigurer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
@@ -51,10 +54,29 @@ public class ClientInterceptorsConfigurer implements InitializingBean {
 	 */
 	protected void configureInterceptors(ManagedChannelBuilder<?> builder, List<ClientInterceptor> interceptors,
 			boolean mergeWithGlobalInterceptors) {
+		this.configureInterceptors(builder, interceptors, mergeWithGlobalInterceptors, null);
+	}
+
+	/**
+	 * Configure a {@link ManagedChannelBuilder} with client interceptors.
+	 * @param builder the builder to configure
+	 * @param interceptors the non-null list of interceptors to be applied to the channel
+	 * @param mergeWithGlobalInterceptors whether the provided interceptors should be
+	 * blended with the global interceptors.
+	 * @param factory the channel factory used to filter global interceptors; no filtering
+	 * if {@code null}
+	 */
+	protected void configureInterceptors(ManagedChannelBuilder<?> builder, List<ClientInterceptor> interceptors,
+			boolean mergeWithGlobalInterceptors, GrpcChannelFactory factory) {
 		// Add global interceptors first
 		List<ClientInterceptor> allInterceptors = new ArrayList<>(this.globalInterceptors);
 		// Add specific interceptors
 		allInterceptors.addAll(interceptors);
+		// Filter all interceptors
+		if (factory != null) {
+			allInterceptors.removeIf(interceptor -> this.interceptorFilters.stream()
+				.anyMatch(filter -> !filter.shouldInclude(interceptor, factory)));
+		}
 		if (mergeWithGlobalInterceptors) {
 			ApplicationContextBeanLookupUtils.sortBeansIncludingOrderAnnotation(this.applicationContext,
 					ClientInterceptor.class, allInterceptors);
@@ -66,11 +88,16 @@ public class ClientInterceptorsConfigurer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() {
 		this.globalInterceptors = findGlobalInterceptors();
+		this.interceptorFilters = findInterceptorFilters();
 	}
 
 	private List<ClientInterceptor> findGlobalInterceptors() {
 		return ApplicationContextBeanLookupUtils.getBeansWithAnnotation(this.applicationContext,
 				ClientInterceptor.class, GlobalClientInterceptor.class);
+	}
+
+	private List<ClientInterceptorFilter> findInterceptorFilters() {
+		return List.copyOf(this.applicationContext.getBeansOfType(ClientInterceptorFilter.class).values());
 	}
 
 }
