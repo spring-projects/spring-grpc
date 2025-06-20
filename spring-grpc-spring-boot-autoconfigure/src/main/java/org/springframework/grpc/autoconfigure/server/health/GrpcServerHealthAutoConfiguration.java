@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -61,6 +62,7 @@ import io.grpc.protobuf.services.HealthStatusManager;
 @ConditionalOnGrpcServerEnabled
 @ConditionalOnClass(HealthStatusManager.class)
 @ConditionalOnProperty(name = "spring.grpc.server.health.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean(BindableService.class)
 public class GrpcServerHealthAutoConfiguration {
 
 	@Bean(destroyMethod = "enterTerminalState")

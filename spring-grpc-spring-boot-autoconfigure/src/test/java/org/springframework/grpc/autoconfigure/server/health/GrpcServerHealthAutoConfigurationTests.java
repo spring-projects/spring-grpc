@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,20 @@ import io.grpc.protobuf.services.HealthStatusManager;
  * Tests for {@link GrpcServerHealthAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 class GrpcServerHealthAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner() {
 		return new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(GrpcServerHealthAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(GrpcServerHealthAutoConfiguration.class))
+			.withBean(BindableService.class, Mockito::mock);
+	}
+
+	@Test
+	void whenNoBindableServiceDefinedDoesNotAutoConfigureBean() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(GrpcServerHealthAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerHealthAutoConfiguration.class));
 	}
 
 	@Test
@@ -116,7 +124,6 @@ class GrpcServerHealthAutoConfigurationTests {
 			.withBean("serverBuilderCustomizers", ServerBuilderCustomizers.class, Mockito::mock)
 			.withBean("grpcServicesDiscoverer", GrpcServiceDiscoverer.class, Mockito::mock)
 			.withBean("sslBundles", SslBundles.class, Mockito::mock)
-			.withBean(BindableService.class, () -> service)
 			.withPropertyValues("spring.grpc.server.port=0")
 			.run((context) -> assertThatBeanDefinitionsContainInOrder(context, GrpcServerHealthAutoConfiguration.class,
 					GrpcServerFactoryAutoConfiguration.class));
