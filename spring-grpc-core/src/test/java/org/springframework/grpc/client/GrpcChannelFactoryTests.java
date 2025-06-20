@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ class GrpcChannelFactoryTests {
 			channel = channelFactory.createChannel(channelName);
 			assertThat(channel).isNotNull();
 			verify(configurer).configureInterceptors(any(ManagedChannelBuilder.class),
-					assertArg((interceptors) -> assertThat(interceptors).isEmpty()), eq(false));
+					assertArg((interceptors) -> assertThat(interceptors).isEmpty()), eq(false), eq(channelFactory));
 		}
 
 		@Test
@@ -126,7 +126,8 @@ class GrpcChannelFactoryTests {
 						.withInterceptorsMerge(true));
 			assertThat(channel).isNotNull();
 			verify(configurer).configureInterceptors(any(ManagedChannelBuilder.class),
-					assertArg((interceptors) -> assertThat(interceptors).containsExactly(interceptor)), eq(true));
+					assertArg((interceptors) -> assertThat(interceptors).containsExactly(interceptor)), eq(true),
+					eq(channelFactory));
 		}
 
 	}

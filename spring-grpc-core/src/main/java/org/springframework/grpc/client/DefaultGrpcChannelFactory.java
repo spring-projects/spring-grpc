@@ -96,7 +96,7 @@ public class DefaultGrpcChannelFactory<T extends ManagedChannelBuilder<T>>
 		T builder = newChannelBuilder(targetUri, this.credentials.getChannelCredentials(target));
 		// Handle interceptors
 		this.interceptorsConfigurer.configureInterceptors(builder, options.interceptors(),
-				options.mergeWithGlobalInterceptors());
+				options.mergeWithGlobalInterceptors(), this);
 		// Handle customizers
 		this.globalCustomizers.forEach((c) -> c.customize(target, builder));
 		var customizer = options.<T>customizer();
