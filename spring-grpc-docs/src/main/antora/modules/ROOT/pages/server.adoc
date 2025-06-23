@@ -8,7 +8,7 @@ The `Server` is the gRPC server that listens for incoming requests and routes th
 == Create a gRPC Service
 
 To create a gRPC server, you need to provide one or more beans of type `BindableService`.
-There are some `BindableServices` available off the shelf that you could include in your application (an example is the reflection service from the `grpc-services` artifact which allows clients to browse the metadata of your services and download the Protobuf files).
+There are some `BindableServices` available off the shelf that you could include in your application (e.g. the <<reflection-service,gRPC Reflection>> or <<health-service,gRPC Health>> services).
 Very commonly, you will create your own `BindableService` by extending the generated service implementation from your Protobuf file.
 The easiest way to activate it is to simply add a Spring `@Service` annotation to the implementation class and have it picked up by the `@ComponentScan` in your Spring Boot application.
 
@@ -150,7 +150,14 @@ However, by setting the `blendWithGlobalInterceptors` attribute on the `@GrpcSer
 You can use this option if you want to add a per-service interceptor between global interceptors.
 ====
 
-[[health]]
+[[reflection-service]]
+== Reflection
+
+Spring gRPC autoconfigures the standard https://grpc.io/docs/guides/reflection/[gRPC Reflection service] which allows clients to browse the metadata of your services and download the Protobuf files.
+
+IMPORTANT: The reflection service resides in the `io.grpc:grpc-services` library which is marked as `optional` by Spring gRPC. You must add this dependency to your application in order for it to be autoconfigured.
+
+[[health-service]]
 include::health.adoc[leveloffset=+1]
 
 == Observability
