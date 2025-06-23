@@ -150,12 +150,11 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			return this.health;
 		}
 
+		/**
+		 * Map representation of the service config to use for the channel
+		 */
 		private final Map<String, ?> serviceConfig = new HashMap<>();
 
-		/**
-		 * The service config to use for the channel.
-		 * @return the service config
-		 */
 		public Map<String, ?> getServiceConfig() {
 			return this.serviceConfig;
 		}

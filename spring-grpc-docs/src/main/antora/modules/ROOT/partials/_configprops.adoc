@@ -16,10 +16,13 @@
 |spring.grpc.client.default-channel.max-inbound-metadata-size | `+++8192B+++` | Maximum metadata size allowed to be received by the channel (default 8KiB). Set to '-1' to use the highest possible limit (not recommended).
 |spring.grpc.client.default-channel.negotiation-type | `+++plaintext+++` | The negotiation type for the channel.
 |spring.grpc.client.default-channel.secure | `+++true+++` | Flag to say that strict SSL checks are not enabled (so the remote certificate could be anonymous).
+|spring.grpc.client.default-channel.service-config |  | Map representation of the service config to use for the channel
 |spring.grpc.client.default-channel.ssl.bundle |  | SSL bundle name.
 |spring.grpc.client.default-channel.ssl.enabled |  | Whether to enable SSL support. Enabled automatically if "bundle" is provided unless specified otherwise.
 |spring.grpc.client.default-channel.user-agent |  | The custom User-Agent for the channel.
 |spring.grpc.client.enabled | `+++true+++` | Whether to enable client autoconfiguration.
+|spring.grpc.client.inprocess.enabled | `+++true+++` | Whether to configure the in-process channel factory.
+|spring.grpc.client.inprocess.exclusive | `+++true+++` | Whether the inprocess channel factory should be the only channel factory available. When the value is true, no other channel factory will be configured.
 |spring.grpc.client.observations.enabled | `+++true+++` | Whether to enable Observations on the client.
 |spring.grpc.server.address |  | The address to bind to. could be a host:port combination or a pseudo URL like static://host:port. Can not be set if host or port are set independently.
 |spring.grpc.server.enabled | `+++true+++` | Whether to enable server autoconfiguration.
@@ -31,6 +34,8 @@
 |spring.grpc.server.health.actuator.update-rate | `+++5s+++` | How often to update the health status.
 |spring.grpc.server.health.enabled | `+++true+++` | Whether to auto-configure Health feature on the gRPC server.
 |spring.grpc.server.host | `+++*+++` | Server address to bind to. The default is any IP address ('*').
+|spring.grpc.server.inprocess.exclusive |  | Whether the inprocess server factory should be the only server factory available. When the value is true no other server factory will be configured.
+|spring.grpc.server.inprocess.name |  | The name of the in-process server or null to not start the in-process server.
 |spring.grpc.server.keep-alive.max-age |  | Maximum time a connection may exist before being gracefully terminated (default infinite).
 |spring.grpc.server.keep-alive.max-age-grace |  | Maximum time for graceful connection termination (default infinite).
 |spring.grpc.server.keep-alive.max-idle |  | Maximum time a connection can remain idle before being gracefully terminated (default infinite).
