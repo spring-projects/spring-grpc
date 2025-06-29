@@ -99,7 +99,7 @@ You can run an in-process server (i.e. not listening on a network port) by inclu
 
 In this mode, the in-process server factory is auto-configured in *addition* to the regular server factory (e.g. Netty).
 
-NOTE: To use the inprocess server the channel target must be set to `in-process://<in-process-name>`
+NOTE: To use the inprocess server the channel target must be set to `in-process:<in-process-name>`
 
 
 [[server-interceptor]]
