@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class GrpcReactiveRequestTests {
 		when(service.bindService()).thenReturn(serviceDefinition);
 		this.context.registerBean(BindableService.class, () -> service);
 		this.context.registerBean(GrpcServiceDiscoverer.class,
-				() -> new DefaultGrpcServiceDiscoverer((input, info) -> input.bindService(), context));
+				() -> new DefaultGrpcServiceDiscoverer((__, bindableService, ___) -> service.bindService(), context));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class GrpcReactiveRequestTests {
 		return request;
 	}
 
-	static interface MockService extends BindableService {
+	interface MockService extends BindableService {
 
 	}
 

@@ -75,7 +75,7 @@ class GrpcServerFactoryConfigurations {
 			}
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
 					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
-			grpcServicesDiscoverer.findServices().forEach(factory::addService);
+			grpcServicesDiscoverer.findServices(factory).forEach(factory::addService);
 			return factory;
 		}
 
@@ -114,7 +114,7 @@ class GrpcServerFactoryConfigurations {
 			}
 			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
 					keyManager, trustManager, properties.getSsl().getClientAuth());
-			grpcServicesDiscoverer.findServices().forEach(factory::addService);
+			grpcServicesDiscoverer.findServices(factory).forEach(factory::addService);
 			return factory;
 		}
 
@@ -143,7 +143,7 @@ class GrpcServerFactoryConfigurations {
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
 					builderCustomizers);
-			grpcServicesDiscoverer.findServices().forEach(factory::addService);
+			grpcServicesDiscoverer.findServices(factory).forEach(factory::addService);
 			return factory;
 		}
 

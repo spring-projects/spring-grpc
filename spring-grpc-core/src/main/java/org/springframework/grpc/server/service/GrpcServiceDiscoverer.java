@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.grpc.server.service;
 
 import java.util.List;
 
+import org.springframework.grpc.server.GrpcServerFactory;
+
 import io.grpc.ServerServiceDefinition;
 
 /**
@@ -26,36 +28,20 @@ import io.grpc.ServerServiceDefinition;
  * @author Michael (yidongnan@gmail.com)
  * @author Chris Bono
  */
-@FunctionalInterface
 public interface GrpcServiceDiscoverer {
 
 	/**
-	 * Find gRPC services for the server to provide.
+	 * Find all gRPC services.
+	 * @param serverFactory the factory that provides the server that the services are to
+	 * be added to
 	 * @return list of services to add to the server - empty when no services available
 	 */
-	List<ServerServiceDefinition> findServices();
+	List<ServerServiceDefinition> findServices(GrpcServerFactory serverFactory);
 
 	/**
-	 * Find gRPC service names.
+	 * Find names of all gRPC services.
 	 * @return list of service names - empty when no services available
 	 */
-	default List<String> listServiceNames() {
-		return findServices().stream()
-			.map(ServerServiceDefinition::getServiceDescriptor)
-			.map(descriptor -> descriptor.getName())
-			.toList();
-	}
-
-	/**
-	 * Find gRPC service.
-	 * @param name the service name
-	 * @return a service - null if no service has this name
-	 */
-	default ServerServiceDefinition findService(String name) {
-		return findServices().stream()
-			.filter(service -> service.getServiceDescriptor().getName().equals(name))
-			.findFirst()
-			.orElse(null);
-	}
+	List<String> listServiceNames();
 
 }

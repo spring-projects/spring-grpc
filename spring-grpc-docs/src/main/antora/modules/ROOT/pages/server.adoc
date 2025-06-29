@@ -119,6 +119,22 @@ ServerInterceptor myGlobalLoggingInterceptor() {
 }
 ----
 
+[[global-server-interceptor-filtering]]
+==== Filtering
+All global interceptors are applied to all created services by default.
+However, you can register a `ServerInterceptorFilter` bean to decide which interceptors are applied to which server factories.
+
+The following example prevents the `ExtraThingsInterceptor` interceptor from being applied to any servers created by the `InProcessGrpcServerFactory` server factory.
+
+[source,java]
+----
+@Bean
+ServerInterceptorFilter myInterceptorFilter() {
+	return (interceptor, factory, service) ->
+			!(interceptor instanceof ExtraThingsInterceptor && factory instanceof InProcessGrpcServerFactory);
+}
+----
+
 === Per-Service
 To add a server interceptor to be applied to a single service you can simply register a server interceptor bean and then annotate your `BindableService` bean with `@GrpcService`, specifying the interceptor using either the `interceptors` or `interceptorNames` attribute.
 
