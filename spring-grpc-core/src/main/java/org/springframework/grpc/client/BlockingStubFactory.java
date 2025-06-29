@@ -20,9 +20,10 @@ import io.grpc.stub.AbstractBlockingStub;
 public class BlockingStubFactory extends AbstractStubFactory<AbstractBlockingStub<?>> {
 
 	public static boolean supports(Class<?> type) {
-        return (AbstractStubFactory.supports(AbstractBlockingStub.class, type) && !type.getSimpleName().contains("BlockingV2"))
-                // compatible for old grpc version
-                || type.getSimpleName().endsWith("BlockingStub");
+		return (AbstractStubFactory.supports(AbstractBlockingStub.class, type)
+				&& !type.getSimpleName().contains("BlockingV2"))
+				// compatible for old grpc version
+				|| type.getSimpleName().endsWith("BlockingStub");
 	}
 
 	@Override
