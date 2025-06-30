@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,16 @@
 package org.springframework.grpc.server.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.DefaultGrpcServiceDiscovererTestsConfig.SERVICE_A;
-import static org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.DefaultGrpcServiceDiscovererTestsConfig.SERVICE_B;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.DefaultGrpcServiceDiscovererTestsServiceConfig.SERVICE_A;
+import static org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.DefaultGrpcServiceDiscovererTestsServiceConfig.SERVICE_B;
+import static org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.DefaultGrpcServiceDiscovererTestsServiceConfig.SERVICE_DEF_A;
+import static org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.DefaultGrpcServiceDiscovererTestsServiceConfig.SERVICE_DEF_B;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -32,9 +37,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.grpc.server.GrpcServerFactory;
+import org.springframework.grpc.server.service.DefaultGrpcServiceDiscovererTests.TestServiceConfigurer.TestServiceConfigurerInvocation;
 
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
+import io.grpc.ServiceDescriptor;
 
 /**
  * Tests for {@link DefaultGrpcServiceDiscoverer}.
@@ -44,35 +52,58 @@ import io.grpc.ServerServiceDefinition;
 class DefaultGrpcServiceDiscovererTests {
 
 	@Test
-	void servicesAreFoundInProperOrderWithExpectedGrpcServiceAnnotations() {
-		new ApplicationContextRunner().withUserConfiguration(DefaultGrpcServiceDiscovererTestsConfig.class)
+	void whenNoServicesRegisteredThenListServiceNamesReturnsEmptyList() {
+		new ApplicationContextRunner().withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class)
+			.run((context) -> assertThat(context).getBean(DefaultGrpcServiceDiscoverer.class)
+				.extracting(DefaultGrpcServiceDiscoverer::listServiceNames, InstanceOfAssertFactories.LIST)
+				.isEmpty());
+	}
+
+	@Test
+	void whenServicesRegisteredThenListServiceNamesReturnsNames() {
+		new ApplicationContextRunner()
+			.withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class,
+					DefaultGrpcServiceDiscovererTestsServiceConfig.class)
+			.run((context) -> assertThat(context).getBean(DefaultGrpcServiceDiscoverer.class)
+				.extracting(DefaultGrpcServiceDiscoverer::listServiceNames, InstanceOfAssertFactories.LIST)
+				.containsExactly("serviceB", "serviceA"));
+
+	}
+
+	@Test
+	void whenNoServerFactorySpecifiedThenThrowsException() {
+		new ApplicationContextRunner().withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class)
 			.run((context) -> {
+				var discoverer = context.getBean(DefaultGrpcServiceDiscoverer.class);
+				assertThatIllegalArgumentException().isThrownBy(() -> discoverer.findServices(null))
+					.withMessage("serverFactory must not be null");
+			});
+	}
+
+	@Test
+	void servicesAreFoundInProperOrderWithExpectedGrpcServiceAnnotations() {
+		new ApplicationContextRunner()
+			.withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class,
+					DefaultGrpcServiceDiscovererTestsServiceConfig.class)
+			.run((context) -> {
+				GrpcServerFactory serverFactory = mock();
 				assertThat(context).getBean(DefaultGrpcServiceDiscoverer.class)
-					.extracting(DefaultGrpcServiceDiscoverer::findServices, InstanceOfAssertFactories.LIST)
-					.containsExactly(DefaultGrpcServiceDiscovererTestsConfig.SERVICE_DEF_B,
-							DefaultGrpcServiceDiscovererTestsConfig.SERVICE_DEF_A);
+					.extracting((discoverer) -> discoverer.findServices(serverFactory), InstanceOfAssertFactories.LIST)
+					.containsExactly(SERVICE_DEF_B, SERVICE_DEF_A);
 				TestServiceConfigurer configurer = context.getBean(TestServiceConfigurer.class);
 				assertThat(configurer.invocations).hasSize(2);
-				assertThat(configurer.invocations.keySet()).containsExactly(SERVICE_B, SERVICE_A);
-				assertThat(configurer.invocations).containsEntry(SERVICE_B, null);
-				assertThat(configurer.invocations).hasEntrySatisfying(SERVICE_A, (serviceInfo) -> {
-					assertThat(serviceInfo.interceptors()).isEmpty();
-					assertThat(serviceInfo.interceptorNames()).isEmpty();
-					assertThat(serviceInfo.blendWithGlobalInterceptors()).isFalse();
+				assertThat(configurer.invocations).element(0)
+					.isEqualTo(new TestServiceConfigurerInvocation(serverFactory, SERVICE_B, null));
+				assertThat(configurer.invocations).element(1).satisfies((invocation) -> {
+					assertThat(invocation.serverFactory).isEqualTo(serverFactory);
+					assertThat(invocation.bindableService).isEqualTo(SERVICE_A);
+					assertThat(invocation.serviceInfo).isNotNull();
 				});
 			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class DefaultGrpcServiceDiscovererTestsConfig {
-
-		static BindableService SERVICE_A = Mockito.mock();
-
-		static ServerServiceDefinition SERVICE_DEF_A = Mockito.mock();
-
-		static BindableService SERVICE_B = Mockito.mock();
-
-		static ServerServiceDefinition SERVICE_DEF_B = Mockito.mock();
+	static class DefaultGrpcServiceDiscovererTestsBaseConfig {
 
 		@Bean
 		TestServiceConfigurer testServiceConfigurer() {
@@ -85,18 +116,37 @@ class DefaultGrpcServiceDiscovererTests {
 			return new DefaultGrpcServiceDiscoverer(grpcServiceConfigurer, applicationContext);
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DefaultGrpcServiceDiscovererTestsServiceConfig {
+
+		static BindableService SERVICE_A = Mockito.mock();
+
+		static ServerServiceDefinition SERVICE_DEF_A = Mockito.mock();
+
+		static BindableService SERVICE_B = Mockito.mock();
+
+		static ServerServiceDefinition SERVICE_DEF_B = Mockito.mock();
+
 		@GrpcService
 		@Bean
 		@Order(200)
 		BindableService serviceA() {
-			Mockito.when(SERVICE_A.bindService()).thenReturn(SERVICE_DEF_A);
+			ServiceDescriptor descriptor = mock();
+			when(descriptor.getName()).thenReturn("serviceA");
+			when(SERVICE_DEF_A.getServiceDescriptor()).thenReturn(descriptor);
+			when(SERVICE_A.bindService()).thenReturn(SERVICE_DEF_A);
 			return SERVICE_A;
 		}
 
 		@Bean
 		@Order(100)
 		BindableService serviceB() {
-			Mockito.when(SERVICE_B.bindService()).thenReturn(SERVICE_DEF_B);
+			ServiceDescriptor descriptor = mock();
+			when(descriptor.getName()).thenReturn("serviceB");
+			when(SERVICE_DEF_B.getServiceDescriptor()).thenReturn(descriptor);
+			when(SERVICE_B.bindService()).thenReturn(SERVICE_DEF_B);
 			return SERVICE_B;
 		}
 
@@ -104,12 +154,17 @@ class DefaultGrpcServiceDiscovererTests {
 
 	static class TestServiceConfigurer implements GrpcServiceConfigurer {
 
-		Map<BindableService, GrpcServiceInfo> invocations = new LinkedHashMap<>();
+		List<TestServiceConfigurerInvocation> invocations = new ArrayList<>();
 
 		@Override
-		public ServerServiceDefinition configure(BindableService bindableService, GrpcServiceInfo serviceInfo) {
-			invocations.put(bindableService, serviceInfo);
+		public ServerServiceDefinition configure(GrpcServerFactory serverFactory, BindableService bindableService,
+				GrpcServiceInfo serviceInfo) {
+			invocations.add(new TestServiceConfigurerInvocation(serverFactory, bindableService, serviceInfo));
 			return bindableService.bindService();
+		}
+
+		record TestServiceConfigurerInvocation(GrpcServerFactory serverFactory, BindableService bindableService,
+				GrpcServiceInfo serviceInfo) {
 		}
 
 	}

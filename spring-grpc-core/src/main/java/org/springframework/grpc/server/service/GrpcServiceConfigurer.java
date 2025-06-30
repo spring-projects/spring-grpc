@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.grpc.server.service;
 
+import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.lang.Nullable;
 
 import io.grpc.BindableService;
@@ -31,10 +32,13 @@ public interface GrpcServiceConfigurer {
 
 	/**
 	 * Configure and bind a gRPC service.
+	 * @param serverFactory the factory that provides the server the service will be added
+	 * to
 	 * @param bindableService service to bind and configure
 	 * @param serviceInfo optional additional service information
 	 * @return configured service definition
 	 */
-	ServerServiceDefinition configure(BindableService bindableService, @Nullable GrpcServiceInfo serviceInfo);
+	ServerServiceDefinition configure(GrpcServerFactory serverFactory, BindableService bindableService,
+			@Nullable GrpcServiceInfo serviceInfo);
 
 }

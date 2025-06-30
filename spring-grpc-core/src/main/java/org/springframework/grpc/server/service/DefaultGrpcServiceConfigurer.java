@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.log.LogAccessor;
 import org.springframework.grpc.internal.ApplicationContextBeanLookupUtils;
 import org.springframework.grpc.server.GlobalServerInterceptor;
+import org.springframework.grpc.server.GrpcServerFactory;
+import org.springframework.grpc.server.ServerInterceptorFilter;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
@@ -38,9 +44,13 @@ import io.grpc.ServerServiceDefinition;
  */
 public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, InitializingBean {
 
+	private final LogAccessor log = new LogAccessor(getClass());
+
 	private final ApplicationContext applicationContext;
 
 	private List<ServerInterceptor> globalInterceptors;
+
+	private ServerInterceptorFilter interceptorFilter;
 
 	public DefaultGrpcServiceConfigurer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
@@ -49,11 +59,15 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 	@Override
 	public void afterPropertiesSet() {
 		this.globalInterceptors = findGlobalInterceptors();
+		this.interceptorFilter = findInterceptorFilter();
 	}
 
 	@Override
-	public ServerServiceDefinition configure(BindableService bindableService, @Nullable GrpcServiceInfo serviceInfo) {
-		return bindInterceptors(bindableService, serviceInfo);
+	public ServerServiceDefinition configure(GrpcServerFactory serverFactory, BindableService bindableService,
+			@Nullable GrpcServiceInfo serviceInfo) {
+		Assert.notNull(serverFactory, () -> "serverFactory must not be null");
+		Assert.notNull(bindableService, () -> "bindableService must not be null");
+		return bindInterceptors(serverFactory, bindableService, serviceInfo);
 	}
 
 	private List<ServerInterceptor> findGlobalInterceptors() {
@@ -61,14 +75,18 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 				ServerInterceptor.class, GlobalServerInterceptor.class);
 	}
 
-	private ServerServiceDefinition bindInterceptors(BindableService bindableService,
+	private ServerServiceDefinition bindInterceptors(GrpcServerFactory serverFactory, BindableService bindableService,
 			@Nullable GrpcServiceInfo serviceInfo) {
 		var serviceDef = bindableService.bindService();
 		if (serviceInfo == null) {
 			return ServerInterceptors.interceptForward(serviceDef, this.globalInterceptors);
 		}
-		// Add global interceptors first
+		// Add and filter global interceptors first
 		List<ServerInterceptor> allInterceptors = new ArrayList<>(this.globalInterceptors);
+		if (this.interceptorFilter != null) {
+			allInterceptors
+				.removeIf(interceptor -> !this.interceptorFilter.filter(interceptor, serverFactory, bindableService));
+		}
 		// Add interceptors by type
 		Arrays.stream(serviceInfo.interceptors())
 			.forEachOrdered(
@@ -82,6 +100,22 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 					ServerInterceptor.class, allInterceptors);
 		}
 		return ServerInterceptors.interceptForward(serviceDef, allInterceptors);
+	}
+
+	private ServerInterceptorFilter findInterceptorFilter() {
+		try {
+			return this.applicationContext.getBean(ServerInterceptorFilter.class);
+		}
+		catch (NoUniqueBeanDefinitionException noUniqueBeanEx) {
+			this.log.warn(noUniqueBeanEx,
+					() -> "No unique ServerInterceptorFilter bean found. Consider defining a single bean or marking one as @Primary");
+			return null;
+		}
+		catch (NoSuchBeanDefinitionException ignored) {
+			this.log.debug(
+					() -> "No ServerInterceptorFilter bean found - filtering will not be applied to server interceptors.");
+			return null;
+		}
 	}
 
 }
