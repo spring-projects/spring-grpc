@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
+import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 
 import io.grpc.BindableService;
@@ -53,10 +54,11 @@ public class InProcessTestAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(BindableService.class)
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	TestInProcessGrpcServerFactory testInProcessGrpcServerFactory(GrpcServiceDiscoverer grpcServicesDiscoverer,
+	TestInProcessGrpcServerFactory testInProcessGrpcServerFactory(GrpcServiceDiscoverer serviceDiscoverer,
+			GrpcServiceConfigurer serviceConfigurer,
 			List<ServerBuilderCustomizer<InProcessServerBuilder>> customizers) {
 		var factory = new TestInProcessGrpcServerFactory(address, customizers);
-		grpcServicesDiscoverer.findServices().forEach(factory::addService);
+		serviceDiscoverer.findServices().stream().map(serviceConfigurer::configure).forEach(factory::addService);
 		return factory;
 	}
 

@@ -39,6 +39,7 @@ import org.springframework.grpc.autoconfigure.server.GrpcServerFactoryAutoConfig
 import org.springframework.grpc.autoconfigure.server.ServerBuilderCustomizers;
 import org.springframework.grpc.autoconfigure.server.health.GrpcServerHealthAutoConfiguration.ActuatorHealthAdapterConfiguration;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
+import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.util.StringUtils;
 
@@ -130,6 +131,7 @@ class GrpcServerHealthAutoConfigurationTests {
 			.withBean("noopServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
 			.withBean("serverBuilderCustomizers", ServerBuilderCustomizers.class, Mockito::mock)
 			.withBean("grpcServicesDiscoverer", GrpcServiceDiscoverer.class, Mockito::mock)
+			.withBean("grpcServiceConfigurer", GrpcServiceConfigurer.class, Mockito::mock)
 			.withBean("sslBundles", SslBundles.class, Mockito::mock)
 			.withPropertyValues("spring.grpc.server.port=0")
 			.run((context) -> assertThatBeanDefinitionsContainInOrder(context, GrpcServerHealthAutoConfiguration.class,

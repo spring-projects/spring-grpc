@@ -42,8 +42,7 @@ public class GrpcServletRequestTests {
 		ServerServiceDefinition serviceDefinition = ServerServiceDefinition.builder("my-service").build();
 		when(service.bindService()).thenReturn(serviceDefinition);
 		this.context.registerBean(BindableService.class, () -> service);
-		this.context.registerBean(GrpcServiceDiscoverer.class,
-				() -> new DefaultGrpcServiceDiscoverer((input, info) -> input.bindService(), context));
+		this.context.registerBean(GrpcServiceDiscoverer.class, () -> new DefaultGrpcServiceDiscoverer(context));
 	}
 
 	@Test
@@ -51,28 +50,28 @@ public class GrpcServletRequestTests {
 		GrpcServletRequestMatcher matcher = GrpcServletRequest.all();
 		MockHttpServletRequest request = mockRequest("/my-service/Method");
 		assertThat(matcher.matches(request)).isTrue();
-	};
+	}
 
 	@Test
 	void noMatch() {
 		GrpcServletRequestMatcher matcher = GrpcServletRequest.all();
 		MockHttpServletRequest request = mockRequest("/other-service/Method");
 		assertThat(matcher.matches(request)).isFalse();
-	};
+	}
 
 	@Test
 	void requestMatcherExcludes() {
 		GrpcServletRequestMatcher matcher = GrpcServletRequest.all().excluding("my-service");
 		MockHttpServletRequest request = mockRequest("/my-service/Method");
 		assertThat(matcher.matches(request)).isFalse();
-	};
+	}
 
 	@Test
 	void noServices() {
 		GrpcServletRequestMatcher matcher = GrpcServletRequest.all();
 		MockHttpServletRequest request = mockRequestNoServices("/my-service/Method");
 		assertThat(matcher.matches(request)).isFalse();
-	};
+	}
 
 	private MockHttpServletRequest mockRequestNoServices(String path) {
 		MockServletContext servletContext = new MockServletContext();
@@ -91,7 +90,7 @@ public class GrpcServletRequestTests {
 		return request;
 	}
 
-	static interface MockService extends BindableService {
+	interface MockService extends BindableService {
 
 	}
 

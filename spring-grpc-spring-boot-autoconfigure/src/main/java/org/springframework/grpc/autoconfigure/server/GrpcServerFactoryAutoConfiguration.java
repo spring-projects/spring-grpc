@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.util.unit.DataSize;
 
@@ -83,16 +84,20 @@ public class GrpcServerFactoryAutoConfiguration {
 
 		@Bean
 		public ServletRegistrationBean<GrpcServlet> grpcServlet(GrpcServerProperties properties,
-				GrpcServiceDiscoverer discoverer, ServerBuilderCustomizers serverBuilderCustomizers) {
-			List<String> paths = discoverer.listServiceNames()
-				.stream()
+				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
+				ServerBuilderCustomizers serverBuilderCustomizers) {
+			List<String> serviceNames = serviceDiscoverer.listServiceNames();
+			if (logger.isInfoEnabled()) {
+				serviceNames.forEach(service -> logger.info("Registering gRPC service: " + service));
+			}
+			List<String> paths = serviceNames.stream()
 				.map(service -> "/" + service + "/*")
 				.collect(Collectors.toList());
-			if (logger.isInfoEnabled()) {
-				discoverer.listServiceNames().forEach(service -> logger.info("Registering gRPC service: " + service));
-			}
 			ServletServerBuilder servletServerBuilder = new ServletServerBuilder();
-			discoverer.findServices().forEach(servletServerBuilder::addService);
+			serviceDiscoverer.findServices()
+				.stream()
+				.map(serviceConfigurer::configure)
+				.forEach(servletServerBuilder::addService);
 			PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			mapper.from(properties.getMaxInboundMessageSize())
 				.asInt(DataSize::toBytes)

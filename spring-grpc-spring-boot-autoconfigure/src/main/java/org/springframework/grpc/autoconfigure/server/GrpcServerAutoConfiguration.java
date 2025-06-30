@@ -23,15 +23,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.grpc.autoconfigure.common.codec.GrpcCodecConfiguration;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.exception.ReactiveStubBeanDefinitionRegistrar;
-import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.DefaultGrpcServiceConfigurer;
 import org.springframework.grpc.server.service.DefaultGrpcServiceDiscoverer;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
@@ -78,9 +75,8 @@ public class GrpcServerAutoConfiguration {
 
 	@ConditionalOnMissingBean(GrpcServiceDiscoverer.class)
 	@Bean
-	DefaultGrpcServiceDiscoverer grpcServiceDiscoverer(GrpcServiceConfigurer grpcServiceConfigurer,
-			ApplicationContext applicationContext) {
-		return new DefaultGrpcServiceDiscoverer(grpcServiceConfigurer, applicationContext);
+	DefaultGrpcServiceDiscoverer grpcServiceDiscoverer(ApplicationContext applicationContext) {
+		return new DefaultGrpcServiceDiscoverer(applicationContext);
 	}
 
 	@ConditionalOnBean(CompressorRegistry.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,32 +24,41 @@ import org.springframework.lang.Nullable;
 
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
+import io.grpc.ServiceDescriptor;
 
 /**
- * The default {@link GrpcServiceDiscoverer} that finds all {@link BindableService} beans
- * and configures and binds them.
+ * Default {@link GrpcServiceDiscoverer} implementation that finds all
+ * {@link BindableService} beans in the application context.
  *
  * @author Chris Bono
  */
 public class DefaultGrpcServiceDiscoverer implements GrpcServiceDiscoverer {
 
-	private final GrpcServiceConfigurer serviceConfigurer;
-
 	private final ApplicationContext applicationContext;
 
-	public DefaultGrpcServiceDiscoverer(GrpcServiceConfigurer serviceConfigurer,
-			ApplicationContext applicationContext) {
-		this.serviceConfigurer = serviceConfigurer;
+	public DefaultGrpcServiceDiscoverer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
-	public List<ServerServiceDefinition> findServices() {
+	public List<ServerServiceDefinitionSpec> findServices() {
 		return ApplicationContextBeanLookupUtils
 			.getOrderedBeansWithAnnotation(this.applicationContext, BindableService.class, GrpcService.class)
 			.entrySet()
 			.stream()
-			.map((e) -> this.serviceConfigurer.configure(e.getKey(), this.serviceInfo(e.getValue())))
+			.map((e) -> new ServerServiceDefinitionSpec(e.getKey(), this.serviceInfo(e.getValue())))
+			.toList();
+	}
+
+	@Override
+	public List<String> listServiceNames() {
+		return ApplicationContextBeanLookupUtils
+			.getOrderedBeansWithAnnotation(this.applicationContext, BindableService.class, GrpcService.class)
+			.keySet()
+			.stream()
+			.map(BindableService::bindService)
+			.map(ServerServiceDefinition::getServiceDescriptor)
+			.map(ServiceDescriptor::getName)
 			.toList();
 	}
 

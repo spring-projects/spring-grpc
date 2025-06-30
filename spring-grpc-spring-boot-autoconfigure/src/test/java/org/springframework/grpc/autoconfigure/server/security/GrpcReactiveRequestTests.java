@@ -46,8 +46,7 @@ public class GrpcReactiveRequestTests {
 		ServerServiceDefinition serviceDefinition = ServerServiceDefinition.builder("my-service").build();
 		when(service.bindService()).thenReturn(serviceDefinition);
 		this.context.registerBean(BindableService.class, () -> service);
-		this.context.registerBean(GrpcServiceDiscoverer.class,
-				() -> new DefaultGrpcServiceDiscoverer((input, info) -> input.bindService(), context));
+		this.context.registerBean(GrpcServiceDiscoverer.class, () -> new DefaultGrpcServiceDiscoverer(context));
 	}
 
 	@Test
@@ -63,7 +62,7 @@ public class GrpcReactiveRequestTests {
 		return request;
 	}
 
-	static interface MockService extends BindableService {
+	interface MockService extends BindableService {
 
 	}
 

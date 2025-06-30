@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.grpc.server.service;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
 
 /**
- * Configures and binds a {@link ServerServiceDefinitionSpec service spec} into a
- * {@link ServerServiceDefinition service definition} that can then be added to a gRPC
- * server.
+ * Encapsulates enough information to construct an actual {@link ServerServiceDefinition}.
  *
+ * @param service the bindable service
+ * @param serviceInfo optional additional information about the service (e.g.
+ * interceptors)
  * @author Chris Bono
  */
-@FunctionalInterface
-public interface GrpcServiceConfigurer {
-
-	/**
-	 * Configure and bind a gRPC service spec resulting in a service definition that can
-	 * then be added to a gRPC server.
-	 * @param serviceSpec the spec containing the info about the service
-	 * @return bound and configured service definition that is ready to be added to the
-	 * server
-	 */
-	ServerServiceDefinition configure(ServerServiceDefinitionSpec serviceSpec);
+public record ServerServiceDefinitionSpec(BindableService service, @Nullable GrpcServiceInfo serviceInfo) {
+	public ServerServiceDefinitionSpec {
+		Assert.notNull(service, "service must not be null");
+	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import io.grpc.ServerInterceptors;
 import io.grpc.ServerServiceDefinition;
 
 /**
- * Default {@link GrpcServiceConfigurer} that binds and configures services with
- * interceptors.
+ * Default {@link GrpcServiceConfigurer} implementation that binds and configures services
+ * with interceptors.
  *
  * @author Chris Bono
  */
@@ -52,8 +52,8 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 	}
 
 	@Override
-	public ServerServiceDefinition configure(BindableService bindableService, @Nullable GrpcServiceInfo serviceInfo) {
-		return bindInterceptors(bindableService, serviceInfo);
+	public ServerServiceDefinition configure(ServerServiceDefinitionSpec serviceDefinitionSpec) {
+		return bindInterceptors(serviceDefinitionSpec.service(), serviceDefinitionSpec.serviceInfo());
 	}
 
 	private List<ServerInterceptor> findGlobalInterceptors() {

@@ -108,12 +108,13 @@ class DefaultGrpcServiceConfigurerTests {
 				.run((context) -> {
 					DefaultGrpcServiceConfigurer configurer = context.getBean(DefaultGrpcServiceConfigurer.class);
 					if (expectedExceptionType != null) {
-						assertThatThrownBy(() -> configurer.configure(service, serviceInfo))
+						assertThatThrownBy(
+								() -> configurer.configure(new ServerServiceDefinitionSpec(service, serviceInfo)))
 							.isInstanceOf(expectedExceptionType);
 						serverInterceptorsMocked.verifyNoInteractions();
 					}
 					else {
-						configurer.configure(service, serviceInfo);
+						configurer.configure(new ServerServiceDefinitionSpec(service, serviceInfo));
 						serverInterceptorsMocked
 							.verify(() -> ServerInterceptors.interceptForward(serviceDef, expectedInterceptors));
 					}
