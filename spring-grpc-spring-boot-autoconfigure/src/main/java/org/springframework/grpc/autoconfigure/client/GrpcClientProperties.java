@@ -153,9 +153,9 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		/**
 		 * Map representation of the service config to use for the channel
 		 */
-		private final Map<String, ?> serviceConfig = new HashMap<>();
+		private final Map<String, Object> serviceConfig = new HashMap<>();
 
-		public Map<String, ?> getServiceConfig() {
+		public Map<String, Object> getServiceConfig() {
 			return this.serviceConfig;
 		}
 
@@ -349,6 +349,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			copy.defaultDeadline = this.defaultDeadline;
 			copy.health.copyValuesFrom(this.getHealth());
 			copy.ssl.copyValuesFrom(this.getSsl());
+			copy.serviceConfig.clear();
+			copy.serviceConfig.putAll(this.serviceConfig);
 			return copy;
 		}
 

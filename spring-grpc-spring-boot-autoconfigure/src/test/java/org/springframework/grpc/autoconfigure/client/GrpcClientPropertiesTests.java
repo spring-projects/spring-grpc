@@ -289,6 +289,7 @@ class GrpcClientPropertiesTests {
 			var defaultChannel = properties.getDefaultChannel();
 			var newChannel = defaultChannel.copy();
 			assertThat(newChannel).usingRecursiveComparison().isEqualTo(defaultChannel);
+			assertThat(newChannel.getServiceConfig()).isEqualTo(defaultChannel.getServiceConfig());
 		}
 
 	}
