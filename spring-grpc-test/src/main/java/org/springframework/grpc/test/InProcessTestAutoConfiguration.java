@@ -34,9 +34,11 @@ import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
+import org.springframework.grpc.server.ServerServiceDefinitionFilter;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
+import org.springframework.lang.Nullable;
 
 import io.grpc.BindableService;
 import io.grpc.ChannelCredentials;
@@ -56,8 +58,9 @@ public class InProcessTestAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	TestInProcessGrpcServerFactory testInProcessGrpcServerFactory(GrpcServiceDiscoverer serviceDiscoverer,
 			GrpcServiceConfigurer serviceConfigurer,
-			List<ServerBuilderCustomizer<InProcessServerBuilder>> customizers) {
-		var factory = new TestInProcessGrpcServerFactory(address, customizers);
+			List<ServerBuilderCustomizer<InProcessServerBuilder>> customizers,
+			@Nullable ServerServiceDefinitionFilter serviceFilter) {
+		var factory = new TestInProcessGrpcServerFactory(address, customizers, serviceFilter);
 		serviceDiscoverer.findServices()
 			.stream()
 			.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, factory))
@@ -86,8 +89,9 @@ public class InProcessTestAutoConfiguration {
 	public static class TestInProcessGrpcServerFactory extends InProcessGrpcServerFactory {
 
 		public TestInProcessGrpcServerFactory(String address,
-				List<ServerBuilderCustomizer<InProcessServerBuilder>> serverBuilderCustomizers) {
-			super(address, serverBuilderCustomizers);
+				List<ServerBuilderCustomizer<InProcessServerBuilder>> serverBuilderCustomizers,
+				@Nullable ServerServiceDefinitionFilter serviceFilter) {
+			super(address, serverBuilderCustomizers, serviceFilter);
 		}
 
 	}

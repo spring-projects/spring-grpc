@@ -17,18 +17,22 @@ package org.springframework.grpc.server;
 
 import java.util.List;
 
+import org.springframework.lang.Nullable;
+
 import io.grpc.inprocess.InProcessServerBuilder;
 
 /**
  * {@link GrpcServerFactory} that can be used to create an in-process gRPC server.
  *
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 public class InProcessGrpcServerFactory extends DefaultGrpcServerFactory<InProcessServerBuilder> {
 
 	public InProcessGrpcServerFactory(String address,
-			List<ServerBuilderCustomizer<InProcessServerBuilder>> serverBuilderCustomizers) {
-		super(address, serverBuilderCustomizers);
+			List<ServerBuilderCustomizer<InProcessServerBuilder>> serverBuilderCustomizers,
+			@Nullable ServerServiceDefinitionFilter serviceFilter) {
+		super(address, serverBuilderCustomizers, null, null, null, serviceFilter);
 	}
 
 	@Override

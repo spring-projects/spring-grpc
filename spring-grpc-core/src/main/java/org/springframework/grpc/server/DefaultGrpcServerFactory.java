@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.grpc.internal.GrpcUtils;
+import org.springframework.lang.Nullable;
 
 import com.google.common.collect.Lists;
 import io.grpc.Grpc;
@@ -49,6 +50,7 @@ import io.grpc.TlsServerCredentials.ClientAuth;
  * @param <T> the type of server builder
  * @author David Syer
  * @author Chris Bono
+ * @author Andrey Litvitski
  * @see ServerProvider#provider()
  */
 public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements GrpcServerFactory {
@@ -68,17 +70,21 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 
 	private ClientAuth clientAuth;
 
+	private ServerServiceDefinitionFilter serviceFilter;
+
 	public DefaultGrpcServerFactory(String address, List<ServerBuilderCustomizer<T>> serverBuilderCustomizers) {
 		this.address = address;
 		this.serverBuilderCustomizers = Objects.requireNonNull(serverBuilderCustomizers, "serverBuilderCustomizers");
 	}
 
 	public DefaultGrpcServerFactory(String address, List<ServerBuilderCustomizer<T>> serverBuilderCustomizers,
-			KeyManagerFactory keyManager, TrustManagerFactory trustManager, ClientAuth clientAuth) {
+			KeyManagerFactory keyManager, TrustManagerFactory trustManager, ClientAuth clientAuth,
+			@Nullable ServerServiceDefinitionFilter serviceFilter) {
 		this(address, serverBuilderCustomizers);
 		this.keyManager = keyManager;
 		this.trustManager = trustManager;
 		this.clientAuth = clientAuth;
+		this.serviceFilter = serviceFilter;
 	}
 
 	protected String address() {
@@ -94,7 +100,9 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 
 	@Override
 	public void addService(ServerServiceDefinition service) {
-		this.serviceList.add(service);
+		if (this.serviceFilter == null || this.serviceFilter.filter(service)) {
+			this.serviceList.add(service);
+		}
 	}
 
 	/**

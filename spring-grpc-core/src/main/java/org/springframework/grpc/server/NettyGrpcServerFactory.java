@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.springframework.lang.Nullable;
+
 import io.grpc.TlsServerCredentials.ClientAuth;
 import io.grpc.netty.NettyServerBuilder;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -32,13 +34,15 @@ import io.netty.channel.unix.DomainSocketAddress;
  *
  * @author David Syer
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 public class NettyGrpcServerFactory extends DefaultGrpcServerFactory<NettyServerBuilder> {
 
 	public NettyGrpcServerFactory(String address,
 			List<ServerBuilderCustomizer<NettyServerBuilder>> serverBuilderCustomizers, KeyManagerFactory keyManager,
-			TrustManagerFactory trustManager, ClientAuth clientAuth) {
-		super(address, serverBuilderCustomizers, keyManager, trustManager, clientAuth);
+			TrustManagerFactory trustManager, ClientAuth clientAuth,
+			@Nullable ServerServiceDefinitionFilter serviceFilter) {
+		super(address, serverBuilderCustomizers, keyManager, trustManager, clientAuth, serviceFilter);
 	}
 
 	@Override
