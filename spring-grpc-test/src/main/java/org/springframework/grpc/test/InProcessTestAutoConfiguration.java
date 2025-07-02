@@ -57,8 +57,7 @@ public class InProcessTestAutoConfiguration {
 	@ConditionalOnBean(BindableService.class)
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	TestInProcessGrpcServerFactory testInProcessGrpcServerFactory(GrpcServiceDiscoverer serviceDiscoverer,
-			GrpcServiceConfigurer serviceConfigurer,
-			List<ServerBuilderCustomizer<InProcessServerBuilder>> customizers,
+			GrpcServiceConfigurer serviceConfigurer, List<ServerBuilderCustomizer<InProcessServerBuilder>> customizers,
 			@Nullable ServerServiceDefinitionFilter serviceFilter) {
 		var factory = new TestInProcessGrpcServerFactory(address, customizers, serviceFilter);
 		serviceDiscoverer.findServices()

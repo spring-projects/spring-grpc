@@ -17,6 +17,7 @@
 package org.springframework.grpc.autoconfigure.server;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
@@ -26,11 +27,16 @@ import static org.mockito.Mockito.when;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -45,7 +51,6 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.grpc.server.DefaultGrpcServerFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
@@ -83,13 +88,23 @@ class GrpcServerAutoConfigurationTests {
 		when(service.bindService()).thenReturn(serviceDefinition);
 	}
 
-	private AbstractApplicationContextRunner<?, ?, ?> contextRunner() {
+	private ApplicationContextRunner contextRunner() {
 		// NOTE: we use noop server lifecycle to avoid startup
 		ApplicationContextRunner runner = new ApplicationContextRunner();
 		return contextRunner(runner);
 	}
 
-	private AbstractApplicationContextRunner<?, ?, ?> contextRunner(AbstractApplicationContextRunner<?, ?, ?> runner) {
+	private ApplicationContextRunner contextRunner(ApplicationContextRunner runner) {
+		return runner
+			.withConfiguration(AutoConfigurations.of(GrpcServerAutoConfiguration.class,
+					GrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
+			.withBean("shadedNettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
+			.withBean("nettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
+			.withBean("inProcessGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
+			.withBean(BindableService.class, () -> service);
+	}
+
+	private WebApplicationContextRunner webContextRunner(WebApplicationContextRunner runner) {
 		return runner
 			.withConfiguration(AutoConfigurations.of(GrpcServerAutoConfiguration.class,
 					GrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
@@ -294,7 +309,7 @@ class GrpcServerAutoConfigurationTests {
 	@Test
 	void serverFactoryAutoConfiguredInWebAppWhenServletDisabled() {
 		serverFactoryAutoConfiguredAsExpected(
-				this.contextRunner(new WebApplicationContextRunner())
+				this.webContextRunner(new WebApplicationContextRunner())
 					.withPropertyValues("spring.grpc.server.host=myhost", "spring.grpc.server.port=6160")
 					.withPropertyValues("spring.grpc.server.servlet.enabled=false"),
 				GrpcServerFactory.class, "myhost:6160", "shadedNettyGrpcServerLifecycle");
@@ -393,6 +408,74 @@ class GrpcServerAutoConfigurationTests {
 					.withClassLoader(
 							new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class)),
 				NettyGrpcServerFactory.class, "myhost:6160", "nettyGrpcServerLifecycle");
+	}
+
+	@Nested
+	class WithAllFactoriesServiceFilterAutoConfig {
+
+		static Stream<Arguments> serverFactoryProvider() {
+			return Stream.of(arguments(
+					(Function<ApplicationContextRunner, ApplicationContextRunner>) (contextRunner) -> contextRunner,
+					ShadedNettyGrpcServerFactory.class),
+					arguments(
+							(Function<ApplicationContextRunner, ApplicationContextRunner>) (
+									contextRunner) -> contextRunner.withClassLoader(new FilteredClassLoader(
+											io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class)),
+							NettyGrpcServerFactory.class),
+					arguments(
+							(Function<ApplicationContextRunner, ApplicationContextRunner>) (
+									contextRunner) -> contextRunner
+										.withPropertyValues("spring.grpc.server.inprocess.name=foo")
+										.withClassLoader(new FilteredClassLoader(NettyServerBuilder.class,
+												io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class)),
+							InProcessGrpcServerFactory.class));
+		}
+
+		@ParameterizedTest(name = "whenNoServiceFilterThenFactoryUsesNoFilter w/ factory {1}")
+		@MethodSource("serverFactoryProvider")
+		void whenNoServiceFilterThenFactoryUsesNoFilter(
+				Function<ApplicationContextRunner, ApplicationContextRunner> serverFactoryContextCustomizer,
+				Class<?> expectedServerFactoryType) {
+			GrpcServerAutoConfigurationTests.this.contextRunner()
+				.withPropertyValues("spring.grpc.server.port=0")
+				.with(serverFactoryContextCustomizer)
+				.run((context) -> assertThat(context).getBean(GrpcServerFactory.class)
+					.isInstanceOf(expectedServerFactoryType)
+					.extracting("serviceFilter")
+					.isNull());
+		}
+
+		@ParameterizedTest(name = "whenUniqueServiceFilterThenFactoryUsesFilter w/ factory {1}")
+		@MethodSource("serverFactoryProvider")
+		void whenUniqueServiceFilterThenFactoryUsesFilter(
+				Function<ApplicationContextRunner, ApplicationContextRunner> serverFactoryContextCustomizer,
+				Class<?> expectedServerFactoryType) {
+			ServerServiceDefinitionFilter serviceFilter = mock();
+			GrpcServerAutoConfigurationTests.this.contextRunner()
+				.withPropertyValues("spring.grpc.server.port=0")
+				.withBean(ServerServiceDefinitionFilter.class, () -> serviceFilter)
+				.with(serverFactoryContextCustomizer)
+				.run((context) -> assertThat(context).getBean(GrpcServerFactory.class)
+					.isInstanceOf(expectedServerFactoryType)
+					.extracting("serviceFilter")
+					.isSameAs(serviceFilter));
+		}
+
+		@ParameterizedTest(name = "whenMultipleServiceFiltersThenThrowsException w/ factory {1}")
+		@MethodSource("serverFactoryProvider")
+		void whenMultipleServiceFiltersThenThrowsException(
+				Function<ApplicationContextRunner, ApplicationContextRunner> serverFactoryContextCustomizer,
+				Class<?> ignored) {
+			GrpcServerAutoConfigurationTests.this.contextRunnerWithLifecyle()
+				.withPropertyValues("spring.grpc.server.port=0")
+				.withBean("filter1", ServerServiceDefinitionFilter.class, Mockito::mock)
+				.withBean("filter2", ServerServiceDefinitionFilter.class, Mockito::mock)
+				.with(serverFactoryContextCustomizer)
+				.run((context) -> assertThat(context).hasFailed()
+					.getFailure()
+					.hasMessageContaining("expected single matching bean but found 2: filter1,filter2"));
+		}
+
 	}
 
 	@Nested

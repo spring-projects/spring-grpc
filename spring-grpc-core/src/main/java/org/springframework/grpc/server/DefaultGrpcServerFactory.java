@@ -100,7 +100,7 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 
 	@Override
 	public void addService(ServerServiceDefinition service) {
-		if (this.serviceFilter == null || this.serviceFilter.filter(service)) {
+		if (this.serviceFilter == null || this.serviceFilter.filter(service, this)) {
 			this.serviceList.add(service);
 		}
 	}
