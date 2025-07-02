@@ -349,7 +349,6 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			copy.defaultDeadline = this.defaultDeadline;
 			copy.health.copyValuesFrom(this.getHealth());
 			copy.ssl.copyValuesFrom(this.getSsl());
-			copy.serviceConfig.clear();
 			copy.serviceConfig.putAll(this.serviceConfig);
 			return copy;
 		}
