@@ -50,7 +50,8 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 class GrpcServerFactoryConfigurations {
 
 	/**
-	 * Configures services for a gRPC server factory by discovering services and applying configuration.
+	 * Configures services for a gRPC server factory by discovering services and applying
+	 * configuration.
 	 * @param serviceDiscoverer the service discoverer to find services
 	 * @param serviceConfigurer the service configurer to configure services
 	 * @param grpcServerFactory the gRPC server factory to configure
