@@ -16,6 +16,10 @@
 
 package org.springframework.grpc.autoconfigure.server;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.util.List;
+
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.netty.NettyServerBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -37,10 +41,6 @@ import org.springframework.grpc.server.ShadedNettyGrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
-import java.util.List;
 
 /**
  * Configurations for {@link GrpcServerFactory gRPC server factories}.
