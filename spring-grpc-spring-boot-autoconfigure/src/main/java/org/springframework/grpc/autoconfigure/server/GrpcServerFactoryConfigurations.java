@@ -16,11 +16,9 @@
 
 package org.springframework.grpc.autoconfigure.server;
 
-import java.util.List;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
-
+import io.grpc.inprocess.InProcessServerBuilder;
+import io.grpc.netty.NettyServerBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,9 +38,9 @@ import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 
-import io.grpc.inprocess.InProcessServerBuilder;
-import io.grpc.netty.NettyServerBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.util.List;
 
 /**
  * Configurations for {@link GrpcServerFactory gRPC server factories}.
@@ -50,6 +48,20 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
  * @author Chris Bono
  */
 class GrpcServerFactoryConfigurations {
+
+	/**
+	 * Configures services for a gRPC server factory by discovering services and applying configuration.
+	 * @param serviceDiscoverer the service discoverer to find services
+	 * @param serviceConfigurer the service configurer to configure services
+	 * @param grpcServerFactory the gRPC server factory to configure
+	 */
+	private static void configureServices(GrpcServiceDiscoverer serviceDiscoverer,
+			GrpcServiceConfigurer serviceConfigurer, GrpcServerFactory grpcServerFactory) {
+		serviceDiscoverer.findServices()
+			.stream()
+			.map(serviceConfigurer::configure)
+			.forEach(grpcServerFactory::addService);
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class)
@@ -76,10 +88,7 @@ class GrpcServerFactoryConfigurations {
 			}
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
 					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
-			serviceDiscoverer.findServices()
-				.stream()
-				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec))
-				.forEach(factory::addService);
+			configureServices(serviceDiscoverer, serviceConfigurer, factory);
 			return factory;
 		}
 
@@ -118,10 +127,7 @@ class GrpcServerFactoryConfigurations {
 			}
 			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
 					keyManager, trustManager, properties.getSsl().getClientAuth());
-			serviceDiscoverer.findServices()
-				.stream()
-				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec))
-				.forEach(factory::addService);
+			configureServices(serviceDiscoverer, serviceConfigurer, factory);
 			return factory;
 		}
 
@@ -151,10 +157,7 @@ class GrpcServerFactoryConfigurations {
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
 					builderCustomizers);
-			serviceDiscoverer.findServices()
-				.stream()
-				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec))
-				.forEach(factory::addService);
+			configureServices(serviceDiscoverer, serviceConfigurer, factory);
 			return factory;
 		}
 
