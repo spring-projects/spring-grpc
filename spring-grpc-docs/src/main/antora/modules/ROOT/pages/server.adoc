@@ -12,6 +12,37 @@ There are some `BindableServices` available off the shelf that you could include
 Very commonly, you will create your own `BindableService` by extending the generated service implementation from your Protobuf file.
 The easiest way to activate it is to simply add a Spring `@Service` annotation to the implementation class and have it picked up by the `@ComponentScan` in your Spring Boot application.
 
+[[service-filtering]]
+=== Service Filtering
+All available `BindableService` beans are bound to all running gRPC servers.
+However, you can register a `ServerServiceDefinitionFilter` bean to decide which services are bound to which server factories.
+
+The following example prevents the `my-unwanted-service` service from being applied to any servers created by the server factory that the filter is applied to.
+
+[source,java]
+----
+@Bean
+ServerServiceDefinitionFilter myServiceFilter() {
+	return (serviceDefinition, __) ->
+			!(serviceDefinition.getServiceDescriptor().getName().equals("my-unwanted-service"));
+}
+----
+
+The `InProcessGrpcServerFactory` picks up the `ServerServiceDefinitionFilter` automatically.
+Any other server factory will require you to provide a `GrpcServerFactoryCustomizer` in which you can modify the factory by adding a filter, as shown in the following example:
+
+[source,java]
+----
+@Bean
+GrpcServerFactoryCustomizer myServerFactoryCustomizer(ServerServiceDefinitionFilter myServiceFilter) {
+    return factory -> {
+        if (factory instanceof NettyGrpcServerFactory nettyServerFactory) {
+            nettyServerFactory.setServiceFilter(myServiceFilter);
+        }
+    };
+}
+----
+
 == Netty Server
 
 If you use the `spring-grpc-spring-boot-starter` dependency on its own, the `Server` is a Netty-based implementation.
@@ -124,7 +155,7 @@ ServerInterceptor myGlobalLoggingInterceptor() {
 All global interceptors are applied to all created services by default.
 However, you can register a `ServerInterceptorFilter` bean to decide which interceptors are applied to which server factories.
 
-The following example prevents the `ExtraThingsInterceptor` interceptor from being applied to any servers created by the `InProcessGrpcServerFactory` server factory.
+The following example prevents the `ExtraThingsInterceptor` interceptor from being applied to any servers created by the server factory that the filter is applied to.
 
 [source,java]
 ----
