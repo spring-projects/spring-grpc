@@ -124,7 +124,7 @@
 							<groupId>io.grpc</groupId>
 							<artifactId>protoc-gen-grpc-java</artifactId>
 							<version>${grpc.version}</version>
-							<options>jakarta_omit,@generated=omit</options>
+							<options>@generated=omit</options>
 						</binaryMavenPlugin>
 					</binaryMavenPlugins>
 				</configuration>

@@ -151,7 +151,7 @@
 							<groupId>io.grpc</groupId>
 							<artifactId>protoc-gen-grpc-java</artifactId>
 							<version>${grpc.version}</version>
-							<options>jakarta_omit,@generated=omit</options>
+							<options>@generated=omit</options>
 						</binaryMavenPlugin>
 					</binaryMavenPlugins>
 					<jvmMavenPlugins>
@@ -162,7 +162,7 @@
 							<classifier>jdk8</classifier>
 							<type>jar</type>
 							<mainClass>io.grpc.kotlin.generator.GeneratorRunner</mainClass>
-							<options>jakarta_omit,@generated=omit</options>
+							<options>@generated=omit</options>
 						</jvmMavenPlugin>
 					</jvmMavenPlugins>
 				</configuration>
