@@ -15,6 +15,9 @@
  */
 package org.springframework.grpc.server.exception;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -160,6 +163,8 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 
 		private final GrpcExceptionHandler exceptionHandler;
 
+		private static final Log logger = LogFactory.getLog(FallbackHandler.class);
+
 		FallbackHandler(GrpcExceptionHandler exceptionHandler) {
 			this.exceptionHandler = exceptionHandler;
 		}
@@ -167,7 +172,13 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 		@Override
 		public StatusException handleException(Throwable exception) {
 			StatusException status = this.exceptionHandler.handleException(exception);
-			return status != null ? status : Status.fromThrowable(exception).asException();
+			if (status == null) {
+				if (logger.isDebugEnabled()) {
+					logger.error("Unknown exception", exception);
+				}
+				return Status.fromThrowable(exception).asException();
+			}
+			return status;
 		}
 
 	}
