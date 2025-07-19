@@ -51,7 +51,7 @@ public class BearerTokenAuthenticationInterceptor implements ClientInterceptor {
 				headers.put(GrpcSecurity.AUTHORIZATION_KEY,
 						"Bearer " + BearerTokenAuthenticationInterceptor.this.token.get());
 				super.start(responseListener, headers);
-			};
+			}
 		};
 	}
 
