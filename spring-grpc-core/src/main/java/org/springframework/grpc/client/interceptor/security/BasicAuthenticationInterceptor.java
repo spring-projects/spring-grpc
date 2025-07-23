@@ -55,7 +55,7 @@ public class BasicAuthenticationInterceptor implements ClientInterceptor {
 									+ BasicAuthenticationInterceptor.this.password)
 								.getBytes()));
 				super.start(responseListener, headers);
-			};
+			}
 		};
 	}
 
