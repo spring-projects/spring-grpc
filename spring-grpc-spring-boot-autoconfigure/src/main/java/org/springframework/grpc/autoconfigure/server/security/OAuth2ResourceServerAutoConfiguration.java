@@ -34,9 +34,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.KeyValueCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnIssuerLocationJwtDecoder;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnPublicKeyJwtDecoder;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.JwkSetUriJwtDecoderBuilderCustomizer;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
@@ -119,8 +119,10 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
 		SpringOpaqueTokenIntrospector blockingOpaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
-			return new SpringOpaqueTokenIntrospector(opaqueToken.getIntrospectionUri(), opaqueToken.getClientId(),
-					opaqueToken.getClientSecret());
+			return SpringOpaqueTokenIntrospector.withIntrospectionUri(opaqueToken.getIntrospectionUri())
+				.clientId(opaqueToken.getClientId())
+				.clientSecret(opaqueToken.getClientSecret())
+				.build();
 		}
 
 	}
@@ -203,7 +205,7 @@ class OAuth2ResourceServerJwtConfiguration {
 		}
 
 		@Bean
-		@Conditional(KeyValueCondition.class)
+		@ConditionalOnPublicKeyJwtDecoder
 		JwtDecoder blockingJwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
@@ -231,7 +233,7 @@ class OAuth2ResourceServerJwtConfiguration {
 		}
 
 		@Bean
-		@Conditional(IssuerUriCondition.class)
+		@ConditionalOnIssuerLocationJwtDecoder
 		SupplierJwtDecoder blockingJwtDecoderByIssuerUri(
 				ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> customizers) {
 			return new SupplierJwtDecoder(() -> {
