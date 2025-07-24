@@ -43,7 +43,6 @@ public final class HttpBasicConfigurer<H extends SecurityBuilder<AuthenticationP
 
 	@Override
 	public void configure(H builder) throws Exception {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		UserDetailsService userDetailsService = this.userDetailsService;
 		if (userDetailsService == null) {
 			userDetailsService = this.authenticationManagerBuilder.getDefaultUserDetailsService();
@@ -51,7 +50,7 @@ public final class HttpBasicConfigurer<H extends SecurityBuilder<AuthenticationP
 		if (userDetailsService == null) {
 			userDetailsService = this.context.getBean(UserDetailsService.class);
 		}
-		provider.setUserDetailsService(userDetailsService);
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
 		this.authenticationManagerBuilder.authenticationProvider(provider);
 	}
 
