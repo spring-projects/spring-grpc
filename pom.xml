@@ -79,8 +79,8 @@
 		<maven.compiler.target>17</maven.compiler.target>
 
 		<!-- internal dependencies -->
-		<spring-boot.version>3.5.3</spring-boot.version>
-		<jackson.version>2.19.1</jackson.version>
+		<spring-boot.version>3.5.4</spring-boot.version>
+		<jackson.version>2.19.2</jackson.version>
 		<junit.version>5.12.2</junit.version>
 		<assertj.version>3.27.3</assertj.version>
 		<!-- documentation dependencies -->
