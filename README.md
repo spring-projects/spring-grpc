@@ -13,7 +13,7 @@ This section offers jumping off points for how to get started using Spring gRPC.
 
 Want to get started? Let’s speedrun a working service.
 
-Go to the [Spring Initializr](https://start.spring.io) and select the `gRPC` dependency.
+Go to the [Spring Initializr](https://start.spring.io) and select the `Spring gRPC` dependency.
 
 Generate the project and unzip the downloaded result.
 
@@ -74,7 +74,7 @@ Eclipse or VSCode will add them automatically for you.
 Now you can implement a service based on the generated stubs:
 
 ```java
-@Service
+@GrpcService
 class GrpcServerService extends SimpleGrpc.SimpleImplBase {
 
     private static Log log = LogFactory.getLog(GrpcServerService.class);
@@ -236,7 +236,7 @@ You need a Protobuf file that defines your service and messages, and you will ne
 Create a `@Bean` of type `BindableService`. For example:
 
 ```java
-@Service
+@GrpcService
 public class GrpcServerService extends SimpleGrpc.SimpleImplBase {
 ...
 }
