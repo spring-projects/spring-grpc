@@ -173,9 +173,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 		public StatusException handleException(Throwable exception) {
 			StatusException status = this.exceptionHandler.handleException(exception);
 			if (status == null) {
-				if (logger.isDebugEnabled()) {
-					logger.error("Unknown exception", exception);
-				}
+				logger.error("Unknown exception", exception);
 				return Status.fromThrowable(exception).asException();
 			}
 			return status;

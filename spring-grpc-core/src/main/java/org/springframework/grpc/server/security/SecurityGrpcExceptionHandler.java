@@ -32,15 +32,11 @@ public class SecurityGrpcExceptionHandler implements GrpcExceptionHandler {
 	@Override
 	public StatusException handleException(Throwable exception) {
 		if (exception instanceof AuthenticationException) {
-			if (logger.isDebugEnabled()) {
-				logger.error("Failed to authenticate", exception);
-			}
+			logger.error("Failed to authenticate", exception);
 			return Status.UNAUTHENTICATED.withDescription(exception.getMessage()).asException();
 		}
 		if (exception instanceof AccessDeniedException) {
-			if (logger.isDebugEnabled()) {
-				logger.error("Failed to authorize", exception);
-			}
+			logger.error("Failed to authorize", exception);
 			return Status.PERMISSION_DENIED.withDescription(exception.getMessage()).asException();
 		}
 		return null;
