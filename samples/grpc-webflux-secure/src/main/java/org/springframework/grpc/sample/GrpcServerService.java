@@ -4,6 +4,7 @@ import java.time.Duration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.grpc.sample.proto.HelloReply;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
@@ -34,8 +35,6 @@ public class GrpcServerService extends SimpleGrpc.SimpleImplBase {
 	@Override
 	public void streamHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
 		log.info("Hello " + req.getName());
-
-		// Use reactive Flux.interval() instead of blocking Thread.sleep()
 		Flux.interval(Duration.ofSeconds(1))
 			.take(10)
 			.map(count -> HelloReply.newBuilder().setMessage("Hello(" + count + ") ==> " + req.getName()).build())
