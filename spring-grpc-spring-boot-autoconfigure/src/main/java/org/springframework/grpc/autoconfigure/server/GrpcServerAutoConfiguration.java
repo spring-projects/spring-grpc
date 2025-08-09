@@ -91,7 +91,7 @@ public class GrpcServerAutoConfiguration {
 	@Bean
 	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> executorServerConfigurer(
 			GrpcServerExecutorProvider provider) {
-		return new ServerBuilderCustomizerImplementation<T>(provider);
+		return new ServerBuilderCustomizerImplementation<>(provider);
 	}
 
 	private final class ServerBuilderCustomizerImplementation<T extends ServerBuilder<T>>
