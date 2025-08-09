@@ -64,7 +64,7 @@ public class GrpcServerApplicationTests {
 	void anonymous() throws Exception {
 		AtomicReference<ServerReflectionResponse> response = new AtomicReference<>();
 		AtomicBoolean error = new AtomicBoolean();
-		StreamObserver<ServerReflectionResponse> responses = new StreamObserver<ServerReflectionResponse>() {
+		StreamObserver<ServerReflectionResponse> responses = new StreamObserver<>() {
 			@Override
 			public void onNext(ServerReflectionResponse value) {
 				response.set(value);
