@@ -47,7 +47,7 @@ public class BasicAuthenticationInterceptor implements ClientInterceptor {
 	@Override
 	public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method,
 			CallOptions callOptions, Channel next) {
-		return new SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
+		return new SimpleForwardingClientCall<>(next.newCall(method, callOptions)) {
 			public void start(ClientCall.Listener<RespT> responseListener, io.grpc.Metadata headers) {
 				headers.put(GrpcSecurity.AUTHORIZATION_KEY,
 						"Basic " + Base64.getEncoder()

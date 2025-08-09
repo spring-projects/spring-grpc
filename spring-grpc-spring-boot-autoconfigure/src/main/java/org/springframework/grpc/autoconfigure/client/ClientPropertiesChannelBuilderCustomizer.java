@@ -61,7 +61,7 @@ class ClientPropertiesChannelBuilderCustomizer<T extends ManagedChannelBuilder<T
 		mapper.from(channel.getKeepAliveTimeout()).to(durationProperty(builder::keepAliveTimeout));
 		mapper.from(channel.getIdleTimeout()).to(durationProperty(builder::idleTimeout));
 		mapper.from(channel.isKeepAliveWithoutCalls()).to(builder::keepAliveWithoutCalls);
-		Map<String, Object> defaultServiceConfig = new HashMap<String, Object>(channel.getServiceConfig());
+		Map<String, Object> defaultServiceConfig = new HashMap<>(channel.getServiceConfig());
 		if (channel.getHealth().isEnabled()) {
 			String serviceNameToCheck = channel.getHealth().getServiceName() != null
 					? channel.getHealth().getServiceName() : "";

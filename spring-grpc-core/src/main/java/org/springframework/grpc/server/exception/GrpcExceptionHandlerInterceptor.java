@@ -75,7 +75,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 		}
 		catch (Throwable t) {
 			exceptionHandledServerCall.close(handler.handleException(t).getStatus(), headers(t));
-			listener = new Listener<ReqT>() {
+			listener = new Listener<>() {
 			};
 			return listener;
 		}
