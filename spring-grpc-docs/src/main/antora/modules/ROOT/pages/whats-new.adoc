@@ -5,7 +5,7 @@
 [[what-s-new-in-0.9.0-since-0-8-0]]
 == What's New in 0.9.0 Since 0.8.0
 
-This section covers the changes made from version 0.8.0 to version 0.10.0.
+This section covers the changes made from version 0.8.0 to version 0.11.0-SNAPSHOT.
 
 * Upgrade to Spring Boot 3.5.0.
 * `StubFactory` contract changes: the "supports" method is now a static method (it is called before an instance is created).
