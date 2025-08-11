@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.10.0-SNAPSHOT'
+version = '0.10.0'
 
 java {
     toolchain {
@@ -27,7 +27,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.grpc:spring-grpc-dependencies:0.10.0-SNAPSHOT'
+        mavenBom 'org.springframework.grpc:spring-grpc-dependencies:0.10.0'
     }
 }
 

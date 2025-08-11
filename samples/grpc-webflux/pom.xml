@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>org.springframework.grpc</groupId>
 	<artifactId>grpc-webflux-sample</artifactId>
-	<version>0.10.0-SNAPSHOT</version>
+	<version>0.10.0</version>
 	<name>Spring gRPC Webflux Sample</name>
 	<description>Demo project for Spring gRPC</description>
 	<url />
@@ -38,7 +38,7 @@
 			<dependency>
 				<groupId>org.springframework.grpc</groupId>
 				<artifactId>spring-grpc-dependencies</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>0.10.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
