@@ -26,6 +26,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import io.grpc.ForwardingServerCallListener.SimpleForwardingServerCallListener;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
@@ -90,7 +91,64 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 			throw new BadCredentialsException("not authenticated");
 		}
 
-		return next.startCall(call, headers);
+		SecurityContext currentContext = SecurityContextHolder.getContext();
+		return new SecurityContextClearingListener<>(next.startCall(call, headers), currentContext);
+	}
+
+	static class SecurityContextClearingListener<ReqT> extends SimpleForwardingServerCallListener<ReqT> {
+
+		private final SecurityContext securityContext;
+
+		SecurityContextClearingListener(ServerCall.Listener<ReqT> delegate, SecurityContext securityContext) {
+			super(delegate);
+			this.securityContext = securityContext;
+		}
+
+		@Override
+		public void onMessage(ReqT message) {
+			SecurityContextHolder.setContext(this.securityContext);
+			try {
+				super.onMessage(message);
+			}
+			finally {
+				SecurityContextHolder.clearContext();
+			}
+		}
+
+		@Override
+		public void onHalfClose() {
+			SecurityContextHolder.setContext(this.securityContext);
+			try {
+				super.onHalfClose();
+			}
+			finally {
+				SecurityContextHolder.clearContext();
+			}
+		}
+
+		@Override
+		public void onReady() {
+			SecurityContextHolder.setContext(this.securityContext);
+			try {
+				super.onReady();
+			}
+			finally {
+				SecurityContextHolder.clearContext();
+			}
+		}
+
+		@Override
+		public void onCancel() {
+			super.onCancel();
+			SecurityContextHolder.clearContext();
+		}
+
+		@Override
+		public void onComplete() {
+			super.onComplete();
+			SecurityContextHolder.clearContext();
+		}
+
 	}
 
 }
