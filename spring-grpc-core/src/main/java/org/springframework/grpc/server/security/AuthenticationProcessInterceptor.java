@@ -39,6 +39,7 @@ import io.grpc.ServerInterceptor;
  * authentication and authorization for gRPC requests.
  *
  * @author Dave Syer
+ * @author Hyunsang Han
  */
 public class AuthenticationProcessInterceptor implements ServerInterceptor, Ordered {
 
