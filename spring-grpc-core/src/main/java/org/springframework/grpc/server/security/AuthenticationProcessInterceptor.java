@@ -93,7 +93,12 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 		}
 
 		SecurityContext currentContext = SecurityContextHolder.getContext();
-		return new SecurityContextClearingListener<>(next.startCall(call, headers), currentContext);
+		try {
+			return new SecurityContextClearingListener<>(next.startCall(call, headers), currentContext);
+		}
+		finally {
+			SecurityContextHolder.clearContext();
+		}
 	}
 
 	static class SecurityContextClearingListener<ReqT> extends SimpleForwardingServerCallListener<ReqT> {
