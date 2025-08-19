@@ -31,7 +31,7 @@
 		<java.version>17</java.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 		<protobuf-java.version>4.30.2</protobuf-java.version>
-		<grpc.version>1.72.0</grpc.version>
+		<grpc.version>1.74.0</grpc.version>
 		<grpc.kotlin.version>1.4.3</grpc.kotlin.version>
 		<kotlin.version>1.9.22</kotlin.version>
 	</properties>
@@ -143,7 +143,7 @@
 			<plugin>
 				<groupId>io.github.ascopes</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>3.4.2</version>
+				<version>3.8.0</version>
 				<configuration>
 					<protocVersion>${protobuf-java.version}</protocVersion>
 					<binaryMavenPlugins>

@@ -49,7 +49,7 @@
 	</licenses>
 
 	<properties>
-		<grpc.version>1.72.0</grpc.version>
+		<grpc.version>1.74.0</grpc.version>
 		<grpc-kotlin.version>1.4.3</grpc-kotlin.version>
 		<protobuf-java.version>4.30.2</protobuf-java.version>
 		<google-common-protos.version>2.54.1</google-common-protos.version>
