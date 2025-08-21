@@ -26,7 +26,9 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.grpc.client.BlockingStubFactory;
 import org.springframework.grpc.client.NegotiationType;
+import org.springframework.grpc.client.StubFactory;
 import org.springframework.grpc.client.VirtualTargets;
 import org.springframework.util.unit.DataSize;
 
@@ -45,6 +47,11 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 	 */
 	private final Map<String, ChannelConfig> channels = new HashMap<>();
 
+	/**
+	 * Default stub factory to use for all channels.
+	 */
+	private Class<? extends StubFactory<?>> defaultStubFactory = BlockingStubFactory.class;
+
 	private Environment environment;
 
 	GrpcClientProperties() {
@@ -58,6 +65,14 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
 	public Map<String, ChannelConfig> getChannels() {
 		return this.channels;
+	}
+
+	public Class<? extends StubFactory<?>> getDefaultStubFactory() {
+		return this.defaultStubFactory;
+	}
+
+	public void setDefaultStubFactory(Class<? extends StubFactory<?>> defaultStubFactory) {
+		this.defaultStubFactory = defaultStubFactory;
 	}
 
 	@Override

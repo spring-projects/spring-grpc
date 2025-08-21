@@ -32,7 +32,6 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.grpc.autoconfigure.client.ClientScanConfiguration.DefaultGrpcClientRegistrations;
 import org.springframework.grpc.autoconfigure.client.GrpcClientProperties.ChannelConfig;
 import org.springframework.grpc.client.AbstractGrpcClientRegistrar;
-import org.springframework.grpc.client.BlockingStubFactory;
 import org.springframework.grpc.client.GrpcClientFactory;
 import org.springframework.grpc.client.GrpcClientFactory.GrpcClientRegistrationSpec;
 
@@ -68,9 +67,11 @@ public class ClientScanConfiguration {
 				if (AutoConfigurationPackages.has(this.beanFactory)) {
 					packages.addAll(AutoConfigurationPackages.get(this.beanFactory));
 				}
-				// TODO: change global default factory type in properties maybe?
+				GrpcClientProperties props = binder.bind("spring.grpc.client", GrpcClientProperties.class)
+					.orElseGet(GrpcClientProperties::new);
+
 				return new GrpcClientRegistrationSpec[] { GrpcClientRegistrationSpec.of("default")
-					.factory(BlockingStubFactory.class)
+					.factory(props.getDefaultStubFactory())
 					.packages(packages.toArray(new String[0])) };
 			}
 			return new GrpcClientRegistrationSpec[0];
