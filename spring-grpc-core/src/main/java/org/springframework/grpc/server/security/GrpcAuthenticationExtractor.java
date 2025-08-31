@@ -19,9 +19,10 @@ import org.springframework.security.core.Authentication;
 
 import io.grpc.Attributes;
 import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
 
 public interface GrpcAuthenticationExtractor {
 
-	Authentication extract(Metadata headers, Attributes attributes);
+	Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method);
 
 }

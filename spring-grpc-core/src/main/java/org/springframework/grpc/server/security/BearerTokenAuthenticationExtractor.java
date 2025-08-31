@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 
 import io.grpc.Attributes;
 import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
 
 /**
  * Extracts the HTTP Basic authentication credentials from the gRPC request headers. If
@@ -36,7 +37,7 @@ import io.grpc.Metadata;
 public class BearerTokenAuthenticationExtractor implements GrpcAuthenticationExtractor {
 
 	@Override
-	public Authentication extract(Metadata headers, Attributes attributes) {
+	public Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
 		String auth = headers.get(GrpcSecurity.AUTHORIZATION_KEY);
 		if (auth == null) {
 			return null;
