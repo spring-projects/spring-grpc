@@ -35,6 +35,7 @@ import org.springframework.util.Assert;
 
 import io.grpc.Attributes;
 import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
 import io.micrometer.observation.ObservationRegistry;
 
 /**
@@ -196,9 +197,9 @@ public final class GrpcSecurity
 		}
 
 		@Override
-		public Authentication extract(Metadata headers, Attributes attributes) {
+		public Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
 			for (GrpcAuthenticationExtractor extractor : this.extractors) {
-				Authentication authentication = extractor.extract(headers, attributes);
+				Authentication authentication = extractor.extract(headers, attributes, method);
 				if (authentication != null) {
 					return authentication;
 				}

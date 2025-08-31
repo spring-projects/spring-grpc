@@ -31,6 +31,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Principa
 import io.grpc.Attributes;
 import io.grpc.Grpc;
 import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
 
 public class SslContextPreAuthenticationExtractor implements GrpcAuthenticationExtractor {
 
@@ -45,7 +46,7 @@ public class SslContextPreAuthenticationExtractor implements GrpcAuthenticationE
 	}
 
 	@Override
-	public Authentication extract(Metadata headers, Attributes attributes) {
+	public Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
 		SSLSession session = attributes.get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
 		if (session != null) {
 			X509Certificate[] certificates = initCertificates(session);

@@ -66,7 +66,7 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 	public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 			ServerCallHandler<ReqT, RespT> next) {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		Authentication user = this.extractor.extract(headers, call.getAttributes());
+		Authentication user = this.extractor.extract(headers, call.getAttributes(), call.getMethodDescriptor());
 		if (user != null) {
 			user = this.authenticationManager.authenticate(user);
 			securityContext.setAuthentication(user);
