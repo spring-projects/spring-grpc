@@ -291,5 +291,26 @@ verbose "Found extracted Maven distribution directory: $actualDistributionDir"
 printf %s\\n "$distributionUrl" >"$TMP_DOWNLOAD_DIR/$actualDistributionDir/mvnw.url"
 mv -- "$TMP_DOWNLOAD_DIR/$actualDistributionDir" "$MAVEN_HOME" || [ -d "$MAVEN_HOME" ] || die "fail to move MAVEN_HOME"
 
+echo "Running version check"
+VERSION=$( sed '\!<parent!,\!</parent!d' `dirname $0`/pom.xml | grep '<version' | head -1 | sed -e 's/.*<version>//' -e 's!</version>.*$!!' )
+echo "The found version is [${VERSION}]"
+
+MAVEN_ARGS=${MAVEN_ARGS:-}
+if echo $VERSION | egrep -q 'M|RC'; then
+    echo Activating \"milestone\" profile for version=\"$VERSION\"
+    echo $MAVEN_ARGS | grep -q milestone || MAVEN_ARGS="$MAVEN_ARGS -Pmilestone"
+else
+    echo Deactivating \"milestone\" profile for version=\"$VERSION\"
+    echo $MAVEN_ARGS | grep -q milestone && MAVEN_ARGS=$(echo $MAVEN_ARGS | sed -e 's/-Pmilestone//')
+fi
+
+if echo $VERSION | egrep -q '[0-9]*\.[0-9]*\.[0-9]*$|RELEASE'; then
+    echo Activating \"central\" profile for version=\"$VERSION\"
+    echo $MAVEN_ARGS | grep -q milestone || MAVEN_ARGS="$MAVEN_ARGS -Pcentral"
+else
+    echo Deactivating \"central\" profile for version=\"$VERSION\"
+    echo $MAVEN_ARGS | grep -q central && MAVEN_ARGS=$(echo $MAVEN_ARGS | sed -e 's/-Pcentral//')
+fi
+
 clean || :
-exec_maven "$@"
+exec_maven $MAVEN_ARGS "$@"
