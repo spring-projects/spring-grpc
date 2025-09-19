@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - 'main'
+      - '0.x'
     paths-ignore:
       - '.github/**'
 
