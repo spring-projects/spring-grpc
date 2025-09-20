@@ -26,8 +26,8 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -45,39 +45,37 @@ class DefaultGrpcServiceDiscovererTests {
 
 	@Test
 	void whenNoServicesRegisteredThenListServiceNamesReturnsEmptyList() {
-		new ApplicationContextRunner().withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class)
-			.run((context) -> assertThat(context).getBean(DefaultGrpcServiceDiscoverer.class)
-				.extracting(DefaultGrpcServiceDiscoverer::listServiceNames, InstanceOfAssertFactories.LIST)
-				.isEmpty());
+		var context = new AnnotationConfigApplicationContext(DefaultGrpcServiceDiscovererTestsBaseConfig.class);
+		assertThat(context.getBean(DefaultGrpcServiceDiscoverer.class))
+			.extracting(DefaultGrpcServiceDiscoverer::listServiceNames, InstanceOfAssertFactories.LIST)
+			.isEmpty();
 	}
 
 	@Test
 	void whenServicesRegisteredThenListServiceNamesReturnsNames() {
-		new ApplicationContextRunner()
-			.withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class,
-					DefaultGrpcServiceDiscovererTestsServiceConfig.class)
-			.run((context) -> assertThat(context).getBean(DefaultGrpcServiceDiscoverer.class)
-				.extracting(DefaultGrpcServiceDiscoverer::listServiceNames, InstanceOfAssertFactories.LIST)
-				.containsExactly("serviceB", "serviceA"));
+		var context = new AnnotationConfigApplicationContext(DefaultGrpcServiceDiscovererTestsBaseConfig.class,
+				DefaultGrpcServiceDiscovererTestsServiceConfig.class);
+		assertThat(context.getBean(DefaultGrpcServiceDiscoverer.class))
+			.extracting(DefaultGrpcServiceDiscoverer::listServiceNames, InstanceOfAssertFactories.LIST)
+			.containsExactly("serviceB", "serviceA");
 
 	}
 
 	@Test
 	void servicesAreFoundInProperOrderWithExpectedGrpcServiceAnnotations() {
-		new ApplicationContextRunner()
-			.withUserConfiguration(DefaultGrpcServiceDiscovererTestsBaseConfig.class,
-					DefaultGrpcServiceDiscovererTestsServiceConfig.class)
-			.run((context) -> assertThat(context).getBean(DefaultGrpcServiceDiscoverer.class)
-				.extracting(DefaultGrpcServiceDiscoverer::findServices,
-						InstanceOfAssertFactories.list(GrpcServiceSpec.class))
-				.satisfies((serviceSpecs) -> {
-					assertThat(serviceSpecs).hasSize(2);
-					assertThat(serviceSpecs).element(0).isEqualTo(new GrpcServiceSpec(SERVICE_B, null));
-					assertThat(serviceSpecs).element(1).satisfies((spec) -> {
-						assertThat(spec.service()).isEqualTo(SERVICE_A);
-						assertThat(spec.serviceInfo()).isNotNull();
-					});
-				}));
+		var context = new AnnotationConfigApplicationContext(DefaultGrpcServiceDiscovererTestsBaseConfig.class,
+				DefaultGrpcServiceDiscovererTestsServiceConfig.class);
+		assertThat(context.getBean(DefaultGrpcServiceDiscoverer.class))
+			.extracting(DefaultGrpcServiceDiscoverer::findServices,
+					InstanceOfAssertFactories.list(GrpcServiceSpec.class))
+			.satisfies((serviceSpecs) -> {
+				assertThat(serviceSpecs).hasSize(2);
+				assertThat(serviceSpecs).element(0).isEqualTo(new GrpcServiceSpec(SERVICE_B, null));
+				assertThat(serviceSpecs).element(1).satisfies((spec) -> {
+					assertThat(spec.service()).isEqualTo(SERVICE_A);
+					assertThat(spec.serviceInfo()).isNotNull();
+				});
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

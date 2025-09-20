@@ -16,22 +16,20 @@
 
 package org.springframework.grpc.client;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -47,35 +45,33 @@ import io.grpc.ManagedChannelBuilder;
  */
 class ClientInterceptorsConfigurerTests {
 
-	private ApplicationContextRunner contextRunner() {
-		return new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ClientInterceptorsConfigurerConfig.class));
+	private AnnotationConfigApplicationContext appContextForConfigurations(List<Class<?>> configClasses) {
+		List<Class<?>> allConfigClasses = new ArrayList();
+		allConfigClasses.add(ClientInterceptorsConfigurerConfig.class);
+		allConfigClasses.addAll(configClasses);
+		return new AnnotationConfigApplicationContext(allConfigClasses.toArray(new Class<?>[0]));
 	}
 
 	@Test
 	void globalClientInterceptorsAreFoundInProperOrder() {
-		this.contextRunner()
-			.withUserConfiguration(GlobalClientInterceptorsConfig.class)
-			.run((context) -> Assertions.assertThat(context)
-				.getBean(ClientInterceptorsConfigurer.class)
-				.extracting("globalInterceptors", InstanceOfAssertFactories.LIST)
-				.containsExactly(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
-						GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO));
+		var context = this.appContextForConfigurations(List.of(GlobalClientInterceptorsConfig.class));
+		assertThat(context.getBean(ClientInterceptorsConfigurer.class))
+			.extracting("globalInterceptors", InstanceOfAssertFactories.LIST)
+			.containsExactly(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
+					GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO);
 	}
 
-	private void customizeContextAndRunConfigurer(
-			Function<ApplicationContextRunner, ApplicationContextRunner> contextCustomizer,
+	private void customizeContextAndRunConfigurer(List<Class<?>> configClasses,
 			List<ClientInterceptor> clientSpecificInterceptors, List<ClientInterceptor> expectedInterceptors) {
 		ManagedChannelBuilder<?> builder = Mockito.mock();
-		this.contextRunner().with(contextCustomizer).run((context) -> {
-			var configurer = context.getBean(ClientInterceptorsConfigurer.class);
-			var factory = new DefaultGrpcChannelFactory<>(List.of(), configurer);
-			configurer.configureInterceptors(builder, clientSpecificInterceptors, true, factory);
-			// NOTE: the interceptors are called in reverse order per builder contract
-			var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
-			Collections.reverse(expectedInterceptorsReversed);
-			verify(builder).intercept(expectedInterceptorsReversed);
-		});
+		var context = this.appContextForConfigurations(configClasses);
+		var configurer = context.getBean(ClientInterceptorsConfigurer.class);
+		var factory = new DefaultGrpcChannelFactory<>(List.of(), configurer);
+		configurer.configureInterceptors(builder, clientSpecificInterceptors, true, factory);
+		// NOTE: the interceptors are called in reverse order per builder contract
+		var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
+		Collections.reverse(expectedInterceptorsReversed);
+		verify(builder).intercept(expectedInterceptorsReversed);
 	}
 
 	@Nested
@@ -83,14 +79,13 @@ class ClientInterceptorsConfigurerTests {
 
 		@Test
 		void whenNoGlobalInterceptorsRegisteredThenBuilderGetsNoInterceptors() {
-			customizeContextAndRunConfigurer(Function.identity(), List.of(), List.of());
+			customizeContextAndRunConfigurer(List.of(), List.of(), List.of());
 		}
 
 		@Test
 		void whenGlobalInterceptorsRegisteredThenBuilderGetsGlobalInterceptors() {
-			customizeContextAndRunConfigurer(
-					(contextRunner) -> contextRunner.withUserConfiguration(GlobalClientInterceptorsConfig.class),
-					List.of(), List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
+			customizeContextAndRunConfigurer(List.of(GlobalClientInterceptorsConfig.class), List.of(),
+					List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
 							GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO));
 		}
 
@@ -104,8 +99,7 @@ class ClientInterceptorsConfigurerTests {
 			var clientSpecificInterceptors = List
 				.<ClientInterceptor>of(ClientSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
 			var expectedInterceptors = List.<ClientInterceptor>of(ClientSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunConfigurer(
-					(contextRunner) -> contextRunner.withUserConfiguration(ClientSpecificInterceptorsConfig.class),
+			customizeContextAndRunConfigurer(List.of(ClientSpecificInterceptorsConfig.class),
 					clientSpecificInterceptors, expectedInterceptors);
 		}
 
@@ -115,8 +109,7 @@ class ClientInterceptorsConfigurerTests {
 					ClientSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
 			var expectedInterceptors = List.of(ClientSpecificInterceptorsConfig.SVC_INTERCEPTOR_B,
 					ClientSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunConfigurer(
-					(contextRunner) -> contextRunner.withUserConfiguration(ClientSpecificInterceptorsConfig.class),
+			customizeContextAndRunConfigurer(List.of(ClientSpecificInterceptorsConfig.class),
 					clientSpecificInterceptors, expectedInterceptors);
 		}
 
@@ -128,45 +121,40 @@ class ClientInterceptorsConfigurerTests {
 		@Test
 		void whenBlendInterceptorsFalseThenGlobalInterceptorsAddedFirst() {
 			ManagedChannelBuilder<?> builder = Mockito.mock();
-			ClientInterceptorsConfigurerTests.this.contextRunner()
-				.withUserConfiguration(GlobalClientInterceptorsConfig.class, ClientSpecificInterceptorsConfig.class)
-				.run((context) -> {
-					var interceptorA = context.getBean("interceptorA", ClientInterceptor.class);
-					var interceptorB = context.getBean("interceptorB", ClientInterceptor.class);
-					var clientSpecificInterceptors = List.of(interceptorB, interceptorA);
-					var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
-							GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO, interceptorB, interceptorA);
-					var configurer = context.getBean(ClientInterceptorsConfigurer.class);
-					var factory = new DefaultGrpcChannelFactory<>(List.of(), configurer);
-					configurer.configureInterceptors(builder, clientSpecificInterceptors, false, factory);
-					// NOTE: the interceptors are called in reverse order per builder
-					// contract
-					var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
-					Collections.reverse(expectedInterceptorsReversed);
-					verify(builder).intercept(expectedInterceptorsReversed);
-				});
+			var context = ClientInterceptorsConfigurerTests.this.appContextForConfigurations(
+					List.of(GlobalClientInterceptorsConfig.class, ClientSpecificInterceptorsConfig.class));
+			var interceptorA = context.getBean("interceptorA", ClientInterceptor.class);
+			var interceptorB = context.getBean("interceptorB", ClientInterceptor.class);
+			var clientSpecificInterceptors = List.of(interceptorB, interceptorA);
+			var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
+					GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO, interceptorB, interceptorA);
+			var configurer = context.getBean(ClientInterceptorsConfigurer.class);
+			var factory = new DefaultGrpcChannelFactory<>(List.of(), configurer);
+			configurer.configureInterceptors(builder, clientSpecificInterceptors, false, factory);
+			// NOTE: the interceptors are called in reverse order per builder contract
+			var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
+			Collections.reverse(expectedInterceptorsReversed);
+			verify(builder).intercept(expectedInterceptorsReversed);
 		}
 
 		@Test
 		void whenBlendInterceptorsTrueThenGlobalInterceptorsBlended() {
 			ManagedChannelBuilder<?> builder = Mockito.mock();
-			ClientInterceptorsConfigurerTests.this.contextRunner()
-				.withUserConfiguration(GlobalClientInterceptorsConfig.class, ClientSpecificInterceptorsConfig.class)
-				.run((context) -> {
-					var interceptorA = context.getBean("interceptorA", ClientInterceptor.class);
-					var interceptorB = context.getBean("interceptorB", ClientInterceptor.class);
-					var clientSpecificInterceptors = List.of(interceptorB, interceptorA);
-					var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
-							interceptorB, GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO, interceptorA);
-					var configurer = context.getBean(ClientInterceptorsConfigurer.class);
-					var factory = new DefaultGrpcChannelFactory<>(List.of(), configurer);
-					configurer.configureInterceptors(builder, clientSpecificInterceptors, true, factory);
-					// NOTE: the interceptors are called in reverse order per builder
-					// contract
-					var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
-					Collections.reverse(expectedInterceptorsReversed);
-					verify(builder).intercept(expectedInterceptorsReversed);
-				});
+			var context = ClientInterceptorsConfigurerTests.this.appContextForConfigurations(
+					List.of(GlobalClientInterceptorsConfig.class, ClientSpecificInterceptorsConfig.class));
+			var interceptorA = context.getBean("interceptorA", ClientInterceptor.class);
+			var interceptorB = context.getBean("interceptorB", ClientInterceptor.class);
+			var clientSpecificInterceptors = List.of(interceptorB, interceptorA);
+			var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR, interceptorB,
+					GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO, interceptorA);
+			var configurer = context.getBean(ClientInterceptorsConfigurer.class);
+			var factory = new DefaultGrpcChannelFactory<>(List.of(), configurer);
+			configurer.configureInterceptors(builder, clientSpecificInterceptors, true, factory);
+			// NOTE: the interceptors are called in reverse order per builder
+			// contract
+			var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
+			Collections.reverse(expectedInterceptorsReversed);
+			verify(builder).intercept(expectedInterceptorsReversed);
 		}
 
 	}
@@ -179,37 +167,33 @@ class ClientInterceptorsConfigurerTests {
 			ManagedChannelBuilder<?> builder = Mockito.mock();
 			ClientInterceptorFilter filter = (
 					interceptor) -> interceptor == GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR;
-			ClientInterceptorsConfigurerTests.this.contextRunner()
-				.withUserConfiguration(GlobalClientInterceptorsConfig.class)
-				.run(context -> {
-					var configurer = context.getBean(ClientInterceptorsConfigurer.class);
-					var factory = new InProcessGrpcChannelFactory(List.of(), configurer);
-					factory.setInterceptorFilter(filter);
-					configurer.configureInterceptors(builder, List.of(), true, factory);
-					var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR);
-					verify(builder).intercept(expectedInterceptors);
-				});
+			var context = ClientInterceptorsConfigurerTests.this
+				.appContextForConfigurations(List.of(GlobalClientInterceptorsConfig.class));
+			var configurer = context.getBean(ClientInterceptorsConfigurer.class);
+			var factory = new InProcessGrpcChannelFactory(List.of(), configurer);
+			factory.setInterceptorFilter(filter);
+			configurer.configureInterceptors(builder, List.of(), true, factory);
+			var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR);
+			verify(builder).intercept(expectedInterceptors);
 		}
 
 		@Test
 		void whenFilterIncludesAllGlobalInterceptors_thenBuilderGetsOnlyAllowedOnes() {
 			ManagedChannelBuilder<?> builder = Mockito.mock();
 			ClientInterceptorFilter filter = (interceptor) -> true;
-			ClientInterceptorsConfigurerTests.this.contextRunner()
-				.withUserConfiguration(GlobalClientInterceptorsConfig.class)
-				.run(context -> {
-					var configurer = context.getBean(ClientInterceptorsConfigurer.class);
-					var factory = new InProcessGrpcChannelFactory(List.of(), configurer);
-					factory.setInterceptorFilter(filter);
-					configurer.configureInterceptors(builder, List.of(), true, factory);
-					var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
-							GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO);
-					// NOTE: the interceptors are called in reverse order per builder
-					// contract
-					var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
-					Collections.reverse(expectedInterceptorsReversed);
-					verify(builder).intercept(expectedInterceptorsReversed);
-				});
+			var context = ClientInterceptorsConfigurerTests.this
+				.appContextForConfigurations(List.of(GlobalClientInterceptorsConfig.class));
+			var configurer = context.getBean(ClientInterceptorsConfigurer.class);
+			var factory = new InProcessGrpcChannelFactory(List.of(), configurer);
+			factory.setInterceptorFilter(filter);
+			configurer.configureInterceptors(builder, List.of(), true, factory);
+			var expectedInterceptors = List.of(GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
+					GlobalClientInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO);
+			// NOTE: the interceptors are called in reverse order per builder
+			// contract
+			var expectedInterceptorsReversed = new ArrayList<>(expectedInterceptors);
+			Collections.reverse(expectedInterceptorsReversed);
+			verify(builder).intercept(expectedInterceptorsReversed);
 		}
 
 	}
