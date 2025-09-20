@@ -484,6 +484,13 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.springframework.grpc</groupId>
+				<artifactId>spring-grpc-build-dependencies</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-bom</artifactId>
 				<version>${assertj.version}</version>
@@ -494,7 +501,6 @@
 				<groupId>org.awaitility</groupId>
 				<artifactId>awaitility</artifactId>
 				<version>${awaitility.version}</version>
-				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit</groupId>
@@ -507,13 +513,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-bom</artifactId>
 				<version>${mockito.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.grpc</groupId>
-				<artifactId>spring-grpc-build-dependencies</artifactId>
-				<version>${project.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
