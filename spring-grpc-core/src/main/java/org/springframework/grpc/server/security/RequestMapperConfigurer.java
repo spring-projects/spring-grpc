@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -28,6 +30,7 @@ import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationEventPublisher;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManagers;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.authorization.SpringAuthorizationEventPublisher;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -159,17 +162,17 @@ public class RequestMapperConfigurer extends SecurityConfigurerAdapter<Authentic
 			this.publisher = publisher;
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
-		public AuthorizationDecision check(Supplier<Authentication> authentication, CallContext context) {
-			AuthorizationDecision result = new AuthorizationDecision(false);
+		public @Nullable AuthorizationResult authorize(Supplier<? extends @Nullable Authentication> authentication,
+				CallContext context) {
+			AuthorizationResult result = new AuthorizationDecision(false);
 			for (AuthorizedCall authorizedCall : this.authorizedCalls) {
 				if (authorizedCall.matcher.matches(context)) {
-					result = authorizedCall.authorizationManager.check(authentication, context);
+					result = authorizedCall.authorizationManager.authorize(authentication, context);
 					break;
 				}
 			}
-			this.publisher.publishAuthorizationEvent(authentication, context, result);
+			this.publisher.publishAuthorizationEvent((Supplier<Authentication>) authentication, context, result);
 			return result;
 		}
 

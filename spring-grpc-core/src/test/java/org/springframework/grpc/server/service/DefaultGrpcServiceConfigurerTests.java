@@ -16,6 +16,7 @@
 
 package org.springframework.grpc.server.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,10 +24,10 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,9 +37,8 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -58,40 +58,48 @@ import io.grpc.ServerServiceDefinition;
  */
 class DefaultGrpcServiceConfigurerTests {
 
-	private ApplicationContextRunner contextRunner() {
-		// NOTE: we use noop server lifecycle to avoid startup
-		return new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(ServiceConfigurerConfig.class))
-			.withBean("noopServerLifecycle", GrpcServerLifecycle.class, Mockito::mock);
+	private AnnotationConfigApplicationContext appContextForConfigurations(List<Class<?>> configClasses) {
+		return this.appContextForConfigurations(configClasses, null);
+	}
+
+	private AnnotationConfigApplicationContext appContextForConfigurations(List<Class<?>> configClasses,
+			@Nullable Consumer<AnnotationConfigApplicationContext> contextCustomizer) {
+		List<Class<?>> allConfigClasses = new ArrayList();
+		allConfigClasses.add(ServiceConfigurerConfig.class);
+		allConfigClasses.addAll(configClasses);
+		var context = new AnnotationConfigApplicationContext();
+		context.register(allConfigClasses.toArray(new Class<?>[0]));
+		context.registerBean("noopServerLifecycle", GrpcServerLifecycle.class, () -> mock());
+		if (contextCustomizer != null) {
+			contextCustomizer.accept(context);
+		}
+		context.refresh();
+		return context;
 	}
 
 	@Test
 	void globalServerInterceptorsAreFoundInProperOrder() {
-		this.contextRunner()
-			.withUserConfiguration(GlobalServerInterceptorsConfig.class)
-			.run((context) -> Assertions.assertThat(context)
-				.getBean(DefaultGrpcServiceConfigurer.class)
-				.extracting("globalInterceptors", InstanceOfAssertFactories.LIST)
-				.containsExactly(GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
-						GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO));
+		var context = this.appContextForConfigurations(List.of(GlobalServerInterceptorsConfig.class));
+		assertThat(context.getBean(DefaultGrpcServiceConfigurer.class))
+			.extracting("globalInterceptors", InstanceOfAssertFactories.LIST)
+			.containsExactly(GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
+					GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO);
 	}
 
-	private void customizeContextAndRunServiceConfigurerWithServiceInfo(
-			Function<ApplicationContextRunner, ApplicationContextRunner> contextCustomizer, GrpcServiceInfo serviceInfo,
-			List<ServerInterceptor> expectedInterceptors) {
-		this.doCustomizeContextAndRunServiceConfigurerWithServiceInfo(contextCustomizer, serviceInfo,
-				expectedInterceptors, null);
+	private void customizeContextAndRunServiceConfigurerWithServiceInfo(List<Class<?>> configClasses,
+			GrpcServiceInfo serviceInfo, List<ServerInterceptor> expectedInterceptors) {
+		this.doCustomizeContextAndRunServiceConfigurerWithServiceInfo(configClasses, serviceInfo, expectedInterceptors,
+				null);
 	}
 
-	private void customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(
-			Function<ApplicationContextRunner, ApplicationContextRunner> contextCustomizer, GrpcServiceInfo serviceInfo,
-			Class<? extends Throwable> expectedExceptionType) {
-		this.doCustomizeContextAndRunServiceConfigurerWithServiceInfo(contextCustomizer, serviceInfo, null,
+	private void customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(List<Class<?>> configClasses,
+			GrpcServiceInfo serviceInfo, Class<? extends Throwable> expectedExceptionType) {
+		this.doCustomizeContextAndRunServiceConfigurerWithServiceInfo(configClasses, serviceInfo, null,
 				expectedExceptionType);
 	}
 
-	private void doCustomizeContextAndRunServiceConfigurerWithServiceInfo(
-			Function<ApplicationContextRunner, ApplicationContextRunner> contextCustomizer, GrpcServiceInfo serviceInfo,
-			@Nullable List<ServerInterceptor> expectedInterceptors,
+	private void doCustomizeContextAndRunServiceConfigurerWithServiceInfo(List<Class<?>> configClasses,
+			GrpcServiceInfo serviceInfo, @Nullable List<ServerInterceptor> expectedInterceptors,
 			@Nullable Class<? extends Throwable> expectedExceptionType) {
 		// It gets difficult to verify interceptors are added properly to mocked
 		// services.
@@ -107,32 +115,28 @@ class DefaultGrpcServiceConfigurerTests {
 			BindableService service = mock();
 			ServerServiceDefinition serviceDef = mock();
 			when(service.bindService()).thenReturn(serviceDef);
-			this.contextRunner()
-				.withBean("service", BindableService.class, () -> service)
-				.with(contextCustomizer)
-				.run((context) -> {
-					DefaultGrpcServiceConfigurer configurer = context.getBean(DefaultGrpcServiceConfigurer.class);
-					if (expectedExceptionType != null) {
-						assertThatThrownBy(() -> configurer.configure(new GrpcServiceSpec(service, serviceInfo), null))
-							.isInstanceOf(expectedExceptionType);
-						serverInterceptorsMocked.verifyNoInteractions();
-					}
-					else {
-						configurer.configure(new GrpcServiceSpec(service, serviceInfo), null);
-						serverInterceptorsMocked
-							.verify(() -> ServerInterceptors.interceptForward(serviceDef, expectedInterceptors));
-					}
-				});
+			var context = this.appContextForConfigurations(configClasses,
+					(appContext) -> appContext.registerBean("service", BindableService.class, () -> service));
+			DefaultGrpcServiceConfigurer configurer = context.getBean(DefaultGrpcServiceConfigurer.class);
+			if (expectedExceptionType != null) {
+				assertThatThrownBy(() -> configurer.configure(new GrpcServiceSpec(service, serviceInfo), null))
+					.isInstanceOf(expectedExceptionType);
+				serverInterceptorsMocked.verifyNoInteractions();
+			}
+			else {
+				configurer.configure(new GrpcServiceSpec(service, serviceInfo), null);
+				serverInterceptorsMocked
+					.verify(() -> ServerInterceptors.interceptForward(serviceDef, expectedInterceptors));
+			}
 		}
 	}
 
 	@Test
 	void whenNoServiceSpecThenThrowsException() {
-		this.contextRunner().run((context) -> {
-			var configurer = context.getBean(DefaultGrpcServiceConfigurer.class);
-			assertThatIllegalArgumentException().isThrownBy(() -> configurer.configure(null, null))
-				.withMessage("serviceSpec must not be null");
-		});
+		var context = this.appContextForConfigurations(List.of());
+		var configurer = context.getBean(DefaultGrpcServiceConfigurer.class);
+		assertThatIllegalArgumentException().isThrownBy(() -> configurer.configure(null, null))
+			.withMessage("serviceSpec must not be null");
 	}
 
 	@Nested
@@ -140,13 +144,12 @@ class DefaultGrpcServiceConfigurerTests {
 
 		@Test
 		void whenNoGlobalInterceptorsRegisteredThenServiceGetsNoInterceptors() {
-			customizeContextAndRunServiceConfigurerWithServiceInfo(Function.identity(), null, List.of());
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(), null, List.of());
 		}
 
 		@Test
 		void whenGlobalInterceptorsRegisteredThenServiceGetsGlobalInterceptors() {
-			customizeContextAndRunServiceConfigurerWithServiceInfo(
-					(contextRunner) -> contextRunner.withUserConfiguration(GlobalServerInterceptorsConfig.class), null,
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(GlobalServerInterceptorsConfig.class), null,
 					List.of(GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_BAR,
 							GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO));
 		}
@@ -160,8 +163,7 @@ class DefaultGrpcServiceConfigurerTests {
 		void whenSingleBeanOfInterceptorTypeRegisteredThenItIsUsed() {
 			GrpcServiceInfo serviceInfo = GrpcServiceInfo.withInterceptors(List.of(TestServerInterceptorA.class));
 			List<ServerInterceptor> expectedInterceptors = List.of(ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunServiceConfigurerWithServiceInfo(
-					(contextRunner) -> contextRunner.withUserConfiguration(ServiceSpecificInterceptorsConfig.class),
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(ServiceSpecificInterceptorsConfig.class),
 					serviceInfo, expectedInterceptors);
 		}
 
@@ -169,14 +171,14 @@ class DefaultGrpcServiceConfigurerTests {
 		void whenMultipleBeansOfInterceptorTypeRegisteredThenThrowsException() {
 			GrpcServiceInfo serviceInfo = GrpcServiceInfo.withInterceptors(List.of(ServerInterceptor.class));
 			customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(
-					(contextRunner) -> contextRunner.withUserConfiguration(ServiceSpecificInterceptorsConfig.class),
-					serviceInfo, NoUniqueBeanDefinitionException.class);
+					List.of(ServiceSpecificInterceptorsConfig.class), serviceInfo,
+					NoUniqueBeanDefinitionException.class);
 		}
 
 		@Test
 		void whenNoBeanOfInterceptorTypeRegisteredThenThrowsException() {
 			GrpcServiceInfo serviceInfo = GrpcServiceInfo.withInterceptors(List.of(ServerInterceptor.class));
-			customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(Function.identity(), serviceInfo,
+			customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(List.of(), serviceInfo,
 					NoSuchBeanDefinitionException.class);
 		}
 
@@ -191,8 +193,7 @@ class DefaultGrpcServiceConfigurerTests {
 				.withInterceptors(List.of(TestServerInterceptorB.class, TestServerInterceptorA.class));
 			List<ServerInterceptor> expectedInterceptors = List.of(ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_B,
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunServiceConfigurerWithServiceInfo(
-					(contextRunner) -> contextRunner.withUserConfiguration(ServiceSpecificInterceptorsConfig.class),
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(ServiceSpecificInterceptorsConfig.class),
 					serviceInfo, expectedInterceptors);
 		}
 
@@ -205,15 +206,14 @@ class DefaultGrpcServiceConfigurerTests {
 		void whenSingleBeanWithInterceptorNameRegisteredThenItIsUsed() {
 			GrpcServiceInfo serviceInfo = GrpcServiceInfo.withInterceptorNames(List.of("interceptorB"));
 			List<ServerInterceptor> expectedInterceptors = List.of(ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_B);
-			customizeContextAndRunServiceConfigurerWithServiceInfo(
-					(contextRunner) -> contextRunner.withUserConfiguration(ServiceSpecificInterceptorsConfig.class),
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(ServiceSpecificInterceptorsConfig.class),
 					serviceInfo, expectedInterceptors);
 		}
 
 		@Test
 		void whenNoBeanWithInterceptorNameRegisteredThenThrowsException() {
 			GrpcServiceInfo serviceInfo = GrpcServiceInfo.withInterceptorNames(List.of("interceptor1"));
-			customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(Function.identity(), serviceInfo,
+			customizeContextAndRunServiceConfigurerWithServiceInfoExpectingException(List.of(), serviceInfo,
 					NoSuchBeanDefinitionException.class);
 		}
 
@@ -227,8 +227,7 @@ class DefaultGrpcServiceConfigurerTests {
 			GrpcServiceInfo serviceInfo = GrpcServiceInfo.withInterceptorNames(List.of("interceptorB", "interceptorA"));
 			List<ServerInterceptor> expectedInterceptors = List.of(ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_B,
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunServiceConfigurerWithServiceInfo(
-					(contextRunner) -> contextRunner.withUserConfiguration(ServiceSpecificInterceptorsConfig.class),
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(ServiceSpecificInterceptorsConfig.class),
 					serviceInfo, expectedInterceptors);
 		}
 
@@ -244,8 +243,7 @@ class DefaultGrpcServiceConfigurerTests {
 					new String[] { "interceptorA" }, false);
 			List<ServerInterceptor> expectedInterceptors = List.of(ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_B,
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunServiceConfigurerWithServiceInfo(
-					(contextRunner) -> contextRunner.withUserConfiguration(ServiceSpecificInterceptorsConfig.class),
+			customizeContextAndRunServiceConfigurerWithServiceInfo(List.of(ServiceSpecificInterceptorsConfig.class),
 					serviceInfo, expectedInterceptors);
 		}
 
@@ -263,9 +261,9 @@ class DefaultGrpcServiceConfigurerTests {
 					GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO,
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_B,
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunServiceConfigurerWithServiceInfo((contextRunner) -> contextRunner
-				.withUserConfiguration(GlobalServerInterceptorsConfig.class, ServiceSpecificInterceptorsConfig.class),
-					serviceInfo, expectedInterceptors);
+			customizeContextAndRunServiceConfigurerWithServiceInfo(
+					List.of(GlobalServerInterceptorsConfig.class, ServiceSpecificInterceptorsConfig.class), serviceInfo,
+					expectedInterceptors);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -278,9 +276,9 @@ class DefaultGrpcServiceConfigurerTests {
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_B,
 					GlobalServerInterceptorsConfig.GLOBAL_INTERCEPTOR_FOO,
 					ServiceSpecificInterceptorsConfig.SVC_INTERCEPTOR_A);
-			customizeContextAndRunServiceConfigurerWithServiceInfo((contextRunner) -> contextRunner
-				.withUserConfiguration(GlobalServerInterceptorsConfig.class, ServiceSpecificInterceptorsConfig.class),
-					serviceInfo, expectedInterceptors);
+			customizeContextAndRunServiceConfigurerWithServiceInfo(
+					List.of(GlobalServerInterceptorsConfig.class, ServiceSpecificInterceptorsConfig.class), serviceInfo,
+					expectedInterceptors);
 		}
 
 	}

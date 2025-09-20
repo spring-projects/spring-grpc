@@ -49,10 +49,10 @@
 	</licenses>
 
 	<properties>
-		<spring-framework.version>6.2.9</spring-framework.version>
-		<spring-security.version>6.5.2</spring-security.version>
-		<micrometer.version>1.15.2</micrometer.version>
-		<netty.version>4.1.122.Final</netty.version>
+		<spring-framework.version>7.0.0-M9</spring-framework.version>
+		<spring-security.version>7.0.0-M3</spring-security.version>
+		<micrometer.version>1.16.0-M3</micrometer.version>
+		<netty.version>4.2.6.Final</netty.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 	</properties>
