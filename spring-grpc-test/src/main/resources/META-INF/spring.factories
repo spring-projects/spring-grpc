@@ -1,7 +1,0 @@
-# Application Context Initializers
-org.springframework.context.ApplicationContextInitializer=\
-org.springframework.grpc.test.ServerPortInfoApplicationContextInitializer
-
-# Environment Post Processors
-org.springframework.boot.env.EnvironmentPostProcessor=\
-  org.springframework.grpc.test.InProcessTransportEnvironmentPostProcessor
