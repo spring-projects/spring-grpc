@@ -49,10 +49,10 @@
 	</licenses>
 
 	<properties>
-		<grpc.version>1.74.0</grpc.version>
+		<grpc.version>1.75.0</grpc.version>
 		<grpc-kotlin.version>1.4.3</grpc-kotlin.version>
-		<protobuf-java.version>4.31.1</protobuf-java.version>
-		<google-common-protos.version>2.61.0</google-common-protos.version>
+		<protobuf-java.version>4.32.1</protobuf-java.version>
+		<google-common-protos.version>2.61.2</google-common-protos.version>
 		<reactor-grpc.version>1.2.4</reactor-grpc.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
