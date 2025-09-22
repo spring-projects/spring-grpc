@@ -50,7 +50,7 @@
 
 	<properties>
 		<grpc.version>1.75.0</grpc.version>
-		<grpc-kotlin.version>1.4.3</grpc-kotlin.version>
+		<grpc-kotlin.version>1.5.0</grpc-kotlin.version>
 		<protobuf-java.version>4.32.1</protobuf-java.version>
 		<google-common-protos.version>2.61.2</google-common-protos.version>
 		<reactor-grpc.version>1.2.4</reactor-grpc.version>

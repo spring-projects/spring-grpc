@@ -29,7 +29,7 @@ dependencyManagement {
     }
 }
 
-def kotlinStubVersion = "1.4.3"
+def kotlinStubVersion = "1.5.0"
 
 dependencies {
 
