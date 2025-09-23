@@ -23,7 +23,7 @@
 |spring.grpc.client.enabled | `+++true+++` | Whether to enable client autoconfiguration.
 |spring.grpc.client.inprocess.enabled | `+++true+++` | Whether to configure the in-process channel factory.
 |spring.grpc.client.inprocess.exclusive | `+++true+++` | Whether the inprocess channel factory should be the only channel factory available. When the value is true, no other channel factory will be configured.
-|spring.grpc.client.observations.enabled | `+++true+++` | Whether to enable Observations on the client.
+|spring.grpc.client.observation.enabled | `+++true+++` | Whether to enable Observations on the client.
 |spring.grpc.server.address |  | The address to bind to. could be a host:port combination or a pseudo URL like static://host:port. Can not be set if host or port are set independently.
 |spring.grpc.server.enabled | `+++true+++` | Whether to enable server autoconfiguration.
 |spring.grpc.server.exception-handling.enabled | `+++true+++` | Whether to enable user-defined global exception handling on the gRPC server.
@@ -45,7 +45,7 @@
 |spring.grpc.server.keep-alive.timeout | `+++20s+++` | Maximum time to wait for read activity after sending a keep alive ping. If sender does not receive an acknowledgment within this time, it will close the connection (default 20s).
 |spring.grpc.server.max-inbound-message-size | `+++4194304B+++` | Maximum message size allowed to be received by the server (default 4MiB).
 |spring.grpc.server.max-inbound-metadata-size | `+++8192B+++` | Maximum metadata size allowed to be received by the server (default 8KiB).
-|spring.grpc.server.observations.enabled | `+++true+++` | Whether to enable Observations on the server.
+|spring.grpc.server.observation.enabled | `+++true+++` | Whether to enable Observations on the server.
 |spring.grpc.server.port | `+++9090+++` | Server port to listen on. When the value is 0, a random available port is selected. The default is 9090.
 |spring.grpc.server.reflection.enabled | `+++true+++` | Whether to enable Reflection on the gRPC server.
 |spring.grpc.server.security.csrf.enabled | `+++false+++` | Whether to enable CSRF protection on gRPC requests.
