@@ -15,7 +15,7 @@
 
 	<modules>
 		<module>spring-grpc-build-dependencies</module>
-<!--		<module>spring-grpc-docs</module>-->
+		<module>spring-grpc-docs</module>
 		<module>spring-grpc-dependencies</module>
 		<module>spring-grpc-core</module>
 <!--		<module>samples</module>-->
@@ -70,7 +70,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
 		<!-- internal dependencies -->
-		<spring-boot.version>4.0.0-M3</spring-boot.version>
+		<spring-boot.version>4.0.0-SNAPSHOT</spring-boot.version>
 		<jackson.version>2.20.0</jackson.version>
 		<junit.version>5.13.4</junit.version>
 		<assertj.version>3.27.4</assertj.version>
