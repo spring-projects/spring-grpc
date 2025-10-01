@@ -523,16 +523,13 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 					map.put(key, extract(value));
 				}
 			}
-			if (list.size() > 0) {
+			if (!list.isEmpty()) {
 				return list;
 			}
 			return map;
 		}
 
 		private Object extract(Object input) {
-			if (input == null) {
-				return null;
-			}
 			if (input instanceof Map) {
 				@SuppressWarnings("unchecked")
 				Map<String, Object> generic = (Map<String, Object>) input;
