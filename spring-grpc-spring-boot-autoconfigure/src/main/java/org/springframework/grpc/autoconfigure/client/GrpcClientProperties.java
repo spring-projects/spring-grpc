@@ -17,7 +17,9 @@ package org.springframework.grpc.autoconfigure.client;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -172,6 +174,10 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
 		public Map<String, Object> getServiceConfig() {
 			return this.serviceConfig;
+		}
+
+		public Map<String, Object> extractServiceConfig() {
+			return this.configMapConverter.convert(getServiceConfig());
 		}
 
 		/**
@@ -388,6 +394,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
 		private final Ssl ssl = new Ssl();
 
+		private final ConfigMapConverter configMapConverter = new ConfigMapConverter();
+
 		public Ssl getSsl() {
 			return this.ssl;
 		}
@@ -469,6 +477,68 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 				this.serviceName = other.serviceName;
 			}
 
+		}
+
+	}
+
+	/**
+	 * Utility to convert a map with numeric keys into a list. Such maps are used by
+	 * Spring Boot to represent lists in properties.
+	 */
+	static class ConfigMapConverter {
+
+		private static final String NUMBER = "[0-9]+";
+
+		public Map<String, Object> convert(Map<String, Object> input) {
+			Map<String, Object> map = new HashMap<>();
+			for (Map.Entry<String, Object> entry : input.entrySet()) {
+				map.put(entry.getKey(), extract(entry.getValue()));
+			}
+			return map;
+		}
+
+		private Object map(Map<String, Object> input) {
+			Map<String, Object> map = new HashMap<>();
+			List<Object> list = new ArrayList<>();
+			boolean maybeList = true;
+			for (Map.Entry<String, Object> entry : input.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+				if (maybeList && key.matches(NUMBER)) {
+					int index = Integer.parseInt(key);
+					while (index >= list.size()) {
+						list.add(null);
+					}
+					list.set(index, extract(value));
+				}
+				else {
+					maybeList = false;
+					if (!list.isEmpty()) {
+						// Not really a list after all
+						for (int i = 0; i < list.size(); i++) {
+							map.put(String.valueOf(i), list.get(i));
+						}
+						list.clear();
+					}
+					map.put(key, extract(value));
+				}
+			}
+			if (list.size() > 0) {
+				return list;
+			}
+			return map;
+		}
+
+		private Object extract(Object input) {
+			if (input == null) {
+				return null;
+			}
+			if (input instanceof Map) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> generic = (Map<String, Object>) input;
+				return map(generic);
+			}
+			return input;
 		}
 
 	}
