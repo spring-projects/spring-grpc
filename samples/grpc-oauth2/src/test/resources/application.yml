@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          spring:
+            client-id: spring
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            provider: local
+        provider:
+          local:
+            token-uri: ${spring.security.oauth2.client.provider.spring.issuer-uri:http://localhost:9000}/oauth2/token

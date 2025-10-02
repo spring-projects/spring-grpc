@@ -11,13 +11,9 @@ import org.springframework.grpc.server.security.AuthenticationProcessInterceptor
 import org.springframework.grpc.server.security.GrpcSecurity;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
-import io.grpc.Metadata;
-
 @SpringBootApplication
 @Import(AuthenticationConfiguration.class)
 public class GrpcServerApplication {
-
-	public static final Metadata.Key<String> USER_KEY = Metadata.Key.of("X-USER", Metadata.ASCII_STRING_MARSHALLER);
 
 	public static void main(String[] args) {
 		SpringApplication.run(GrpcServerApplication.class, args);
