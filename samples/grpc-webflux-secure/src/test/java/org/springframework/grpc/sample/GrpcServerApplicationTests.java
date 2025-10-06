@@ -81,7 +81,7 @@ public class GrpcServerApplicationTests {
 			return CommonsExecWebServerFactoryBean.builder()
 				.useGenericSpringBootMain()
 				.classpath(classpath -> classpath.entries(new MavenClasspathEntry(
-						"org.springframework.boot:spring-boot-starter-oauth2-authorization-server:3.5.5")));
+						"org.springframework.boot:spring-boot-starter-oauth2-authorization-server:3.5.6")));
 		}
 
 		@Bean

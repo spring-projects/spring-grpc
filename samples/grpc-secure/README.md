@@ -11,7 +11,7 @@ $ ./mvnw spring-boot:run
  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.5.5)
+ :: Spring Boot ::                (v3.5.6)
 
 2022-12-08T05:32:24.934-08:00  INFO 551632 --- [           main] com.example.demo.DemoApplication         : Starting DemoApplication using Java 17.0.5 with PID 551632 (/home/dsyer/dev/scratch/demo/target/classes started by dsyer in /home/dsyer/dev/scratch/demo)
 2022-12-08T05:32:24.938-08:00  INFO 551632 --- [           main] com.example.demo.DemoApplication         : No active profile set, falling back to 1 default profile: "default"
@@ -57,7 +57,7 @@ $ ./target/demo
  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.5.5)
+ :: Spring Boot ::                (v3.5.6)
 
 2022-12-08T05:36:54.365-08:00  INFO 554359 --- [           main] com.example.demo.DemoApplication         : Starting AOT-processed DemoApplication using Java 17.0.5 with PID 554359 (/home/dsyer/dev/scratch/demo/target/demo started by dsyer in /home/dsyer/dev/scratch/demo)
 2022-12-08T05:36:54.366-08:00  INFO 554359 --- [           main] com.example.demo.DemoApplication         : No active profile set, falling back to 1 default profile: "default"
