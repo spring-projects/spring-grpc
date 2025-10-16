@@ -31,7 +31,7 @@
 		<java.version>17</java.version>
 		<spring-javaformat-maven-plugin.version>0.0.39</spring-javaformat-maven-plugin.version>
 		<protobuf-java.version>4.32.1</protobuf-java.version>
-		<grpc.version>1.75.0</grpc.version>
+		<grpc.version>1.76.0</grpc.version>
 		<maven.version>3.9.4</maven.version>
 		<maven.resolver.version>1.9.18</maven.resolver.version>
 	</properties>
