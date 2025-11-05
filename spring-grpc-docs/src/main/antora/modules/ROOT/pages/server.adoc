@@ -125,13 +125,14 @@ If you want to do that in any Spring Boot application, it should be sufficient *
 This dependency is only provided by the `spring-grpc-server-web-spring-boot-starter` (or if you include it explicitly yourself), but if you need to be explicit you can set `spring.grpc.server.servlet.enabled=false` in your application configuration.
 
 [[in-process-server]]
-== InProcess Server
+== In-Process Transport
 
-You can run an in-process server (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath and specifying the `spring.grpc.server.inprocess.name` property which is used as the identity of the server for clients to connect to.
+You can run an in-process server (i.e. not listening on a network port) by including the `io.grpc:grpc-inprocess` dependency on your classpath and specifying the `spring.grpc.server.inprocess.name` property which is used as the identity of the server for clients to connect to.
 
 In this mode, the in-process server factory is auto-configured in *addition* to the regular server factory (e.g. Netty).
 
-NOTE: To use the inprocess server the channel target must be set to `in-process:<in-process-name>`
+NOTE: In application code, to connect a client to the inprocess server the channel target can be set to `in-process:<in-process-name>`.
+In tests, if you are using only the in-process transport (see <<Testing,Testing>>), the autoconfigured `GrpcChannelFactory` will automatically connect to the in-process server without any special configuration.
 
 
 [[server-interceptor]]
@@ -167,7 +168,7 @@ ServerInterceptorFilter myInterceptorFilter() {
 }
 ----
 
-An `InProcessGrpcServerFactory` picks up the `ServerInterceptorFilter` automatically.
+An `InProcessGrpcServerFactory` picks up the `ServerInterceptorFilter` automatically, if it is present.
 Any other server factory will require you to provide a `GrpcServerFactoryCustomizer` in which you can modify the factory by adding a filter, as shown in the following example:
 
 [source,java]
@@ -238,10 +239,15 @@ A `GrpcExceptionHandler` can be used to handle exceptions of a specific type, re
 == Testing
 
 If you include `spring-grpc-test` in your project, your gRPC server in a `@SpringBootTest` can be started in-process (i.e. not listening on a network port) by enabling the in-process server.
-All clients that connect to any server via the autoconfigured `GrpcChannelFactory` will be able to connect to it.
-You can switch the in-process server on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
+Additionally the `grpc-inprocess` dependency must be present on the classpath (which is automatic if you already depend on `spring-grpc-test``).
+All clients that connect to any server via the autoconfigured `GrpcChannelFactory` will be able to connect to it instead.
 
-NOTE: When the in-process server is run in test mode (as opposed to <<in-process-server,running normally>>) it replaces the regular server and channel factories (e.g. Netty)
+The in-process transport is an opt-in feature, so it requires an explicit configuration.
+You can switch it on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
+There is no need to set `spring.grpc.server.inprocess.name` as that is done automatically.
+Using the annotation is equivalent to setting the "enabled" property to true, and in addition marking the in-process transport as "exclusive", meaning that no other transport will be used.
+
+NOTE: When the in-process server is run in test mode using `@AutoConfigureInProcessTransport` (as opposed to <<in-process-server,running in an application>>) it replaces the regular server and channel factories (e.g. Netty)
 
 
 == Security
