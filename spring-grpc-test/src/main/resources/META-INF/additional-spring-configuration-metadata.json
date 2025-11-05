@@ -4,7 +4,7 @@
     {
       "name": "spring.grpc.test.inprocess.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable the in-process server and client for testing.",
+      "description": "Whether to enable the in-process server and client for testing. Consider using @AutoConfigInProcessTransport instead.",
       "defaultValue": false
     }
   ]
