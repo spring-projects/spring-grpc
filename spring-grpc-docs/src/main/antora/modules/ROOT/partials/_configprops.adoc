@@ -56,5 +56,6 @@
 |spring.grpc.server.ssl.client-auth | `+++none+++` | Client authentication mode.
 |spring.grpc.server.ssl.enabled |  | Whether to enable SSL support.
 |spring.grpc.server.ssl.secure | `+++true+++` | Flag to indicate that client authentication is secure (i.e. certificates are checked). Do not set this to false in production.
+|spring.grpc.test.inprocess.enabled | `+++false+++` | Whether to enable the in-process server and client for testing. Consider using @AutoConfigInProcessTransport instead.
 
 |===
