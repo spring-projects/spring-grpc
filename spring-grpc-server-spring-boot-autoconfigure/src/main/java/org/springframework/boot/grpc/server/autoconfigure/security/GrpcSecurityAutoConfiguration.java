@@ -56,7 +56,7 @@ import io.grpc.internal.GrpcUtil;
  * @since 4.0.0
  */
 @AutoConfiguration(before = GrpcExceptionHandlerAutoConfiguration.class,
-		afterName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration")
+		afterName = "org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration")
 @ConditionalOnSpringGrpc
 @ConditionalOnClass(ObjectPostProcessor.class)
 @ConditionalOnGrpcServerEnabled

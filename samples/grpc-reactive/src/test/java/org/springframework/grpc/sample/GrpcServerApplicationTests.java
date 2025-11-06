@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureInProcessTransport;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.grpc.client.ImportGrpcClients;
@@ -12,7 +13,6 @@ import org.springframework.grpc.sample.proto.HelloReply;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.ReactorSimpleGrpc;
 import org.springframework.grpc.sample.proto.ReactorSimpleGrpc.ReactorSimpleStub;
-import org.springframework.grpc.test.AutoConfigureInProcessTransport;
 import org.springframework.test.annotation.DirtiesContext;
 
 import reactor.core.publisher.Mono;

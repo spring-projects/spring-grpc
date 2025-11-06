@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import io.grpc.stub.StreamObserver;
 
 @Service
-public class GrpcServerService extends SimpleGrpc.SimpleImplBase {
+class GrpcServerService extends SimpleGrpc.SimpleImplBase {
 
 	private static Log log = LogFactory.getLog(GrpcServerService.class);
 

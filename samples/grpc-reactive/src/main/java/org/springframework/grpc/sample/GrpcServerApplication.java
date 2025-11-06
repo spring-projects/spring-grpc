@@ -10,7 +10,7 @@ import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 import io.grpc.Status;
 
 @SpringBootApplication
-public class GrpcServerApplication {
+class GrpcServerApplication {
 
 	private static Log log = LogFactory.getLog(GrpcServerApplication.class);
 
