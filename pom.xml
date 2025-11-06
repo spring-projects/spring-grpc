@@ -14,11 +14,21 @@
 	<description>Building gRPC applications with Spring Boot</description>
 
 	<modules>
+		<!-- Spring gRPC modules -->
 		<module>spring-grpc-build-dependencies</module>
-		<module>spring-grpc-docs</module>
-		<module>spring-grpc-dependencies</module>
 		<module>spring-grpc-core</module>
-<!--		<module>samples</module>-->
+		<module>spring-grpc-dependencies</module>
+		<module>spring-grpc-docs</module>
+<!--		<module>samples</module>,-->
+
+		<!-- Spring Boot modules -->
+		<module>spring-grpc-client-spring-boot-autoconfigure</module>
+		<module>spring-grpc-client-spring-boot-starter</module>
+		<module>spring-grpc-server-spring-boot-autoconfigure</module>
+		<module>spring-grpc-server-spring-boot-starter</module>
+		<module>spring-grpc-server-web-spring-boot-starter</module>
+		<module>spring-grpc-spring-boot-starter</module>
+		<module>spring-grpc-test-spring-boot-autoconfigure</module>
 	</modules>
 
 	<organization>
