@@ -69,7 +69,7 @@
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-inprocess</artifactId>
 			<scope>test</scope>
-			</dependency>
+		</dependency>
 		<dependency>
 			<!-- for testing unix domain sockets -->
 			<groupId>io.netty</groupId>
