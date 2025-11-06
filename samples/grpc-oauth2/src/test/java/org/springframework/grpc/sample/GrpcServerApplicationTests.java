@@ -1,7 +1,7 @@
 package org.springframework.grpc.sample;
 
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -123,8 +123,8 @@ public class GrpcServerApplicationTests {
 		static CommonsExecWebServerFactoryBean authServer() {
 			return CommonsExecWebServerFactoryBean.builder()
 				.useGenericSpringBootMain()
-				.classpath(classpath -> classpath.entries(new MavenClasspathEntry(
-						"org.springframework.boot:spring-boot-starter-oauth2-authorization-server:3.5.5")));
+				.classpath(classpath -> classpath
+					.entries(MavenClasspathEntry.springBootStarter("oauth2-authorization-server")));
 		}
 
 		@Bean
