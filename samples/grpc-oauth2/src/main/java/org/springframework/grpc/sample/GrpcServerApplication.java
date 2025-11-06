@@ -15,7 +15,7 @@ import io.grpc.Metadata;
 
 @SpringBootApplication
 @Import(AuthenticationConfiguration.class)
-public class GrpcServerApplication {
+class GrpcServerApplication {
 
 	public static final Metadata.Key<String> USER_KEY = Metadata.Key.of("X-USER", Metadata.ASCII_STRING_MARSHALLER);
 
