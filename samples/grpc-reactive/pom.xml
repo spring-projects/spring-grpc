@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.5</version>
+		<version>4.0.0-SNAPSHOT</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.springframework.grpc</groupId>
@@ -30,7 +30,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
-		<protobuf-java.version>4.31.1</protobuf-java.version>
+		<protobuf-java.version>4.32.1</protobuf-java.version>
 		<grpc.version>1.76.0</grpc.version>
 	</properties>
 	<dependencyManagement>
@@ -50,33 +50,12 @@
 			<artifactId>spring-grpc-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-services</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-
-		<dependency>
-			<!-- for testing unix domain sockets -->
-			<groupId>io.netty</groupId>
-			<artifactId>netty-transport-native-epoll</artifactId>
-			<classifier>linux-x86_64</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.grpc</groupId>
-			<artifactId>spring-grpc-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-test</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.salesforce.servicelibs</groupId>
@@ -88,6 +67,34 @@
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.2</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.grpc</groupId>
+			<artifactId>spring-grpc-test-spring-boot-autoconfigure</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-inprocess</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- for testing unix domain sockets -->
+			<groupId>io.netty</groupId>
+			<artifactId>netty-transport-native-epoll</artifactId>
+			<classifier>linux-x86_64</classifier>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

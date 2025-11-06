@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class GrpcServerService extends ReactorSimpleGrpc.SimpleImplBase {
+class GrpcServerService extends ReactorSimpleGrpc.SimpleImplBase {
 
 	private static Log log = LogFactory.getLog(GrpcServerService.class);
 
