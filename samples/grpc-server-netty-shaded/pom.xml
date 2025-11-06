@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.5</version>
+		<version>4.0.0-RC1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
-		<protobuf-java.version>4.31.1</protobuf-java.version>
+		<protobuf-java.version>4.32.1</protobuf-java.version>
 		<grpc.version>1.76.0</grpc.version>
 	</properties>
 	<dependencyManagement>
@@ -46,19 +46,20 @@
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-services</artifactId>
-		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
+			<groupId>org.springframework.grpc</groupId>
+			<artifactId>spring-grpc-test-spring-boot-autoconfigure</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.grpc</groupId>
-			<artifactId>spring-grpc-test</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
