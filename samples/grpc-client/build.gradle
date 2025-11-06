@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.5'
-    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.springframework.boot' version '4.0.0-RC1'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'com.google.protobuf' version '0.9.4'
 }
 
@@ -28,12 +28,17 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'org.springframework.grpc:spring-grpc-client-spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.grpc:spring-grpc-test'
-    testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.0.3'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.grpc:spring-grpc-client-spring-boot-starter'
+
+	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-web-server'
+	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0-SNAPSHOT'
+	testImplementation 'io.grpc:grpc-inprocess'
+
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()

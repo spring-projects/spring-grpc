@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureInProcessTransport;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -15,7 +16,6 @@ import org.springframework.grpc.client.FutureStubFactory;
 import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.client.SimpleStubFactory;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
-import org.springframework.grpc.test.AutoConfigureInProcessTransport;
 
 import io.grpc.stub.AbstractStub;
 

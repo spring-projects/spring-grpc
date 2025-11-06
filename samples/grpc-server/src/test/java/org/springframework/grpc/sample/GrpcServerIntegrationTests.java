@@ -17,19 +17,24 @@
 package org.springframework.grpc.sample;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureInProcessTransport;
+import org.springframework.boot.grpc.test.autoconfigure.LocalGrpcPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.grpc.autoconfigure.server.GrpcServerProperties;
 import org.springframework.grpc.client.ChannelBuilderOptions;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.sample.proto.HelloReply;
@@ -37,8 +42,6 @@ import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.GrpcServerFactory;
-import org.springframework.grpc.test.AutoConfigureInProcessTransport;
-import org.springframework.grpc.test.LocalGrpcPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -47,9 +50,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 import io.grpc.ServerCall.Listener;
 import io.grpc.ServerInterceptor;
+import io.grpc.Status;
 import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
 import io.grpc.netty.NettyChannelBuilder;
+import net.bytebuddy.asm.Advice.Thrown;
 
 /**
  * More detailed integration tests for {@link GrpcServerFactory gRPC server factories} and
@@ -77,19 +82,27 @@ class GrpcServerIntegrationTests {
 		@Test
 		void specificErrorResponse(@Autowired GrpcChannelFactory channels) {
 			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"));
-			assertThat(assertThrows(StatusRuntimeException.class,
-					() -> client.sayHello(HelloRequest.newBuilder().setName("internal").build()))
-				.getStatus()
-				.getCode()).isEqualTo(Code.UNKNOWN);
+			assertThatExceptionOfType(StatusRuntimeException.class)
+				.isThrownBy(() -> client.sayHello(HelloRequest.newBuilder().setName("internal").build()))
+				.extracting(StatusRuntimeException::getStatus)
+				.extracting(Status::getCode)
+				.isEqualTo(Code.UNKNOWN);
 		}
 
 		@Test
 		void defaultErrorResponseIsUnknown(@Autowired GrpcChannelFactory channels) {
 			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"));
-			StatusRuntimeException status = assertThrows(StatusRuntimeException.class,
+
+			assertThatExceptionOfType(StatusRuntimeException.class)
+				.isThrownBy(() -> client.sayHello(HelloRequest.newBuilder().setName("error").build()))
+				.extracting(StatusRuntimeException::getStatus)
+				.extracting(Status::getCode)
+				.isEqualTo(Code.INVALID_ARGUMENT);
+
+			StatusRuntimeException ex = Assertions.catchThrowableOfType(StatusRuntimeException.class,
 					() -> client.sayHello(HelloRequest.newBuilder().setName("error").build()));
-			assertThat(status.getStatus().getCode()).isEqualTo(Code.INVALID_ARGUMENT);
-			assertThat(status.getTrailers().get(Metadata.Key.of("error-code", Metadata.ASCII_STRING_MARSHALLER)))
+			assertThat(ex.getStatus().getCode()).isEqualTo(Code.INVALID_ARGUMENT);
+			assertThat(ex.getTrailers().get(Metadata.Key.of("error-code", Metadata.ASCII_STRING_MARSHALLER)))
 				.isNotNull();
 		}
 
@@ -103,10 +116,11 @@ class GrpcServerIntegrationTests {
 		@Test
 		void specificErrorResponse(@Autowired GrpcChannelFactory channels) {
 			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"));
-			assertThat(assertThrows(StatusRuntimeException.class,
-					() -> client.sayHello(HelloRequest.newBuilder().setName("foo").build()))
-				.getStatus()
-				.getCode()).isEqualTo(Code.INVALID_ARGUMENT);
+			assertThatExceptionOfType(StatusRuntimeException.class)
+				.isThrownBy(() -> client.sayHello(HelloRequest.newBuilder().setName("foo").build()))
+				.extracting(StatusRuntimeException::getStatus)
+				.extracting(Status::getCode)
+				.isEqualTo(Code.INVALID_ARGUMENT);
 		}
 
 		@TestConfiguration
@@ -143,10 +157,11 @@ class GrpcServerIntegrationTests {
 		void specificErrorResponse(@Autowired GrpcChannelFactory channels) {
 			TestConfig.reset();
 			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"));
-			assertThat(assertThrows(StatusRuntimeException.class,
-					() -> client.sayHello(HelloRequest.newBuilder().setName("foo").build()))
-				.getStatus()
-				.getCode()).isEqualTo(Code.INVALID_ARGUMENT);
+			assertThatExceptionOfType(StatusRuntimeException.class)
+				.isThrownBy(() -> client.sayHello(HelloRequest.newBuilder().setName("foo").build()))
+				.extracting(StatusRuntimeException::getStatus)
+				.extracting(Status::getCode)
+				.isEqualTo(Code.INVALID_ARGUMENT);
 			assertThat(TestConfig.readyCount.get()).isEqualTo(1);
 			assertThat(TestConfig.callCount.get()).isEqualTo(0);
 			assertThat(TestConfig.messageCount.get()).isEqualTo(0);
@@ -227,19 +242,22 @@ class GrpcServerIntegrationTests {
 		@Test
 		void specificErrorResponse(@Autowired GrpcChannelFactory channels) {
 			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"));
-			assertThat(assertThrows(StatusRuntimeException.class,
-					() -> client.sayHello(HelloRequest.newBuilder().setName("error").build()))
-				.getStatus()
-				.getCode()).isEqualTo(Code.UNKNOWN);
+
+			assertThatExceptionOfType(StatusRuntimeException.class)
+				.isThrownBy(() -> client.sayHello(HelloRequest.newBuilder().setName("error").build()))
+				.extracting(StatusRuntimeException::getStatus)
+				.extracting(Status::getCode)
+				.isEqualTo(Code.UNKNOWN);
 		}
 
 		@Test
 		void defaultErrorResponseIsUnknown(@Autowired GrpcChannelFactory channels) {
 			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:0"));
-			assertThat(assertThrows(StatusRuntimeException.class,
-					() -> client.sayHello(HelloRequest.newBuilder().setName("internal").build()))
-				.getStatus()
-				.getCode()).isEqualTo(Code.UNKNOWN);
+			assertThatExceptionOfType(StatusRuntimeException.class)
+				.isThrownBy(() -> client.sayHello(HelloRequest.newBuilder().setName("internal").build()))
+				.extracting(StatusRuntimeException::getStatus)
+				.extracting(Status::getCode)
+				.isEqualTo(Code.UNKNOWN);
 		}
 
 	}
