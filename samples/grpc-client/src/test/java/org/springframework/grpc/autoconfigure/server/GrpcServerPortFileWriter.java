@@ -28,10 +28,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * An {@link ApplicationListener} that saves embedded server port and management port into
- * file. This application listener will be triggered whenever the server starts, and the
- * file name can be overridden at runtime with a System property or environment variable
- * named "PORTFILE" or "portfile".
+ * An {@link ApplicationListener} that saves the gRPC server port into a file. This
+ * application listener will be triggered whenever the gRPC server starts, and the file
+ * name can be overridden at runtime with a System property or environment variable named
+ * "PORTFILE" or "portfile".
+ *
+ * <b>NOTE:</b> This is currently required in order to use spring-boot-testjars as it
+ * expects this file to be available in order to determine the port of the dynamically
+ * launched gRPC server.
  *
  * @author David Liu
  * @author Phillip Webb

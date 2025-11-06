@@ -28,8 +28,7 @@ import io.grpc.StatusRuntimeException;
 public class DefaultDeadlineSetupTests {
 
 	@Nested
-	@SpringBootTest(properties = { "spring.grpc.client.default-channel.address=static://0.0.0.0:${local.grpc.port}",
-			"spring.grpc.client.default-channel.default-deadline=1s" })
+	@SpringBootTest(properties = "spring.grpc.client.default-channel.default-deadline=1s")
 	@DirtiesContext
 	@EnabledIf("serverJarAvailable")
 	class Deadline {
@@ -48,11 +47,12 @@ public class DefaultDeadlineSetupTests {
 		static class ExtraConfiguration {
 
 			@Bean
-			@DynamicProperty(name = "local.grpc.port", value = "port")
+			@DynamicProperty(name = "launched.grpc.port", value = "port")
 			static CommonsExecWebServerFactoryBean grpcServer() {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
 						.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.0.0-SNAPSHOT"))
+						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}
 
@@ -76,8 +76,7 @@ public class DefaultDeadlineSetupTests {
 	}
 
 	@Nested
-	@SpringBootTest(properties = { "spring.grpc.client.default-channel.address=static://0.0.0.0:${local.grpc.port}",
-			"spring.grpc.client.default-channel.default-deadline=1s" })
+	@SpringBootTest(properties = "spring.grpc.client.default-channel.default-deadline=1s")
 	@DirtiesContext
 	@EnabledIf("serverJarAvailable")
 	class WithoutDeadline {
@@ -96,11 +95,12 @@ public class DefaultDeadlineSetupTests {
 		static class ExtraConfiguration {
 
 			@Bean
-			@DynamicProperty(name = "local.grpc.port", value = "port")
+			@DynamicProperty(name = "launched.grpc.port", value = "port")
 			static CommonsExecWebServerFactoryBean grpcServer() {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
 						.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.0.0-SNAPSHOT"))
+						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}
 

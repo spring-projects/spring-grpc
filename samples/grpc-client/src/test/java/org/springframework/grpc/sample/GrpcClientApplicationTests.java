@@ -16,7 +16,7 @@ import org.springframework.experimental.boot.test.context.DynamicProperty;
 import org.springframework.experimental.boot.test.context.EnableDynamicProperty;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(properties = "spring.grpc.client.default-channel.address=static://0.0.0.0:${local.grpc.port}")
+@SpringBootTest
 @DirtiesContext
 @EnabledIf("serverJarAvailable")
 public class GrpcClientApplicationTests {
@@ -38,19 +38,18 @@ public class GrpcClientApplicationTests {
 	static class ExtraConfiguration {
 
 		@Bean
-		@DynamicProperty(name = "local.grpc.port", value = "port")
+		@DynamicProperty(name = "launched.grpc.port", value = "port")
 		static CommonsExecWebServerFactoryBean grpcServer() {
 			return CommonsExecWebServerFactoryBean.builder()
 				.classpath(classpath -> classpath
 					.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.0.0-SNAPSHOT"))
+					.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 					.files("target/test-classes"));
 		}
 
 		@Bean
 		static BeanDefinitionRegistryPostProcessor startup(WebServer server) {
-			return registry -> {
-				server.getPort();
-			};
+			return registry -> System.out.println("*** gRPC server started on port " + server.getPort());
 		}
 
 	}

@@ -19,7 +19,7 @@
 		<module>spring-grpc-core</module>
 		<module>spring-grpc-dependencies</module>
 		<module>spring-grpc-docs</module>
-<!--		<module>samples</module>,-->
+		<module>samples</module>
 
 		<!-- Spring Boot modules -->
 		<module>spring-grpc-client-spring-boot-autoconfigure</module>
