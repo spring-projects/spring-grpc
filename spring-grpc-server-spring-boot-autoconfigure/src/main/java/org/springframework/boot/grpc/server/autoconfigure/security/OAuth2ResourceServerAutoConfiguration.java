@@ -82,9 +82,8 @@ import io.grpc.BindableService;
 // All copied from Spring Boot
 // (https://github.com/spring-projects/spring-boot/issues/43978), except the
 // 2 @Beans of type AuthenticationProcessInterceptor
-@AutoConfiguration(
-		beforeName = "org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration",
-		afterName = { "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration",
+@AutoConfiguration(beforeName = "org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration",
+		afterName = { "org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration",
 				"org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration" },
 		after = { GrpcSecurityAutoConfiguration.class, GrpcServerFactoryAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
