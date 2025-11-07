@@ -23,7 +23,7 @@
 		<module>grpc-server</module>
 <!--		<module>grpc-server-kotlin</module>-->
 		<module>grpc-server-netty-shaded</module>
-<!--		<module>grpc-tomcat</module>-->
+		<module>grpc-tomcat</module>
 <!--		<module>grpc-tomcat-secure</module>-->
 <!--		<module>grpc-webflux</module>-->
 <!--		<module>grpc-webflux-secure</module>-->
