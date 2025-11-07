@@ -33,7 +33,7 @@
 		<protobuf-java.version>4.32.1</protobuf-java.version>
 		<grpc.version>1.76.0</grpc.version>
 		<grpc.kotlin.version>1.5.0</grpc.kotlin.version>
-		<kotlin.version>1.9.22</kotlin.version>
+		<kotlin.version>2.2.21</kotlin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -144,7 +144,7 @@
 			<plugin>
 				<groupId>io.github.ascopes</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.10.2</version>
 				<configuration>
 					<protocVersion>${protobuf-java.version}</protocVersion>
 					<binaryMavenPlugins>
