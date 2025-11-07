@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.5</version>
+		<version>4.0.0-RC2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.springframework.grpc</groupId>
@@ -30,7 +30,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
-		<protobuf-java.version>4.31.1</protobuf-java.version>
+		<protobuf-java.version>4.32.1</protobuf-java.version>
 		<grpc.version>1.76.0</grpc.version>
 	</properties>
 	<dependencyManagement>
@@ -46,6 +46,10 @@
 	</dependencyManagement>
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework.grpc</groupId>
+			<artifactId>spring-grpc-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
@@ -55,30 +59,23 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.grpc</groupId>
-			<artifactId>spring-grpc-spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-services</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+			<artifactId>spring-grpc-test-spring-boot-autoconfigure</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.grpc</groupId>
-			<artifactId>spring-grpc-test</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental.boot</groupId>
 			<artifactId>spring-boot-testjars-maven</artifactId>
-			<version>0.0.4</version>
+			<version>0.4.0.0-RC1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
