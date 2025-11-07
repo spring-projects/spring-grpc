@@ -43,6 +43,7 @@ import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
 import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.web.SecurityFilterChain;
 
 import io.grpc.internal.GrpcUtil;
@@ -78,6 +79,7 @@ public final class GrpcSecurityAutoConfiguration {
 	@ConditionalOnBean(ObjectPostProcessor.class)
 	@ConditionalOnGrpcNativeServer
 	@Configuration(proxyBeanMethods = false)
+	@EnableGlobalAuthentication
 	static class GrpcNativeSecurityConfigurerConfiguration {
 
 		@Bean
