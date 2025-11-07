@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.0-RC1'
+    id 'org.springframework.boot' version '4.0.0-RC2'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.google.protobuf' version '0.9.4'
 }
@@ -33,7 +33,7 @@ dependencies {
 	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-web-server'
-	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0-SNAPSHOT'
+	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0-RC1'
 	testImplementation 'io.grpc:grpc-inprocess'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
