@@ -55,7 +55,7 @@ public class GrpcServerApplicationTests {
 	}
 
 	@Test
-    @Disabled("Code is coming back PERMISSION_DENIED NOT UNAUTHENTICATED")
+	@Disabled("Code is coming back PERMISSION_DENIED NOT UNAUTHENTICATED")
 	void unauthenticated() {
 		assertThatExceptionOfType(StatusRuntimeException.class)
 			.isThrownBy(() -> basic.streamHello(HelloRequest.newBuilder().setName("Alien").build()).next())
