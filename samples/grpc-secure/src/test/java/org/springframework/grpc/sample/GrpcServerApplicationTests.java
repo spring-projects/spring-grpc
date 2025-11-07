@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,11 +50,12 @@ public class GrpcServerApplicationTests {
 	@Qualifier("simpleBlockingStub")
 	private SimpleGrpc.SimpleBlockingStub basic;
 
-	// @Test
+	@Test
 	void contextLoads() {
 	}
 
-	// @Test
+	@Test
+    @Disabled("Code is coming back PERMISSION_DENIED NOT UNAUTHENTICATED")
 	void unauthenticated() {
 		assertThatExceptionOfType(StatusRuntimeException.class)
 			.isThrownBy(() -> basic.streamHello(HelloRequest.newBuilder().setName("Alien").build()).next())
@@ -61,7 +63,7 @@ public class GrpcServerApplicationTests {
 			.isEqualTo(Code.UNAUTHENTICATED);
 	}
 
-	// @Test
+	@Test
 	void anonymous() throws Exception {
 		AtomicReference<ServerReflectionResponse> response = new AtomicReference<>();
 		AtomicBoolean error = new AtomicBoolean();
@@ -86,7 +88,7 @@ public class GrpcServerApplicationTests {
 		Awaitility.await().until(() -> response.get() != null || error.get());
 	}
 
-	// @Test
+	@Test
 	void unauthauthorized() {
 		assertThatExceptionOfType(StatusRuntimeException.class)
 			.isThrownBy(() -> basic.streamHello(HelloRequest.newBuilder().setName("Alien").build()).next())
@@ -94,7 +96,7 @@ public class GrpcServerApplicationTests {
 			.isEqualTo(Code.PERMISSION_DENIED);
 	}
 
-	// @Test
+	@Test
 	void authenticated() {
 		HelloReply response = basic.sayHello(HelloRequest.newBuilder().setName("Alien").build());
 		assertThat("Hello ==> Alien").isEqualTo(response.getMessage());
