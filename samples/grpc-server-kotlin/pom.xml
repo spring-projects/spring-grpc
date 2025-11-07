@@ -75,6 +75,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>context-propagation</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
 		<dependency>
 			<!-- for testing unix domain sockets -->
 			<groupId>io.netty</groupId>
