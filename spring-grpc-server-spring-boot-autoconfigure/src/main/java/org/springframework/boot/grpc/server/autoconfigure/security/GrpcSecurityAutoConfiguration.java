@@ -76,7 +76,6 @@ public final class GrpcSecurityAutoConfiguration {
 
 	}
 
-	@ConditionalOnBean(ObjectPostProcessor.class)
 	@ConditionalOnGrpcNativeServer
 	@Configuration(proxyBeanMethods = false)
 	@EnableGlobalAuthentication
