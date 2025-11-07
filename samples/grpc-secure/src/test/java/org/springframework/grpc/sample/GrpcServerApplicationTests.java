@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,10 +54,9 @@ public class GrpcServerApplicationTests {
 	}
 
 	@Test
-	@Disabled("Code is coming back PERMISSION_DENIED NOT UNAUTHENTICATED")
 	void unauthenticated() {
 		assertThatExceptionOfType(StatusRuntimeException.class)
-			.isThrownBy(() -> basic.streamHello(HelloRequest.newBuilder().setName("Alien").build()).next())
+			.isThrownBy(() -> stub.sayHello(HelloRequest.newBuilder().setName("Alien").build()))
 			.extracting("status.code")
 			.isEqualTo(Code.UNAUTHENTICATED);
 	}
