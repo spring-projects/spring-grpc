@@ -17,10 +17,11 @@ import org.springframework.test.annotation.DirtiesContext
         "spring.grpc.server.port=0",
         "spring.grpc.client.default-channel.address=0.0.0.0:\${local.grpc.port}"
     ],
-    useMainMethod = UseMainMethod.ALWAYS
 )
 @DirtiesContext
 class GrpcServerApplicationTests {
+
+    private val log: Log = LogFactory.getLog(this.javaClass)
 
     @Autowired
     private lateinit var stub: SimpleBlockingStub
@@ -38,14 +39,5 @@ class GrpcServerApplicationTests {
                 .build()
         )
         Assertions.assertEquals("Hello ==> Alien", response.getMessage())
-    }
-
-    companion object {
-        private val log: Log = LogFactory.getLog(GrpcServerApplicationTests::class.java)
-
-        @JvmStatic
-        fun main(args: Array<String>) {
-            SpringApplicationBuilder(GrpcServerApplication::class.java).run()
-        }
     }
 }
