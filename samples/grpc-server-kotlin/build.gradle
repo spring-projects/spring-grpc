@@ -35,6 +35,7 @@ dependencies {
 
     implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation("io.micrometer:context-propagation:1.2.0")
     implementation 'io.grpc:grpc-services'
     implementation "io.grpc:grpc-kotlin-stub:${kotlinStubVersion}"
 

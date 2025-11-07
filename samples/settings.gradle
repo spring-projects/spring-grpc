@@ -6,6 +6,7 @@ pluginManagement {
 	}
 }
 
+include 'grpc-client'
 include 'grpc-reactive'
 include 'grpc-oauth2'
 include 'grpc-secure'
