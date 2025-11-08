@@ -11,9 +11,9 @@ jobs:
       matrix:
         include:
           - javaVersion: 17
-            springBootVersion: "3.5.5"
+            springBootVersion: "4.0.0-RC2"
           - javaVersion: 17
-            springBootVersion: "3.5.0-SNAPSHOT"
+            springBootVersion: "4.0.0-SNAPSHOT"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
