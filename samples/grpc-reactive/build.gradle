@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.0-RC2'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.graalvm.buildtools.native' version '0.10.3'
 	id 'com.google.protobuf' version '0.9.4'
 }
 
@@ -17,7 +16,8 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
+	mavenLocal()
+	maven { url 'https://repo.spring.io/milestone' }
     maven { url 'https://repo.spring.io/snapshot' }
 }
 
@@ -30,13 +30,14 @@ dependencyManagement {
 dependencies {
     implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'com.salesforce.servicelibs:reactor-grpc-stub:1.2.4'
 	implementation 'io.projectreactor:reactor-core'
+	implementation 'com.salesforce.servicelibs:reactor-grpc-stub:1.2.4'
 
     compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
 
 	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.grpc:grpc-inprocess'
     testImplementation 'io.projectreactor:reactor-test'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -50,23 +51,23 @@ test {
 }
 
 protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
-    }
-    plugins {
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
-        }
-        reactor {
-            artifact = "com.salesforce.servicelibs:reactor-grpc:1.2.4"
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {
-                option '@generated=omit'
-            }
-            reactor {}
-        }
-    }
+	protoc {
+		artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
+	}
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
+		}
+		reactor {
+			artifact = "com.salesforce.servicelibs:reactor-grpc:1.2.4"
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {
+				option '@generated=omit'
+			}
+			reactor {}
+		}
+	}
 }
