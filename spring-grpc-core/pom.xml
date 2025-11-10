@@ -12,15 +12,6 @@
 	<packaging>jar</packaging>
 	<name>Spring gRPC Core</name>
 	<description>Core module for gRPC programming</description>
-	<url>https://github.com/spring-projects/spring-grpc</url>
-
-	<scm>
-		<url>https://github.com/spring-projects/spring-grpc</url>
-		<connection>git://github.com/spring-projects/spring-grpc.git
-		</connection>
-		<developerConnection>git@github.com:spring-projects/spring-grpc.git
-		</developerConnection>
-	</scm>
 
 	<dependencies>
 		<dependency>

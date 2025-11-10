@@ -12,13 +12,6 @@
 	<packaging>jar</packaging>
 	<name>Spring gRPC Server Auto Configuration</name>
 	<description>Spring gRPC Server Auto Configuration</description>
-	<url>https://github.com/spring-projects/spring-grpc</url>
-
-	<scm>
-		<url>https://github.com/spring-projects/spring-grpc</url>
-		<connection>git://github.com/spring-projects/spring-grpc.git</connection>
-		<developerConnection>git@github.com:spring-projects/spring-grpc.git</developerConnection>
-	</scm>
 
 	<dependencyManagement>
 		<dependencies>
