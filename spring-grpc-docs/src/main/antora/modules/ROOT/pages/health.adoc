@@ -26,7 +26,7 @@ spring:
 ----
 NOTE: The items in the `health-indicator-paths` are the identifiers of the indicator which is typically the name of the indicator bean without the `HealthIndicator` suffix.
 
-You can use the `spring.grpc.server.health.*`  application properties to further configure the health feature.
+You can use the xref:appendix.adoc#common-application-properties["spring.grpc.server.health.*"] application properties to further configure the health feature.
 
 == Client-side
 Spring gRPC can also autoconfigure the https://grpc.io/docs/guides/health-checking/[client-side] health check feature to your gRPC clients.
