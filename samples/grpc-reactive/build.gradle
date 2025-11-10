@@ -35,9 +35,7 @@ dependencies {
 
     compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.grpc:grpc-inprocess'
+	testImplementation 'org.springframework.grpc:spring-grpc-test'
     testImplementation 'io.projectreactor:reactor-test'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

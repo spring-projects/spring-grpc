@@ -39,8 +39,7 @@ dependencies {
 	implementation "io.grpc:grpc-kotlin-stub:${kotlinStubVersion}"
 	implementation("io.micrometer:context-propagation")
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.grpc:spring-grpc-test'
 
 	testRuntimeOnly "io.netty:netty-transport-native-epoll::linux-x86_64"
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

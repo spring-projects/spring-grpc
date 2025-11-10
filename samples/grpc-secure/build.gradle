@@ -32,8 +32,7 @@ dependencies {
     implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.grpc:spring-grpc-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
