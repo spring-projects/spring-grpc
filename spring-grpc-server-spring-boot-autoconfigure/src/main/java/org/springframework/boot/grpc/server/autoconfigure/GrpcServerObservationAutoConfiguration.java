@@ -53,7 +53,7 @@ public final class GrpcServerObservationAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(name = "io.grpc.kotlin.AbstractCoroutineStub")
+	@ConditionalOnClass(name = { "io.grpc.kotlin.AbstractCoroutineStub", "io.micrometer.context.ContextRegistry" })
 	static class GrpcServerCoroutineStubConfiguration {
 
 		@Bean
