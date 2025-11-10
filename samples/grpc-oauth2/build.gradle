@@ -36,8 +36,7 @@ dependencies {
     implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.grpc:spring-grpc-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0-RC1'
 

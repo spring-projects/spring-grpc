@@ -33,8 +33,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.grpc:spring-grpc-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
