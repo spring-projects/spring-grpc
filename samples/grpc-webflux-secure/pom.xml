@@ -120,7 +120,7 @@
 			<plugin>
 				<groupId>io.github.ascopes</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.10.2</version>
 				<configuration>
 					<protocVersion>${protobuf-java.version}</protocVersion>
 					<binaryMavenPlugins>
