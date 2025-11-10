@@ -33,7 +33,9 @@ import org.springframework.grpc.server.GrpcServerFactory;
 
 import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
+import io.micrometer.context.ContextRegistry;
 import io.micrometer.core.instrument.binder.grpc.ObservationGrpcServerInterceptor;
+import io.micrometer.core.instrument.kotlin.ObservationCoroutineContextServerInterceptor;
 import io.micrometer.observation.ObservationRegistry;
 
 /**
@@ -129,6 +131,14 @@ class GrpcServerObservationAutoConfigurationTests {
 						.toList();
 					return annotated.size() == 2 && interceptors.get(0) instanceof ObservationGrpcServerInterceptor;
 				}, "Two global interceptors expected")));
+	}
+
+	@Test
+	void whenMicrometerContextPropagationIsNotOnClasspathCoroutineInterceptorIsNotCreated() {
+		this.validContextRunner()
+			.withClassLoader(new FilteredClassLoader(ContextRegistry.class))
+			.run((context) -> assertThat(context).hasSingleBean(ObservationGrpcServerInterceptor.class)
+				.doesNotHaveBean(ObservationCoroutineContextServerInterceptor.class));
 	}
 
 }
