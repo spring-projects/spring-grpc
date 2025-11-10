@@ -16,10 +16,23 @@
 		<maven-exec-plugin.version>3.4.1</maven-exec-plugin.version>
 		<maven-frontend-plugin.version>1.15.1</maven-frontend-plugin.version>
 		<maven-gem-plugin.version>3.0.3</maven-gem-plugin.version>
+		<configprops.path>${project.basedir}/src/main/antora/modules/ROOT/partials/_configprops.adoc</configprops.path>
+		<configprops.inclusionPattern>spring.grpc.*</configprops.inclusionPattern>
 		<jruby.version>9.4.6.0</jruby.version>
 		<disable.checkstyle.checks>true</disable.checkstyle.checks>
 	</properties>
+	<!-- Dependencies used to build the config props doc generator -->
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.grpc</groupId>
+			<artifactId>spring-grpc-spring-boot-starter</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>rubygems</groupId>
 			<artifactId>asciidoctor-reducer</artifactId>
@@ -170,6 +183,43 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>docs</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>${maven-exec-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>generate-configprops</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<includeProjectDependencies>true</includeProjectDependencies>
+									<includePluginDependencies>false</includePluginDependencies>
+									<mainClass>
+										org.springframework.grpc.internal.ConfigurationPropertiesAsciidocGenerator</mainClass>
+									<arguments>
+										<argument>${configprops.path}</argument>
+										<argument>${configprops.inclusionPattern}</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
