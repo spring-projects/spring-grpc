@@ -61,7 +61,7 @@ class InProcessTransportContextCustomizerFactory implements ContextCustomizerFac
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedContextConfiguration) {
 			if (this.annotation == null
-					|| !context.getEnvironment().getProperty(ENABLED_PROPERTY, Boolean.class, false)) {
+					|| !context.getEnvironment().getProperty(ENABLED_PROPERTY, Boolean.class, true)) {
 				return;
 			}
 			TestPropertyValues
