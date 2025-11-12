@@ -41,7 +41,7 @@ import org.springframework.boot.test.context.PropertyMapping;
 @Documented
 @Inherited
 @ImportAutoConfiguration
-@PropertyMapping("spring.test.grpc.inprocess")
+@PropertyMapping("spring.grpc.test.inprocess")
 public @interface AutoConfigureInProcessTransport {
 
 	/**
