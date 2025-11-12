@@ -241,7 +241,40 @@ If you include `spring-grpc-test` in your project, your gRPC server in a `@Sprin
 All clients that connect to any server via the autoconfigured `GrpcChannelFactory` will be able to connect to it.
 You can switch the in-process server on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
 
-NOTE: When the in-process server is run in test mode (as opposed to <<in-process-server,running normally>>) it replaces the regular server and channel factories (e.g. Netty)
+The in-process transport is an opt-in feature, so it requires an explicit configuration.
+You can switch it on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
+There is no need to set `spring.grpc.server.inprocess.name` as that is done automatically.
+Using the annotation is equivalent to setting the "enabled" property to true, and in addition marking the in-process transport as "exclusive", meaning that no other transport will be used.
+
+The `@AutoConfigureInProcessTransport` annotation works even if the test is not a `@SpringBootTest`, so if you only want to test the gRPC server layer you can use `@SpringJUnitConfig` with `@EnableAutoconfiguration` and add the `BindableService` beans that you want to test, either manually or as a `@ComponentScan`.
+Here's an example from the samples:
+
+```java
+@TestPropertySource(properties = { "spring.grpc.client.default-channel.address=localhost:9090" })
+@SpringJUnitConfig(TestConfig.class)
+@AutoConfigureInProcessTransport
+public class GrpcServerSideTests {
+
+	@Autowired
+	private SimpleBlockingStub stub;
+
+	@Test
+	void contextLoads() {
+		// Test the service using the stub...
+	}
+
+	@TestConfiguration
+	@Import({ GrpcServerService.class })
+	@EnableAutoConfiguration
+	static class TestConfig {
+
+	}
+
+}
+```
+
+NOTE: When the in-process server is run in test mode (as opposed to <<in-process-server,running normally>>) it replaces the regular server and channel factories (e.g. Netty).
+All channel target addresses are magically replaced with the in-process server name, so that clients can connect to it without any special configuration (hence the "default-channel" configuration in the example above, which is there purely to trigger automatic stub creation).
 
 
 == Security
