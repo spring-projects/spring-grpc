@@ -442,18 +442,6 @@
 			</distributionManagement>
 		</profile>
 		<profile>
-			<id>milestone</id>
-			<distributionManagement>
-				<repository>
-					<id>repo.spring.io</id>
-					<url>https://repo.spring.io/libs-milestone-local</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-			</distributionManagement>
-		</profile>
-		<profile>
 			<id>central</id>
 			<build>
 				<plugins>

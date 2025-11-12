@@ -145,6 +145,19 @@ distributionUrlNameMain="${distributionUrlNameMain%-bin}"
 MAVEN_USER_HOME="${MAVEN_USER_HOME:-${HOME}/.m2}"
 MAVEN_HOME="${MAVEN_USER_HOME}/wrapper/dists/${distributionUrlNameMain-}/$(hash_string "$distributionUrl")"
 
+echo "Running version check"
+VERSION=$( sed '\!<parent!,\!</parent!d' `dirname $0`/pom.xml | grep '<version' | head -1 | sed -e 's/.*<version>//' -e 's!</version>.*$!!' )
+echo "The found version is [${VERSION}]"
+
+MAVEN_ARGS=${MAVEN_ARGS:-}
+if echo $VERSION | egrep -q '[0-9]*\.[0-9]*\.[0-9]*$|RELEASE|-M|-RC'; then
+    echo Activating \"central\" profile for version=\"$VERSION\"
+    echo $MAVEN_ARGS | grep -q milestone || MAVEN_ARGS="$MAVEN_ARGS -Pcentral"
+else
+    echo Deactivating \"central\" profile for version=\"$VERSION\"
+    echo $MAVEN_ARGS | grep -q central && MAVEN_ARGS=$(echo $MAVEN_ARGS | sed -e 's/-Pcentral//')
+fi
+
 exec_maven() {
   unset MVNW_VERBOSE MVNW_USERNAME MVNW_PASSWORD MVNW_REPOURL || :
   exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
@@ -152,7 +165,7 @@ exec_maven() {
 
 if [ -d "$MAVEN_HOME" ]; then
   verbose "found existing MAVEN_HOME at $MAVEN_HOME"
-  exec_maven "$@"
+  exec_maven $MAVEN_ARGS "$@"
 fi
 
 case "${distributionUrl-}" in
@@ -290,27 +303,6 @@ fi
 verbose "Found extracted Maven distribution directory: $actualDistributionDir"
 printf %s\\n "$distributionUrl" >"$TMP_DOWNLOAD_DIR/$actualDistributionDir/mvnw.url"
 mv -- "$TMP_DOWNLOAD_DIR/$actualDistributionDir" "$MAVEN_HOME" || [ -d "$MAVEN_HOME" ] || die "fail to move MAVEN_HOME"
-
-echo "Running version check"
-VERSION=$( sed '\!<parent!,\!</parent!d' `dirname $0`/pom.xml | grep '<version' | head -1 | sed -e 's/.*<version>//' -e 's!</version>.*$!!' )
-echo "The found version is [${VERSION}]"
-
-MAVEN_ARGS=${MAVEN_ARGS:-}
-if echo $VERSION | egrep -q 'M|RC'; then
-    echo Activating \"milestone\" profile for version=\"$VERSION\"
-    echo $MAVEN_ARGS | grep -q milestone || MAVEN_ARGS="$MAVEN_ARGS -Pmilestone"
-else
-    echo Deactivating \"milestone\" profile for version=\"$VERSION\"
-    echo $MAVEN_ARGS | grep -q milestone && MAVEN_ARGS=$(echo $MAVEN_ARGS | sed -e 's/-Pmilestone//')
-fi
-
-if echo $VERSION | egrep -q '[0-9]*\.[0-9]*\.[0-9]*$|RELEASE'; then
-    echo Activating \"central\" profile for version=\"$VERSION\"
-    echo $MAVEN_ARGS | grep -q milestone || MAVEN_ARGS="$MAVEN_ARGS -Pcentral"
-else
-    echo Deactivating \"central\" profile for version=\"$VERSION\"
-    echo $MAVEN_ARGS | grep -q central && MAVEN_ARGS=$(echo $MAVEN_ARGS | sed -e 's/-Pcentral//')
-fi
 
 clean || :
 exec_maven $MAVEN_ARGS "$@"
