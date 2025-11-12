@@ -63,7 +63,7 @@ import io.grpc.stub.AbstractStub;
 @AutoConfiguration(before = { GrpcServerFactoryAutoConfiguration.class, GrpcClientAutoConfiguration.class })
 @ConditionalOnClass({ InProcessServerBuilder.class, InProcessChannelBuilder.class, InProcessGrpcServerFactory.class,
 		InProcessGrpcChannelFactory.class })
-@ConditionalOnBooleanProperty("spring.test.grpc.inprocess.enabled")
+@ConditionalOnBooleanProperty("spring.grpc.test.inprocess.enabled")
 public final class InProcessTestAutoConfiguration {
 
 	private final String address = InProcessServerBuilder.generateName();

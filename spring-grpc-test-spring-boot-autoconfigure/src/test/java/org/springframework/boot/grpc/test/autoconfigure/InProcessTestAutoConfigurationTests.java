@@ -62,7 +62,7 @@ class InProcessTestAutoConfigurationTests {
 	@Test
 	void whenTestInProcessEnabledPropIsSetToTrueDoesAutoConfigureBeans() {
 		this.contextRunner()
-			.withPropertyValues("spring.test.grpc.inprocess.enabled=true", "spring.grpc.server.inprocess.name=foo",
+			.withPropertyValues("spring.grpc.test.inprocess.enabled=true", "spring.grpc.server.inprocess.name=foo",
 					"spring.grpc.server.port=0")
 			.run((context) -> {
 				assertThat(context).getBeans(GrpcServerFactory.class)
@@ -87,7 +87,7 @@ class InProcessTestAutoConfigurationTests {
 	@Test
 	void whenTestInProcessEnabledPropIsSetToFalseDoesNotAutoConfigureBeans() {
 		this.contextRunner()
-			.withPropertyValues("spring.test.grpc.inprocess.enabled=false", "spring.grpc.server.inprocess.name=foo",
+			.withPropertyValues("spring.grpc.test.inprocess.enabled=false", "spring.grpc.server.inprocess.name=foo",
 					"spring.grpc.server.port=0")
 			.run((context) -> {
 				assertThat(context).getBeans(GrpcServerFactory.class)

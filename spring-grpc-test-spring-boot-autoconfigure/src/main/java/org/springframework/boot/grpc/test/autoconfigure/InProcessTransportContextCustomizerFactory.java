@@ -39,7 +39,7 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  */
 class InProcessTransportContextCustomizerFactory implements ContextCustomizerFactory {
 
-	static final String ENABLED_PROPERTY = "spring.test.grpc.inprocess.enabled";
+	static final String ENABLED_PROPERTY = "spring.grpc.test.inprocess.enabled";
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
