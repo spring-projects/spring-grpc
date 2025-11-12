@@ -121,7 +121,7 @@ public class ConfigurationPropertiesAsciidocGenerator {
 
 		protected Resource[] getResources() throws IOException {
 			return new PathMatchingResourcePatternResolver()
-				.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
+				.getResources("classpath*:/META-INF/*spring-configuration-metadata.json");
 		}
 
 	}
