@@ -29,14 +29,12 @@ dependencyManagement {
     }
 }
 
-def kotlinStubVersion = "1.5.0"
-
 dependencies {
 
     implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
-	implementation "io.grpc:grpc-kotlin-stub:${kotlinStubVersion}"
+    implementation("io.grpc:grpc-kotlin-stub")
 	implementation("io.micrometer:context-propagation")
 
 	testImplementation 'org.springframework.grpc:spring-grpc-test'
@@ -60,7 +58,7 @@ protobuf {
             artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
         }
         grpckt {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:${kotlinStubVersion}:jdk8@jar"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:${dependencyManagement.importedProperties['grpc-kotlin.version']}:jdk8@jar"
         }
     }
     generateProtoTasks {
