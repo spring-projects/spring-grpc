@@ -49,7 +49,7 @@ import io.grpc.ServerBuilder;
  *
  * @author David Syer
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration(after = GrpcServerFactoryAutoConfiguration.class)
 @ConditionalOnSpringGrpc

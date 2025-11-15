@@ -57,7 +57,7 @@ import io.grpc.stub.AbstractStub;
  * @author Chris Bono
  * @author Dave Syer
  * @author Andrey Litvitski
- * @since 4.0.0
+ * @since 1.0.0
  * @see AutoConfigureInProcessTransport
  */
 @AutoConfiguration(before = { GrpcServerFactoryAutoConfiguration.class, GrpcClientAutoConfiguration.class })

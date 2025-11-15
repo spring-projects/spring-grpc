@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
  *
  * @author Dave Syer
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)

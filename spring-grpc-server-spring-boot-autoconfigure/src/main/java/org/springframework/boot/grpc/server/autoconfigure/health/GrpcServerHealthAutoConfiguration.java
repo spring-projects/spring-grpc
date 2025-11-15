@@ -55,7 +55,7 @@ import io.grpc.protobuf.services.HealthStatusManager;
  *
  * @author Daniel Theuke (daniel.theuke@heuboe.de)
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration(before = GrpcServerFactoryAutoConfiguration.class)
 @ConditionalOnSpringGrpc

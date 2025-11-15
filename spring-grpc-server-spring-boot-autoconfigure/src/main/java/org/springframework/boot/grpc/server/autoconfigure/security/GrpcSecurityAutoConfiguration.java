@@ -54,7 +54,7 @@ import io.grpc.internal.GrpcUtil;
  * @author Dave Syer
  * @author Chris Bono
  * @author Andrey Litvitski
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration(before = GrpcExceptionHandlerAutoConfiguration.class,
 		afterName = "org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration")

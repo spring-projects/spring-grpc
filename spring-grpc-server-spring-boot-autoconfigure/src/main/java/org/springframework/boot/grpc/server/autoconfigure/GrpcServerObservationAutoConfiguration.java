@@ -35,7 +35,7 @@ import io.micrometer.observation.ObservationRegistry;
  * @author Sunny Tang
  * @author Chris Bono
  * @author Dave Syer
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration(
 		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")

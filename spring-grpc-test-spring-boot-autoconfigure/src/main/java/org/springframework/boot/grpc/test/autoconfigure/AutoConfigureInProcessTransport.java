@@ -33,7 +33,7 @@ import org.springframework.boot.test.context.PropertyMapping;
  *
  * @author Dave Syer
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  * @see InProcessTestAutoConfiguration
  */
 @Target({ ElementType.TYPE })

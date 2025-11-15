@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Conditional;
  *
  * @author Chris Bono
  * @author Dave Syer
- * @since 4.0.0
+ * @since 1.0.0
  * @see OnGrpcNativeServerCondition
  */
 @Retention(RetentionPolicy.RUNTIME)

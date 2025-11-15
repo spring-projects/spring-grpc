@@ -35,7 +35,7 @@ import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor
  *
  * @author Dave Syer
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration
 @ConditionalOnSpringGrpc

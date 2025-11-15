@@ -37,7 +37,7 @@ import io.grpc.servlet.jakarta.GrpcServlet;
  *
  * @author Chris Bono
  * @author Dave Syer
- * @since 4.0.0
+ * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })

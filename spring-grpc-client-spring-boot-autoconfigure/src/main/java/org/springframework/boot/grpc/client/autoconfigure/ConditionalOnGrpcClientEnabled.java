@@ -34,7 +34,7 @@ import io.grpc.stub.AbstractStub;
  *
  * @author Freeman Freeman
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })

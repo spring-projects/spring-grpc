@@ -77,7 +77,7 @@ import io.grpc.BindableService;
  * {@link EnableAutoConfiguration Auto-configuration} for gRPC OAuth2 resource server.
  *
  * @author Dave Syer
- * @since 4.0.0
+ * @since 1.0.0
  */
 // All copied from Spring Boot
 // (https://github.com/spring-projects/spring-boot/issues/43978), except the

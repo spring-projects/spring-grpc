@@ -35,7 +35,7 @@ import io.grpc.protobuf.services.ProtoReflectionServiceV1;
  * @author Dave Syer
  * @author Chris Bono
  * @author Andrey Litvitski
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration(before = GrpcServerFactoryAutoConfiguration.class)
 @ConditionalOnSpringGrpc

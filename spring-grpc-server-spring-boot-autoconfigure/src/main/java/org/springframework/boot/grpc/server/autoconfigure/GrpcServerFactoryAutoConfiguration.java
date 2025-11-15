@@ -48,7 +48,7 @@ import io.grpc.servlet.jakarta.ServletServerBuilder;
  * @author David Syer
  * @author Chris Bono
  * @author Toshiaki Maki
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)

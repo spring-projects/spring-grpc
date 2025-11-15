@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
  * Strategy interface to determine the {@link Executor} to use for the gRPC server.
  *
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface GrpcServerExecutorProvider {

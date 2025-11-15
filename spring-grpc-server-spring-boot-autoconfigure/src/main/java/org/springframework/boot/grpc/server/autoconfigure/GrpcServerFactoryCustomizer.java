@@ -23,7 +23,7 @@ import org.springframework.grpc.server.GrpcServerFactory;
  * {@link GrpcServerFactory server factory} before it is fully initialized.
  *
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface GrpcServerFactoryCustomizer {

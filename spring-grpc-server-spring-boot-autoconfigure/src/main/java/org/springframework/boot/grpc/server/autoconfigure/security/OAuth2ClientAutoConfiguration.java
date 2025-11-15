@@ -37,7 +37,7 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
  * {@link EnableAutoConfiguration Auto-configuration} for gRPC OAuth2 security.
  *
  * @author Dave Syer
- * @since 4.0.0
+ * @since 1.0.0
  */
 // Copied from Spring Boot (https://github.com/spring-projects/spring-boot/issues/40997, ]
 // https://github.com/spring-projects/spring-boot/issues/15877)

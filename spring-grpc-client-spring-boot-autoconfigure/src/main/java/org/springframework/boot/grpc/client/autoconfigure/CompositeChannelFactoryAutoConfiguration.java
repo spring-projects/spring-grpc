@@ -33,7 +33,7 @@ import org.springframework.grpc.client.GrpcChannelFactory;
  * {@link CompositeGrpcChannelFactory}.
  *
  * @author Chris Bono
- * @since 4.0.0
+ * @since 1.0.0
  */
 @AutoConfiguration
 @ConditionalOnGrpcClientEnabled
