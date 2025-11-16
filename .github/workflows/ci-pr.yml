@@ -15,11 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
+      - name: Set up JDK 17 (0.x)
+        if: github.base_ref == '0.x'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: maven
+      - name: Set up JDK 25 (main)
+        if: github.base_ref == 'main'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'liberica'
           cache: maven
       - name: Build and test
         run: |

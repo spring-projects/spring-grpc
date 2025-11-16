@@ -14,11 +14,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 17
+    - name: Set up JDK 17 (0.x)
+      if: startsWith(github.ref, 'refs/heads/0.x/')
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: maven
+    - name: Set up JDK 25 (main)
+      if: startsWith(github.ref, 'refs/heads/main/')
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'liberica'
         cache: maven
     - name: Deploy with Maven
       env:
