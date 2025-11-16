@@ -86,7 +86,7 @@
 		<junit.version>5.13.4</junit.version>
 		<assertj.version>3.27.4</assertj.version>
 		<awaitility.version>4.3.0</awaitility.version>
-		<mockito.version>5.19.0</mockito.version>
+		<mockito.version>5.20.0</mockito.version>
 		<!-- documentation dependencies -->
 		<io.spring.maven.antora-version>0.0.4</io.spring.maven.antora-version>
 		<!-- FIXME build failure with version 2.3.9: -->
@@ -95,7 +95,7 @@
 		<spring-asciidoctor-backends.version>0.0.6</spring-asciidoctor-backends.version>
 
 		<!-- plugin versions -->
-		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
 		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
 		<maven-flatten-plugin.version>1.6.0</maven-flatten-plugin.version>
@@ -202,7 +202,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
-					<argLine>${surefireArgLine}</argLine>
+					<!-- required for Java 25 and Mockito inline mocks -->
+					<argLine>-Dnet.bytebuddy.experimental=true</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
