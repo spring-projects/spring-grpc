@@ -15,14 +15,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17 (0.x)
-      if: startsWith(github.ref, 'refs/heads/0.x/')
+      if: endsWith(github.ref, '/0.x/')
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
     - name: Set up JDK 25 (main)
-      if: startsWith(github.ref, 'refs/heads/main/')
+      if: endsWith(github.ref, '/main/')
       uses: actions/setup-java@v4
       with:
         java-version: '25'
@@ -38,7 +38,9 @@ jobs:
         central_password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
         signing_key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        ghref: ${{ github.ref }}
       run: |
+          echo "**** github.ref = ${ghref}"
           echo "${signing_key}" > private.asc
           gpg --import --batch --no-tty private.asc
           ./mvnw -B deploy -s .mvn/settings.xml
