@@ -63,7 +63,7 @@ import io.grpc.stub.AbstractStub;
  *
  * @author Chris Bono
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked" })
 class GrpcClientAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner() {
@@ -407,7 +407,6 @@ class GrpcClientAutoConfigurationTests {
 				builder, InProcessGrpcChannelFactory.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T extends ManagedChannelBuilder<T>> void channelFactoryAutoConfiguredWithCustomizers(
 			ApplicationContextRunner contextRunner, ManagedChannelBuilder<T> mockChannelBuilder,
 			Class<?> expectedChannelFactoryType) {

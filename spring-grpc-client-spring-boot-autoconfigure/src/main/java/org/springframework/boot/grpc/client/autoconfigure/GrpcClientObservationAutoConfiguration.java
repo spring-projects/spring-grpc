@@ -16,6 +16,7 @@
 
 package org.springframework.boot.grpc.client.autoconfigure;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.client.GlobalClientInterceptor;
 
+import io.micrometer.core.instrument.binder.grpc.GrpcClientObservationConvention;
 import io.micrometer.core.instrument.binder.grpc.ObservationGrpcClientInterceptor;
 import io.micrometer.observation.ObservationRegistry;
 
@@ -39,8 +41,13 @@ public final class GrpcClientObservationAutoConfiguration {
 	@Bean
 	@GlobalClientInterceptor
 	@ConditionalOnMissingBean
-	ObservationGrpcClientInterceptor observationGrpcClientInterceptor(ObservationRegistry observationRegistry) {
-		return new ObservationGrpcClientInterceptor(observationRegistry);
+	ObservationGrpcClientInterceptor observationGrpcClientInterceptor(ObservationRegistry observationRegistry,
+			ObjectProvider<GrpcClientObservationConvention> convention) {
+		ObservationGrpcClientInterceptor interceptor = new ObservationGrpcClientInterceptor(observationRegistry);
+		if (convention.getIfAvailable() != null) {
+			interceptor.setCustomConvention(convention.getIfAvailable());
+		}
+		return interceptor;
 	}
 
 }
