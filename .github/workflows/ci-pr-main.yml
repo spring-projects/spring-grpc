@@ -1,9 +1,9 @@
-name: CI PRs (0.x)
+name: CI PRs (main)
 
 on:
   pull_request:
     branches:
-      - '0.x'
+      - 'main'
     paths-ignore:
       - '.github/**'
 
@@ -14,15 +14,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17 (0.x)
+      - name: Set up JDK 25 (main)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'liberica'
+          cache: maven
+      - name: Build and test
+        run: |
+          ./mvnw -B clean install
+      - name: Set up JDK 17 (run samples)
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build and test
+      - name: Run samples w/ Java 17
         run: |
-          ./mvnw -B clean install
+          pushd samples > /dev/null
+          ../mvnw clean install \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle
+          popd > /dev/null
       - name: Capture Test Results
         if: failure()
         uses: actions/upload-artifact@v4

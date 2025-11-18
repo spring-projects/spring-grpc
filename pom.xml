@@ -118,6 +118,7 @@
 		<spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
 		<disable.format.checks>false</disable.format.checks>
 		<disable.checkstyle.checks>false</disable.checkstyle.checks>
+		<maven-checkstyle-plugin.config.location>src/checkstyle</maven-checkstyle-plugin.config.location>
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
 		<maven-checkstyle-plugin.failOnViolation>true</maven-checkstyle-plugin.failOnViolation>
 		<maven-checkstyle-plugin.includeTestSourceDirectory>true</maven-checkstyle-plugin.includeTestSourceDirectory>
@@ -165,9 +166,9 @@
 						<phase>validate</phase>
 						<inherited>true</inherited>
 						<configuration>
-							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
+							<configLocation>${maven-checkstyle-plugin.config.location}/checkstyle.xml</configLocation>
 							<propertyExpansion>
-								config_loc=src/checkstyle
+								config_loc=${maven-checkstyle-plugin.config.location}
 							</propertyExpansion>
 							<skip>${disable.checkstyle.checks}</skip>
 							<includeTestSourceDirectory>${maven-checkstyle-plugin.includeTestSourceDirectory}</includeTestSourceDirectory>
