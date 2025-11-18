@@ -15,3 +15,21 @@ settingsEvaluated { settings ->
 		}
 	}
 }
+
+allprojects {
+	configurations.all {
+		resolutionStrategy {
+			force "org.springframework.grpc:spring-grpc-build-dependencies:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-core:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-dependencies:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-client-spring-boot-autoconfigure:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-client-spring-boot-starter:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-server-spring-boot-autoconfigure:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-server-spring-boot-starter:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-server-web-spring-boot-starter:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-spring-boot-starter:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-test:$springGrpcVersion"
+			force "org.springframework.grpc:spring-grpc-test-spring-boot-autoconfigure:$springGrpcVersion"
+		}
+	}
+}

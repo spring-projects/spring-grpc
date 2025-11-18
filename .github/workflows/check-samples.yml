@@ -11,22 +11,26 @@ jobs:
       matrix:
         include:
           - javaVersion: 17
-            springBootVersion: "4.0.0-RC2"
-          - javaVersion: 17
             springBootVersion: "4.0.0-SNAPSHOT"
+            springGrpcVersion: "1.0.0-SNAPSHOT"
+          - javaVersion: 25
+            springBootVersion: "4.0.0-SNAPSHOT"
+            springGrpcVersion: "1.0.0-SNAPSHOT"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: spring-io/spring-gradle-build-action@v2
       - name: Check samples project
         env:
-          BOOT_VERSION: ${{ matrix.springBootVersion }}
           JAVA_VERSION: ${{ matrix.javaVersion }}
+          BOOT_VERSION: ${{ matrix.springBootVersion }}
+          SPRING_GRPC_VERSION: ${{ matrix.springGrpcVersion }}
         run: |
           cd samples   
           ./gradlew \
             --init-script ./sample-apps-check-ci.gradle \
-            -PspringBootVersion="$BOOT_VERSION" \
             -PtestToolchain="$JAVA_VERSION" \
+            -PspringBootVersion="$BOOT_VERSION" \
+            -PspringGrpcVersion="$SPRING_GRPC_VERSION" \
             --rerun-tasks --no-build-cache \
             build
