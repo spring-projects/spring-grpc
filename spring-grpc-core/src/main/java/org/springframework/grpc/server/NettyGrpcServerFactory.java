@@ -23,7 +23,8 @@ import javax.net.ssl.TrustManagerFactory;
 
 import io.grpc.TlsServerCredentials.ClientAuth;
 import io.grpc.netty.NettyServerBuilder;
-import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
+import io.netty.channel.epoll.EpollIoHandler;
 import io.netty.channel.epoll.EpollServerDomainSocketChannel;
 import io.netty.channel.unix.DomainSocketAddress;
 
@@ -49,8 +50,8 @@ public class NettyGrpcServerFactory extends DefaultGrpcServerFactory<NettyServer
 			String path = address.substring(5);
 			return NettyServerBuilder.forAddress(new DomainSocketAddress(path))
 				.channelType(EpollServerDomainSocketChannel.class)
-				.bossEventLoopGroup(new EpollEventLoopGroup(1))
-				.workerEventLoopGroup(new EpollEventLoopGroup());
+				.bossEventLoopGroup(new MultiThreadIoEventLoopGroup(1, EpollIoHandler.newFactory()))
+				.workerEventLoopGroup(new MultiThreadIoEventLoopGroup(EpollIoHandler.newFactory()));
 		}
 		return super.newServerBuilder();
 	}
