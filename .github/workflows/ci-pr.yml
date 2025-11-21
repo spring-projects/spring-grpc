@@ -15,23 +15,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17 (0.x)
-        if: github.base_ref == '0.x'
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-      - name: Set up JDK 25 (main)
-        if: github.base_ref == 'main'
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'liberica'
           cache: maven
-      - name: Build and test
+      - name: Build, test, and run samples using Java 25 w/ target=17
         run: |
           ./mvnw -B clean install
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Run samples built w/ Java 25 w/ target=17 using Java 17
+        run: |
+          pushd samples > /dev/null
+          ../mvnw test \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle
+          popd > /dev/null
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'liberica'
+          cache: maven
+      - name: Build and run samples using Java 25 w/ target=25
+        run: |
+          pushd samples > /dev/null
+          ../mvnw clean install \
+              -pl '!grpc-server-kotlin' \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle \
+              -Djava.version=25
+          ../mvnw clean install \
+              -pl 'grpc-server-kotlin' \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle \
+              -Djava.version=24
+          popd > /dev/null
+
       - name: Capture Test Results
         if: failure()
         uses: actions/upload-artifact@v4

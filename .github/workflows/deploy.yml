@@ -3,7 +3,7 @@
 name: Deploy Jars
 on:
   push:
-    branches: [ main, 0.x ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -13,16 +13,7 @@ jobs:
     if: ${{ github.repository == 'spring-projects/spring-grpc' }}
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17 (0.x)
-      if: github.ref != 'refs/heads/main'
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
     - name: Set up JDK 25 (main)
-      if: github.ref == 'refs/heads/main'
       uses: actions/setup-java@v4
       with:
         java-version: '25'
