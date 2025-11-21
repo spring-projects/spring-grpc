@@ -17,6 +17,7 @@ public class GrpcClientApplication {
 	@Bean
 	public CommandLineRunner runner(SimpleGrpc.SimpleBlockingStub stub) {
 		return args -> {
+            System.out.println("***** Hello BONO");
 			System.out.println(stub.sayHello(HelloRequest.newBuilder().setName("Alien").build()));
 		};
 	}
