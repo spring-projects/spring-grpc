@@ -45,7 +45,7 @@ public final class PreAuthConfigurer<H extends SecurityBuilder<AuthenticationPro
 	}
 
 	@Override
-	public void configure(H builder) throws Exception {
+	public void configure(H builder) {
 		PreAuthenticatedAuthenticationProvider provider = new PreAuthenticatedAuthenticationProvider();
 		UserDetailsService userDetailsService = this.userDetailsService;
 		if (userDetailsService == null) {

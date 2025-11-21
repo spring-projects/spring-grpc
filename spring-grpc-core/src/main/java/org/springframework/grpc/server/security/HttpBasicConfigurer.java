@@ -43,7 +43,7 @@ public final class HttpBasicConfigurer<H extends SecurityBuilder<AuthenticationP
 	}
 
 	@Override
-	public void configure(H builder) throws Exception {
+	public void configure(H builder) {
 		UserDetailsService userDetailsService = this.userDetailsService;
 		if (userDetailsService == null) {
 			userDetailsService = this.authenticationManagerBuilder.getDefaultUserDetailsService();

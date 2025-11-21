@@ -59,7 +59,7 @@ public class RequestMapperConfigurer extends SecurityConfigurerAdapter<Authentic
 	}
 
 	@Override
-	public void configure(GrpcSecurity builder) throws Exception {
+	public void configure(GrpcSecurity builder) {
 		builder.authorizationManager(new RequestMapperAuthorizationManager(this.authorizedCalls, this.publisher));
 	}
 
