@@ -13,6 +13,7 @@ jobs:
     if: ${{ github.repository == 'spring-projects/spring-grpc' }}
 
     steps:
+    - uses: actions/checkout@v4
     - name: Set up JDK 25 (main)
       uses: actions/setup-java@v4
       with:
