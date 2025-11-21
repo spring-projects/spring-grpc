@@ -102,7 +102,7 @@ public final class GrpcSecurity
 	}
 
 	@Override
-	protected AuthenticationProcessInterceptor performBuild() throws Exception {
+	protected AuthenticationProcessInterceptor performBuild() {
 		if (this.authenticationManager != null) {
 			setSharedObject(AuthenticationManager.class, this.authenticationManager);
 		}
@@ -121,7 +121,7 @@ public final class GrpcSecurity
 				new CompositeAuthenticationExtractor(this.authenticationExtractors), this.authorizationManager);
 	}
 
-	private AuthenticationManager getAuthenticationManager() throws Exception {
+	private AuthenticationManager getAuthenticationManager() {
 		return getAuthenticationRegistry().getOrBuild();
 	}
 
