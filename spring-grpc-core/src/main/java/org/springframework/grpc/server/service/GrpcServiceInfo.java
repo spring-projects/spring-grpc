@@ -18,7 +18,8 @@ package org.springframework.grpc.server.service;
 
 import java.util.List;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 import io.grpc.ServerInterceptor;

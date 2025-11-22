@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -44,7 +45,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
-import org.springframework.lang.Nullable;
 
 import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
