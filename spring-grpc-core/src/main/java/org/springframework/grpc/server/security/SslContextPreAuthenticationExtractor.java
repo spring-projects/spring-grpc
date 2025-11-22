@@ -23,7 +23,8 @@ import java.util.List;
 
 import javax.net.ssl.SSLSession;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;

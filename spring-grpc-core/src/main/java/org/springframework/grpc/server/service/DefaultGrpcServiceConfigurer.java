@@ -20,12 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.grpc.internal.ApplicationContextBeanLookupUtils;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.GrpcServerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 import io.grpc.BindableService;

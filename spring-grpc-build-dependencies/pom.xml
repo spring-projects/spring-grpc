@@ -49,6 +49,7 @@
 	</licenses>
 
 	<properties>
+		<jspecify.version>1.0.0</jspecify.version>
 		<spring-framework.version>7.0.1</spring-framework.version>
 		<spring-security.version>7.0.0</spring-security.version>
 		<micrometer.version>1.16.0</micrometer.version>
@@ -93,6 +94,11 @@
 				<version>${micrometer.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jspecify</groupId>
+				<artifactId>jspecify</artifactId>
+				<version>${jspecify.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
