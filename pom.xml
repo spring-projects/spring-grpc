@@ -95,7 +95,7 @@
 		<spring-asciidoctor-backends.version>0.0.6</spring-asciidoctor-backends.version>
 
 		<!-- plugin versions -->
-		<maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
 		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
 		<maven-flatten-plugin.version>1.6.0</maven-flatten-plugin.version>
@@ -111,6 +111,9 @@
 		<maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
 		<maven-project-info-reports-plugin.version>3.4.5</maven-project-info-reports-plugin.version>
 		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+		<!-- Nullability plugins -->
+		<error-prone.version>2.44.0</error-prone.version>
+		<nullaway.version>0.12.12</nullaway.version>
 		<!-- BEGIN format + checkstyle properties -->
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
@@ -193,9 +196,39 @@
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<release>${java.version}</release>
+					<showWarnings>true</showWarnings>
 					<compilerArgs>
 						<compilerArg>-parameters</compilerArg>
+						<compilerArg>-Xdoclint:none</compilerArg>
+						<compilerArg>-Werror</compilerArg>
+						<compilerArg>-XDcompilePolicy=simple</compilerArg>
+						<compilerArg>--should-stop=ifError=FLOW</compilerArg>
+						<compilerArg>
+							-Xplugin:ErrorProne
+							<!-- Disable all built-in error prone checks -->
+							-XepDisableAllChecks
+							<!-- JSpecify mode https://github.com/uber/NullAway/wiki/JSpecify-Support -->
+							-XepOpt:NullAway:JSpecifyMode=true
+							<!-- Check JSpecify annotations -->
+							-Xep:NullAway:ERROR
+							-XepOpt:NullAway:OnlyNullMarked
+							-XepOpt:NullAway:TreatGeneratedAsUnannotated=true
+							<!-- https://github.com/uber/NullAway/issues/162 -->
+							-XepExcludedPaths:.*/src/test/java/.*
+						</compilerArg>
 					</compilerArgs>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.google.errorprone</groupId>
+							<artifactId>error_prone_core</artifactId>
+							<version>${error-prone.version}</version>
+						</path>
+						<path>
+							<groupId>com.uber.nullaway</groupId>
+							<artifactId>nullaway</artifactId>
+							<version>${nullaway.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>

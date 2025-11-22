@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * Core module for Spring gRPC.
+ */
+@NullMarked
 package org.springframework.grpc;
+
+import org.jspecify.annotations.NullMarked;

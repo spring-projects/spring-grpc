@@ -16,8 +16,9 @@
 
 package org.springframework.grpc.server.service;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.grpc.server.GrpcServerFactory;
-import org.springframework.lang.Nullable;
 
 import io.grpc.ServerServiceDefinition;
 
