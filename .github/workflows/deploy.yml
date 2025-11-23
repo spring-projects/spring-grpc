@@ -4,6 +4,8 @@ name: Deploy Jars
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.github/**'
 
 jobs:
   build:
