@@ -1,0 +1,54 @@
+name: Check Samples (Maven)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check_samples:
+    name: Check Samples project
+    if: ${{ github.repository == 'spring-projects/spring-grpc' }}
+    strategy:
+      matrix:
+        include:
+          - javaVersion: 25
+            distribution: 'liberica'
+          - javaVersion: 17
+            distribution: 'temurin'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java ${{ matrix.javaVersion }} ${{ matrix.distribution }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          distribution: ${{ matrix.distribution }}
+          cache: maven
+
+      - name: Build and run samples w/ Java 25 ${{ matrix.distribution }}
+        if: ${{ matrix.javaVersion == 25 }}
+        run: |
+          cd samples
+          ../mvnw clean install \
+              -pl '!grpc-server-kotlin' \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle \
+              -Djava.version=25
+          ../mvnw clean install \
+              -pl 'grpc-server-kotlin' \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle \
+              -Djava.version=24
+
+      - name: Build and run samples w/ Java ${{ matrix.javaVersion }} ${{ matrix.distribution }}
+        if: ${{ matrix.javaVersion != 25 }}
+        run: |
+          cd samples
+          ../mvnw clean install \
+              -Dmaven-checkstyle-plugin.config.location=../src/checkstyle \
+              -Djava.version=${{ matrix.javaVersion }}
+
+      - name: Upload Build Reports (Java ${{ matrix.javaVersion }} ${{ matrix.distribution }})
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '*/target/surefire-reports/*.*'
+          retention-days: 3

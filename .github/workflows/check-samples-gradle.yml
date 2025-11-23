@@ -1,4 +1,4 @@
-name: Check Samples (Spring Boot compatability)
+name: Check Samples (Gradle)
 
 on:
   workflow_dispatch:
