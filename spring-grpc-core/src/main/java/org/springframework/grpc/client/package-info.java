@@ -15,9 +15,9 @@
  */
 
 /**
- * gRPC server events.
+ * gRPC client infrastructure.
  */
 @NullMarked
-package org.springframework.grpc.server.lifecycle;
+package org.springframework.grpc.client;
 
 import org.jspecify.annotations.NullMarked;
