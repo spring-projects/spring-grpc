@@ -15,9 +15,9 @@
  */
 
 /**
- * gRPC server events.
+ * AOT (Ahead-Of-Time) processing for gRPC clients.
  */
 @NullMarked
-package org.springframework.grpc.server.lifecycle;
+package org.springframework.grpc.client.aot;
 
 import org.jspecify.annotations.NullMarked;
