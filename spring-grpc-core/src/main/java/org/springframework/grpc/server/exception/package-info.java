@@ -15,9 +15,9 @@
  */
 
 /**
- * gRPC server events.
+ * Exception handling for gRPC servers.
  */
 @NullMarked
-package org.springframework.grpc.server.lifecycle;
+package org.springframework.grpc.server.exception;
 
 import org.jspecify.annotations.NullMarked;
