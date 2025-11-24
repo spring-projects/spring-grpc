@@ -9,9 +9,16 @@ plugins {
 group = 'com.example'
 version = '1.0.0-SNAPSHOT'
 
+def toolchainVersion() {
+    if (project.hasProperty('testToolchain')) {
+        return project.property('testToolchain').toString().toInteger()
+    }
+    return 17
+}
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(toolchainVersion())
     }
 }
 
@@ -26,10 +33,12 @@ repositories {
     maven { url 'https://repo.spring.io/snapshot' }
 }
 
+def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.0.0-SNAPSHOT'
+
 dependencyManagement {
-    imports {
-        mavenBom 'org.springframework.grpc:spring-grpc-dependencies:1.0.0-SNAPSHOT'
-    }
+	imports {
+		mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
+	}
 }
 
 dependencies {

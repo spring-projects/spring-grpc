@@ -10,9 +10,18 @@ plugins {
 group = 'com.example'
 version = '1.0.0-SNAPSHOT'
 
+def toolchainVersion() {
+	// Highest jvm supported is 24
+	if (project.hasProperty('testToolchain')) {
+        def jvmVersion = project.property('testToolchain').toString().toInteger()
+		return jvmVersion == 25 ? 24 : jvmVersion
+    }
+    return 17
+}
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(toolchainVersion())
     }
 }
 
@@ -23,9 +32,11 @@ repositories {
     maven { url 'https://repo.spring.io/snapshot' }
 }
 
+def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.0.0-SNAPSHOT'
+
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.grpc:spring-grpc-dependencies:1.0.0-SNAPSHOT'
+        mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
     }
 }
 
