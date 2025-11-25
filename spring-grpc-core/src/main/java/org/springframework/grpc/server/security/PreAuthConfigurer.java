@@ -16,6 +16,8 @@
 
 package org.springframework.grpc.server.security;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -32,7 +34,7 @@ public final class PreAuthConfigurer<H extends SecurityBuilder<AuthenticationPro
 
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-	private UserDetailsService userDetailsService;
+	private @Nullable UserDetailsService userDetailsService;
 
 	public PreAuthConfigurer(AuthenticationManagerBuilder authenticationManagerBuilder, ApplicationContext context) {
 		this.authenticationManagerBuilder = authenticationManagerBuilder;

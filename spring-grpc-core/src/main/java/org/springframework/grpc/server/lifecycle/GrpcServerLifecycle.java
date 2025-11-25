@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
@@ -50,7 +51,7 @@ public class GrpcServerLifecycle implements SmartLifecycle {
 
 	private final ApplicationEventPublisher eventPublisher;
 
-	private Server server;
+	private @Nullable Server server;
 
 	/**
 	 * Creates a new GrpcServerLifecycle.

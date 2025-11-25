@@ -16,6 +16,8 @@
 
 package org.springframework.grpc.server.security;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityBuilder;
@@ -30,7 +32,7 @@ public final class HttpBasicConfigurer<H extends SecurityBuilder<AuthenticationP
 
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-	private UserDetailsService userDetailsService;
+	private @Nullable UserDetailsService userDetailsService;
 
 	public HttpBasicConfigurer(AuthenticationManagerBuilder authenticationManagerBuilder, ApplicationContext context) {
 		this.authenticationManagerBuilder = authenticationManagerBuilder;

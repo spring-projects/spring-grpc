@@ -18,6 +18,8 @@ package org.springframework.grpc.server.security;
 
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
@@ -38,7 +40,7 @@ import io.grpc.MethodDescriptor;
 public class BearerTokenAuthenticationExtractor implements GrpcAuthenticationExtractor {
 
 	@Override
-	public Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
+	public @Nullable Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
 		String auth = headers.get(GrpcSecurity.AUTHORIZATION_KEY);
 		if (auth == null) {
 			return null;

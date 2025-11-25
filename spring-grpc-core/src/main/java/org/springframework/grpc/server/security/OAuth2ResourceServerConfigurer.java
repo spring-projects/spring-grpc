@@ -18,6 +18,8 @@ package org.springframework.grpc.server.security;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -41,9 +43,9 @@ public class OAuth2ResourceServerConfigurer
 
 	private final ApplicationContext context;
 
-	private JwtConfigurer jwtConfigurer;
+	private @Nullable JwtConfigurer jwtConfigurer;
 
-	private OpaqueTokenConfigurer opaqueTokenConfigurer;
+	private @Nullable OpaqueTokenConfigurer opaqueTokenConfigurer;
 
 	public OAuth2ResourceServerConfigurer(ApplicationContext context) {
 		this.context = context;
@@ -73,6 +75,7 @@ public class OAuth2ResourceServerConfigurer
 		}
 	}
 
+	@Nullable
 	AuthenticationProvider getAuthenticationProvider() {
 		if (this.jwtConfigurer != null) {
 			return this.jwtConfigurer.getAuthenticationProvider();
@@ -87,11 +90,11 @@ public class OAuth2ResourceServerConfigurer
 
 		private final ApplicationContext context;
 
-		private AuthenticationManager authenticationManager;
+		private @Nullable AuthenticationManager authenticationManager;
 
-		private JwtDecoder decoder;
+		private @Nullable JwtDecoder decoder;
 
-		private Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter;
+		private @Nullable Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter;
 
 		JwtConfigurer(ApplicationContext context) {
 			this.context = context;
@@ -138,6 +141,7 @@ public class OAuth2ResourceServerConfigurer
 			return this.decoder;
 		}
 
+		@Nullable
 		AuthenticationProvider getAuthenticationProvider() {
 			if (this.authenticationManager != null) {
 				return null;
@@ -162,17 +166,17 @@ public class OAuth2ResourceServerConfigurer
 
 		private final ApplicationContext context;
 
-		private AuthenticationManager authenticationManager;
+		private @Nullable AuthenticationManager authenticationManager;
 
-		private String introspectionUri;
+		private @Nullable String introspectionUri;
 
-		private String clientId;
+		private @Nullable String clientId;
 
-		private String clientSecret;
+		private @Nullable String clientSecret;
 
-		private Supplier<OpaqueTokenIntrospector> introspector;
+		private @Nullable Supplier<OpaqueTokenIntrospector> introspector;
 
-		private OpaqueTokenAuthenticationConverter authenticationConverter;
+		private @Nullable OpaqueTokenAuthenticationConverter authenticationConverter;
 
 		OpaqueTokenConfigurer(ApplicationContext context) {
 			this.context = context;
@@ -226,6 +230,7 @@ public class OAuth2ResourceServerConfigurer
 			return this.context.getBean(OpaqueTokenIntrospector.class);
 		}
 
+		@Nullable
 		OpaqueTokenAuthenticationConverter getAuthenticationConverter() {
 			if (this.authenticationConverter != null) {
 				return this.authenticationConverter;
@@ -236,6 +241,7 @@ public class OAuth2ResourceServerConfigurer
 			return null;
 		}
 
+		@Nullable
 		AuthenticationProvider getAuthenticationProvider() {
 			if (this.authenticationManager != null) {
 				return null;

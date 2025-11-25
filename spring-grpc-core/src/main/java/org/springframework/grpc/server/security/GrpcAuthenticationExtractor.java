@@ -16,6 +16,8 @@
 
 package org.springframework.grpc.server.security;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.security.core.Authentication;
 
 import io.grpc.Attributes;
@@ -24,6 +26,7 @@ import io.grpc.MethodDescriptor;
 
 public interface GrpcAuthenticationExtractor {
 
+	@Nullable
 	Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method);
 
 }

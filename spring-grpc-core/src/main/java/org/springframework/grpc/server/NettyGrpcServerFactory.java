@@ -21,6 +21,8 @@ import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.jspecify.annotations.Nullable;
+
 import io.grpc.TlsServerCredentials.ClientAuth;
 import io.grpc.netty.NettyServerBuilder;
 import io.netty.channel.MultiThreadIoEventLoopGroup;
@@ -38,8 +40,9 @@ import io.netty.channel.unix.DomainSocketAddress;
 public class NettyGrpcServerFactory extends DefaultGrpcServerFactory<NettyServerBuilder> {
 
 	public NettyGrpcServerFactory(String address,
-			List<ServerBuilderCustomizer<NettyServerBuilder>> serverBuilderCustomizers, KeyManagerFactory keyManager,
-			TrustManagerFactory trustManager, ClientAuth clientAuth) {
+			List<ServerBuilderCustomizer<NettyServerBuilder>> serverBuilderCustomizers,
+			@Nullable KeyManagerFactory keyManager, @Nullable TrustManagerFactory trustManager,
+			@Nullable ClientAuth clientAuth) {
 		super(address, serverBuilderCustomizers, keyManager, trustManager, clientAuth);
 	}
 
