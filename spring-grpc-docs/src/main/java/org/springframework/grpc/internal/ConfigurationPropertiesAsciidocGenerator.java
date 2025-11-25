@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Marcin Grzejszczak
  * @author Chris Bono
  */
+@SuppressWarnings("NullAway")
 public class ConfigurationPropertiesAsciidocGenerator {
 
 	public static void main(String... args) {

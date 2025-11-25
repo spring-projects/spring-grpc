@@ -16,6 +16,8 @@
 
 package org.springframework.grpc.server.exception;
 
+import org.jspecify.annotations.Nullable;
+
 import io.grpc.StatusException;
 
 public class CompositeGrpcExceptionHandler implements GrpcExceptionHandler {
@@ -27,7 +29,7 @@ public class CompositeGrpcExceptionHandler implements GrpcExceptionHandler {
 	}
 
 	@Override
-	public StatusException handleException(Throwable exception) {
+	public @Nullable StatusException handleException(Throwable exception) {
 		for (GrpcExceptionHandler exceptionHandler : this.exceptionHandlers) {
 			StatusException status = exceptionHandler.handleException(exception);
 			if (status != null) {

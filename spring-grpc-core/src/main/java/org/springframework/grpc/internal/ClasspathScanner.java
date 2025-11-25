@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ResourceLoaderAware;
@@ -49,9 +50,9 @@ public class ClasspathScanner implements ResourceLoaderAware {
 
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
 
-	private ResourcePatternResolver resourcePatternResolver;
+	private @Nullable ResourcePatternResolver resourcePatternResolver;
 
-	private MetadataReaderFactory metadataReaderFactory;
+	private @Nullable MetadataReaderFactory metadataReaderFactory;
 
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {

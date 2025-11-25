@@ -18,6 +18,7 @@ package org.springframework.grpc.server.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
@@ -99,9 +100,9 @@ public class RequestMapperConfigurer extends SecurityConfigurerAdapter<Authentic
 
 		private boolean not;
 
-		private AuthorizationManager<Object> authorizationManager;
+		private @Nullable AuthorizationManager<Object> authorizationManager;
 
-		public AuthorizedCall(CallMatcher matcher) {
+		AuthorizedCall(CallMatcher matcher) {
 			this.matcher = matcher;
 		}
 
@@ -169,7 +170,9 @@ public class RequestMapperConfigurer extends SecurityConfigurerAdapter<Authentic
 			AuthorizationResult result = new AuthorizationDecision(false);
 			for (AuthorizedCall authorizedCall : this.authorizedCalls) {
 				if (authorizedCall.matcher.matches(context)) {
-					result = authorizedCall.authorizationManager.authorize(authentication, context);
+					result = Objects
+						.requireNonNull(authorizedCall.authorizationManager, "AuthorizationManager is required")
+						.authorize(authentication, context);
 					break;
 				}
 			}

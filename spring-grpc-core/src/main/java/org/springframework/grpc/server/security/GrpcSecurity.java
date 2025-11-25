@@ -18,6 +18,9 @@ package org.springframework.grpc.server.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -75,11 +78,11 @@ public final class GrpcSecurity
 	 */
 	public static final int CONTEXT_FILTER_ORDER = 0;
 
-	private AuthenticationManager authenticationManager;
+	private @Nullable AuthenticationManager authenticationManager;
 
 	private List<GrpcAuthenticationExtractor> authenticationExtractors = new ArrayList<>();
 
-	private AuthorizationManager<CallContext> authorizationManager;
+	private @Nullable AuthorizationManager<CallContext> authorizationManager;
 
 	public GrpcSecurity(ObjectPostProcessor<Object> objectPostProcessor,
 			AuthenticationManagerBuilder authenticationBuilder, ApplicationContext context) {
@@ -103,6 +106,7 @@ public final class GrpcSecurity
 
 	@Override
 	protected AuthenticationProcessInterceptor performBuild() {
+		Objects.requireNonNull(this.authorizationManager, "AuthorizationManager is required");
 		if (this.authenticationManager != null) {
 			setSharedObject(AuthenticationManager.class, this.authenticationManager);
 		}
@@ -198,7 +202,8 @@ public final class GrpcSecurity
 		}
 
 		@Override
-		public Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
+		public @Nullable Authentication extract(Metadata headers, Attributes attributes,
+				MethodDescriptor<?, ?> method) {
 			for (GrpcAuthenticationExtractor extractor : this.extractors) {
 				Authentication authentication = extractor.extract(headers, attributes, method);
 				if (authentication != null) {

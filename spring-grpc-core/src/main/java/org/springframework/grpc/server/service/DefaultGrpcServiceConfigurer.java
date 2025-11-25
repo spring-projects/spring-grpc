@@ -44,7 +44,7 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 
 	private final ApplicationContext applicationContext;
 
-	private List<ServerInterceptor> globalInterceptors;
+	private List<ServerInterceptor> globalInterceptors = new ArrayList<>();
 
 	public DefaultGrpcServiceConfigurer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
@@ -52,7 +52,7 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 
 	@Override
 	public void afterPropertiesSet() {
-		this.globalInterceptors = findGlobalInterceptors();
+		this.globalInterceptors.addAll(findGlobalInterceptors());
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class DefaultGrpcServiceConfigurer implements GrpcServiceConfigurer, Init
 	}
 
 	private ServerServiceDefinition bindInterceptors(BindableService bindableService,
-			@Nullable GrpcServiceInfo serviceInfo, GrpcServerFactory serverFactory) {
+			@Nullable GrpcServiceInfo serviceInfo, @Nullable GrpcServerFactory serverFactory) {
 		var serviceDef = bindableService.bindService();
 
 		// Add and filter global interceptors first

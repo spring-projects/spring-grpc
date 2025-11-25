@@ -35,13 +35,15 @@ public class GrpcExceptionHandledServerCall<ReqT, RespT>
 	@Override
 	public void close(Status status, Metadata trailers) {
 		if (status.getCode() == Status.Code.UNKNOWN && status.getCause() != null) {
-			final Throwable cause = status.getCause();
-			final StatusException statusException = this.exceptionHandler.handleException(cause);
-			Metadata statusExceptionTrailers = statusException.getTrailers();
-			if (statusExceptionTrailers != null) {
-				trailers.merge(statusExceptionTrailers);
+			StatusException statusException = this.exceptionHandler.handleException(status.getCause());
+			if (statusException != null) {
+				Metadata statusExceptionTrailers = statusException.getTrailers();
+				if (statusExceptionTrailers != null) {
+					trailers.merge(statusExceptionTrailers);
+				}
+				status = statusException.getStatus();
 			}
-			super.close(statusException.getStatus(), trailers);
+			super.close(status, trailers);
 		}
 		else {
 			super.close(status, trailers);

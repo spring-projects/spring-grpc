@@ -17,6 +17,9 @@
 package org.springframework.grpc.server.exception;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -63,18 +66,22 @@ public class ReactiveStubBeanDefinitionRegistrar implements ImportBeanDefinition
 		 */
 		public static final String BEAN_NAME = ReactiveStubBeanFactoryPostProcessor.class.getName();
 
-		private CompositeGrpcExceptionHandler handler;
+		private @Nullable CompositeGrpcExceptionHandler handler;
 
-		private ApplicationContext context;
+		private @Nullable ApplicationContext context;
 
 		@Override
 		public void setApplicationContext(ApplicationContext context) throws BeansException {
 			this.context = context;
 		}
 
+		private ApplicationContext requireNonNullContext() {
+			return Objects.requireNonNull(this.context, "Context must not be null");
+		}
+
 		private Throwable onErrorMap(Throwable throwable) {
 			if (this.handler == null) {
-				GrpcExceptionHandler[] handlers = this.context.getAutowireCapableBeanFactory()
+				GrpcExceptionHandler[] handlers = requireNonNullContext().getAutowireCapableBeanFactory()
 					.getBeanProvider(GrpcExceptionHandler.class)
 					.orderedStream()
 					.toArray(GrpcExceptionHandler[]::new);
@@ -86,7 +93,7 @@ public class ReactiveStubBeanDefinitionRegistrar implements ImportBeanDefinition
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory factory) {
-			if (this.context.getBeanNamesForType(GrpcExceptionHandler.class).length == 0) {
+			if (requireNonNullContext().getBeanNamesForType(GrpcExceptionHandler.class).length == 0) {
 				return;
 			}
 			for (String name : factory.getBeanNamesForType(BindableService.class)) {

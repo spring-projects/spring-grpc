@@ -55,7 +55,7 @@ public class DefaultGrpcChannelFactory<T extends ManagedChannelBuilder<T>>
 
 	private final ClientInterceptorsConfigurer interceptorsConfigurer;
 
-	private ClientInterceptorFilter interceptorFilter;
+	private @Nullable ClientInterceptorFilter interceptorFilter;
 
 	private ChannelCredentialsProvider credentials = ChannelCredentialsProvider.INSECURE;
 

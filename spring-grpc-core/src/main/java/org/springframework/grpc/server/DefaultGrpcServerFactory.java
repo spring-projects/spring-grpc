@@ -66,15 +66,15 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 
 	private final List<ServerBuilderCustomizer<T>> serverBuilderCustomizers;
 
-	private KeyManagerFactory keyManager;
+	private @Nullable KeyManagerFactory keyManager;
 
-	private TrustManagerFactory trustManager;
+	private @Nullable TrustManagerFactory trustManager;
 
-	private ClientAuth clientAuth;
+	private @Nullable ClientAuth clientAuth;
 
-	private ServerServiceDefinitionFilter serviceFilter;
+	private @Nullable ServerServiceDefinitionFilter serviceFilter;
 
-	private ServerInterceptorFilter interceptorFilter;
+	private @Nullable ServerInterceptorFilter interceptorFilter;
 
 	public DefaultGrpcServerFactory(String address, List<ServerBuilderCustomizer<T>> serverBuilderCustomizers) {
 		this.address = address;
@@ -82,7 +82,8 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 	}
 
 	public DefaultGrpcServerFactory(String address, List<ServerBuilderCustomizer<T>> serverBuilderCustomizers,
-			KeyManagerFactory keyManager, TrustManagerFactory trustManager, ClientAuth clientAuth) {
+			@Nullable KeyManagerFactory keyManager, @Nullable TrustManagerFactory trustManager,
+			@Nullable ClientAuth clientAuth) {
 		this(address, serverBuilderCustomizers);
 		this.keyManager = keyManager;
 		this.trustManager = trustManager;

@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -39,7 +41,7 @@ import io.grpc.MethodDescriptor;
 public class HttpBasicAuthenticationExtractor implements GrpcAuthenticationExtractor {
 
 	@Override
-	public Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
+	public @Nullable Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
 		String auth = headers.get(GrpcSecurity.AUTHORIZATION_KEY);
 		if (auth == null) {
 			return null;
@@ -51,7 +53,7 @@ public class HttpBasicAuthenticationExtractor implements GrpcAuthenticationExtra
 		return extract(auth);
 	}
 
-	private Authentication extract(String auth) {
+	private @Nullable Authentication extract(String auth) {
 		String[] parts = new String(Base64.getDecoder().decode(auth), StandardCharsets.UTF_8).split(":");
 		if (parts.length != 2) {
 			return null;

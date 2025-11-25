@@ -24,7 +24,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -39,6 +42,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.grpc.internal.ClasspathScanner;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -59,7 +63,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 
 	private Map<Class<?>, StubFactory<?>> factories = new LinkedHashMap<>();
 
-	private ApplicationContext context;
+	private @Nullable ApplicationContext context;
 
 	static {
 		DEFAULT_FACTORIES.add((Class<? extends StubFactory<?>>) BlockingStubFactory.class);
@@ -74,6 +78,10 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		this.context = applicationContext;
 	}
 
+	private ApplicationContext requireNonNullContext() {
+		return Objects.requireNonNull(this.context, "ApplicationContext is required");
+	}
+
 	public <T> T getClient(String target, Class<T> type, Class<?> factory) {
 		@SuppressWarnings("unchecked")
 		StubFactory<T> stubs = (StubFactory<T>) findFactory(factory, type);
@@ -84,7 +92,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 	private StubFactory<?> findFactory(Class<?> factoryType, Class<?> type) {
 		if (this.factories.isEmpty()) {
 			List<StubFactory<?>> factories = new ArrayList<>();
-			for (StubFactory<?> factory : this.context.getBeansOfType(StubFactory.class).values()) {
+			for (StubFactory<?> factory : this.requireNonNullContext().getBeansOfType(StubFactory.class).values()) {
 				factories.add(factory);
 			}
 			AnnotationAwareOrderComparator.sort(factories);
@@ -96,7 +104,9 @@ public class GrpcClientFactory implements ApplicationContextAware {
 					continue;
 				}
 				this.factories.put(factory,
-						(StubFactory<?>) this.context.getAutowireCapableBeanFactory().createBean(factory));
+						(StubFactory<?>) this.requireNonNullContext()
+							.getAutowireCapableBeanFactory()
+							.createBean(factory));
 			}
 		}
 		StubFactory<?> factory = findFactory(this.factories, factoryType, type);
@@ -107,7 +117,8 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		return factory;
 	}
 
-	private static Class<?> findDefaultFactory(BeanDefinitionRegistry registry, Class<?> factoryType, Class<?> type) {
+	private static @Nullable Class<?> findDefaultFactory(BeanDefinitionRegistry registry,
+			@Nullable Class<?> factoryType, Class<?> type) {
 		if (factoryType != null && factoryType != UnspecifiedStubFactory.class) {
 			return supports(factoryType, type) ? factoryType : null;
 		}
@@ -131,6 +142,8 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		beanDefinition = (AbstractBeanDefinition) registry.getBeanDefinition(FACTORIES_BEAN_DEFINITION_NAME);
 		@SuppressWarnings("unchecked")
 		Set<Class<?>> factories = (Set<Class<?>>) beanDefinition.getAttribute("factories");
+		Assert.notEmpty(factories,
+				"The %s bean requires a 'factories' attribute".formatted(FACTORIES_BEAN_DEFINITION_NAME));
 		return factories;
 
 	}
@@ -152,7 +165,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		return factories;
 	}
 
-	private static Class<?> resolveBeanClass(BeanDefinition beanDefinition) {
+	private static @Nullable Class<?> resolveBeanClass(BeanDefinition beanDefinition) {
 		if (beanDefinition instanceof AbstractBeanDefinition rootBeanDefinition) {
 			if (rootBeanDefinition.hasBeanClass()) {
 				return rootBeanDefinition.getBeanClass();
@@ -161,6 +174,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		return null;
 	}
 
+	@SuppressWarnings("NullAway")
 	private static boolean supports(Class<?> factory, Class<?> type) {
 		// To avoid needing to instantiate the factory we use reflection to check for a
 		// static supports() method. If it exists we call it.
@@ -186,7 +200,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		return supports;
 	}
 
-	private static StubFactory<?> findFactory(Map<Class<?>, StubFactory<?>> values, Class<?> factoryType,
+	private static @Nullable StubFactory<?> findFactory(Map<Class<?>, StubFactory<?>> values, Class<?> factoryType,
 			Class<?> type) {
 		StubFactory<?> factory = null;
 		if (factoryType != null && factoryType != UnspecifiedStubFactory.class) {
@@ -204,7 +218,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 	}
 
 	private GrpcChannelFactory channels() {
-		return this.context.getBean(GrpcChannelFactory.class);
+		return this.requireNonNullContext().getBean(GrpcChannelFactory.class);
 	}
 
 	public static void register(BeanDefinitionRegistry registry, GrpcClientRegistrationSpec spec) {
@@ -230,8 +244,8 @@ public class GrpcClientFactory implements ApplicationContextAware {
 		}
 	}
 
-	public record GrpcClientRegistrationSpec(String prefix, Class<? extends StubFactory<?>> factory, String target,
-			Class<?>[] types, String[] packages) {
+	public record GrpcClientRegistrationSpec(String prefix, @Nullable Class<? extends StubFactory<?>> factory,
+			String target, Class<?>[] types, String[] packages) {
 
 		private static ClasspathScanner SCANNER = new ClasspathScanner();
 
@@ -276,7 +290,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 			this(prefix, UnspecifiedStubFactory.class, target, types, new String[0]);
 		}
 
-		public GrpcClientRegistrationSpec factory(Class<? extends StubFactory<?>> factory) {
+		public GrpcClientRegistrationSpec factory(@Nullable Class<? extends StubFactory<?>> factory) {
 			return new GrpcClientRegistrationSpec(this.prefix, factory, this.target, this.types, this.packages);
 		}
 

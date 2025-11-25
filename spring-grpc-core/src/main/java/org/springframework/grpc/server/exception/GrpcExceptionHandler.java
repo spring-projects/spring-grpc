@@ -16,6 +16,8 @@
 
 package org.springframework.grpc.server.exception;
 
+import org.jspecify.annotations.Nullable;
+
 import io.grpc.StatusException;
 
 /**
@@ -33,6 +35,7 @@ public interface GrpcExceptionHandler {
 	 * @return the status to return to the client, or {@code null} if the exception cannot
 	 * be classified
 	 */
+	@Nullable
 	StatusException handleException(Throwable exception);
 
 }

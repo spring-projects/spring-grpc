@@ -37,7 +37,7 @@ public class ClientInterceptorsConfigurer implements InitializingBean {
 
 	private final ApplicationContext applicationContext;
 
-	private List<ClientInterceptor> globalInterceptors;
+	private List<ClientInterceptor> globalInterceptors = new ArrayList<>();
 
 	public ClientInterceptorsConfigurer(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;

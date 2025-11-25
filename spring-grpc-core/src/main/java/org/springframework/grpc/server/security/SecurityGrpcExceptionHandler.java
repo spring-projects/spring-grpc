@@ -18,6 +18,7 @@ package org.springframework.grpc.server.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 import org.springframework.security.access.AccessDeniedException;
@@ -31,7 +32,7 @@ public class SecurityGrpcExceptionHandler implements GrpcExceptionHandler {
 	private static final Log logger = LogFactory.getLog(SecurityGrpcExceptionHandler.class);
 
 	@Override
-	public StatusException handleException(Throwable exception) {
+	public @Nullable StatusException handleException(Throwable exception) {
 		if (exception instanceof AuthenticationException) {
 			if (logger.isDebugEnabled()) {
 				logger.error("Failed to authenticate", exception);

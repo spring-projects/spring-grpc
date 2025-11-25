@@ -22,6 +22,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
@@ -82,7 +83,8 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 						AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
 			}
 			Authentication authentication = user;
-			if (!this.authorizationManager.authorize(() -> authentication, context).isGranted()) {
+			AuthorizationResult authResult = this.authorizationManager.authorize(() -> authentication, context);
+			if (authResult == null || !authResult.isGranted()) {
 				if (user instanceof AnonymousAuthenticationToken) {
 					throw new BadCredentialsException("not authenticated");
 				}

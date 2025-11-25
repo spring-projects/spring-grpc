@@ -18,6 +18,7 @@ package org.springframework.grpc.server.exception;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -49,6 +50,8 @@ import io.grpc.StatusException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 
+	private final Log logger = LogFactory.getLog(getClass());
+
 	private final GrpcExceptionHandler exceptionHandler;
 
 	public GrpcExceptionHandlerInterceptor(GrpcExceptionHandler exceptionHandler) {
@@ -68,19 +71,21 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 	public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 			ServerCallHandler<ReqT, RespT> next) {
 		Listener<ReqT> listener;
-		FallbackHandler handler = new FallbackHandler(this.exceptionHandler);
-		final GrpcExceptionHandledServerCall<ReqT, RespT> exceptionHandledServerCall = new GrpcExceptionHandledServerCall<>(
-				call, handler);
+		FallbackHandler fallbackHandler = new FallbackHandler(this.exceptionHandler);
+		GrpcExceptionHandledServerCall<ReqT, RespT> exceptionHandledServerCall = new GrpcExceptionHandledServerCall<>(
+				call, fallbackHandler);
 		try {
 			listener = next.startCall(exceptionHandledServerCall, headers);
 		}
 		catch (Throwable t) {
-			exceptionHandledServerCall.close(handler.handleException(t).getStatus(), headers(t));
-			listener = new Listener<>() {
+			this.logger.trace("Failed to start exception handler call", t);
+			StatusException statusEx = fallbackHandler.handleException(t);
+			exceptionHandledServerCall.close(statusEx != null ? statusEx.getStatus() : Status.fromThrowable(t),
+					headers(t));
+			return new Listener<>() {
 			};
-			return listener;
 		}
-		return new ExceptionHandlerListener<>(listener, exceptionHandledServerCall, handler);
+		return new ExceptionHandlerListener<>(listener, exceptionHandledServerCall, fallbackHandler);
 	}
 
 	private static Metadata headers(Throwable t) {
@@ -90,11 +95,13 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 
 	static class ExceptionHandlerListener<ReqT, RespT> extends SimpleForwardingServerCallListener<ReqT> {
 
+		private final Log logger = LogFactory.getLog(getClass());
+
 		private ServerCall<ReqT, RespT> call;
 
 		private GrpcExceptionHandler exceptionHandler;
 
-		volatile private Throwable exception;
+		volatile private @Nullable Throwable exception;
 
 		ExceptionHandlerListener(ServerCall.Listener<ReqT> delegate, ServerCall<ReqT, RespT> call,
 				GrpcExceptionHandler exceptionHandler) {
@@ -144,14 +151,18 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 
 		private void handle(Throwable t) {
 			this.exception = t;
-			StatusException status = Status.fromThrowable(t).asException();
+			StatusException statusEx = Status.fromThrowable(t).asException();
 			try {
-				status = this.exceptionHandler.handleException(t);
+				statusEx = this.exceptionHandler.handleException(t);
 			}
 			catch (Throwable e) {
+				this.logger.trace("Handler unable to handle exception", t);
+			}
+			if (statusEx == null) {
+				statusEx = Status.fromThrowable(t).asException();
 			}
 			try {
-				this.call.close(status.getStatus(), headers(status));
+				this.call.close(statusEx.getStatus(), headers(statusEx));
 			}
 			catch (Throwable e) {
 				throw new IllegalStateException("Failed to close the call", e);
@@ -171,7 +182,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 		}
 
 		@Override
-		public StatusException handleException(Throwable exception) {
+		public @Nullable StatusException handleException(Throwable exception) {
 			StatusException status = this.exceptionHandler.handleException(exception);
 			if (status == null) {
 				if (logger.isDebugEnabled()) {

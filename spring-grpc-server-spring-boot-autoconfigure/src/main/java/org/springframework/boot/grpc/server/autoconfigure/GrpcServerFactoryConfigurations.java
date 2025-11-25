@@ -17,6 +17,7 @@
 package org.springframework.boot.grpc.server.autoconfigure;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -169,8 +170,9 @@ class GrpcServerFactoryConfigurations {
 			var mapper = new InProcessServerFactoryPropertyMapper(properties);
 			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
-			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
-					builderCustomizers);
+			String inProcessName = Objects.requireNonNull(properties.getInprocess().getName(),
+					"The InProcess name property must be set");
+			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(inProcessName, builderCustomizers);
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 			factory.setServiceFilter(serviceFilter.getIfAvailable());
 			applyServerFactoryCustomizers(customizers, factory);
