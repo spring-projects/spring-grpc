@@ -192,47 +192,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<release>${java.version}</release>
-					<showWarnings>true</showWarnings>
-					<compilerArgs>
-						<compilerArg>-parameters</compilerArg>
-						<compilerArg>-Xdoclint:none</compilerArg>
-						<compilerArg>-Werror</compilerArg>
-						<compilerArg>-XDcompilePolicy=simple</compilerArg>
-						<compilerArg>--should-stop=ifError=FLOW</compilerArg>
-						<compilerArg>
-							-Xplugin:ErrorProne
-							<!-- Disable all built-in error prone checks -->
-							-XepDisableAllChecks
-							<!-- JSpecify mode https://github.com/uber/NullAway/wiki/JSpecify-Support -->
-							-XepOpt:NullAway:JSpecifyMode=true
-							<!-- Check JSpecify annotations -->
-							-Xep:NullAway:ERROR
-							-XepOpt:NullAway:OnlyNullMarked
-							-XepOpt:NullAway:TreatGeneratedAsUnannotated=true
-							<!-- https://github.com/uber/NullAway/issues/162 -->
-							-XepExcludedPaths:.*/src/test/java/.*
-						</compilerArg>
-					</compilerArgs>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>com.google.errorprone</groupId>
-							<artifactId>error_prone_core</artifactId>
-							<version>${error-prone.version}</version>
-						</path>
-						<path>
-							<groupId>com.uber.nullaway</groupId>
-							<artifactId>nullaway</artifactId>
-							<version>${nullaway.version}</version>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
@@ -460,6 +419,81 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>java17</id>
+			<activation>
+				<jdk>[17,)</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>${maven-compiler-plugin.version}</version>
+						<configuration>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
+							<compilerArgument>-parameters</compilerArgument>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jspecify</id>
+			<activation>
+				<jdk>[25,)</jdk>
+				<property>
+					<name>jspecify.enabled</name>
+					<value>!false</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>${maven-compiler-plugin.version}</version>
+						<configuration>
+							<release>${java.version}</release>
+							<showWarnings>true</showWarnings>
+							<compilerArgs>
+								<compilerArg>-parameters</compilerArg>
+								<compilerArg>-Xdoclint:none</compilerArg>
+								<compilerArg>-Werror</compilerArg>
+								<compilerArg>-XDcompilePolicy=simple</compilerArg>
+								<compilerArg>--should-stop=ifError=FLOW</compilerArg>
+								<compilerArg>
+									-Xplugin:ErrorProne
+									<!-- Disable all built-in error prone checks -->
+									-XepDisableAllChecks
+									<!-- JSpecify mode https://github.com/uber/NullAway/wiki/JSpecify-Support -->
+									-XepOpt:NullAway:JSpecifyMode=true
+									<!-- Check JSpecify annotations -->
+									-Xep:NullAway:ERROR
+									-XepOpt:NullAway:OnlyNullMarked
+									-XepOpt:NullAway:TreatGeneratedAsUnannotated=true
+									<!-- https://github.com/uber/NullAway/issues/162 -->
+									-XepExcludedPaths:.*/src/test/java/.*
+								</compilerArg>
+							</compilerArgs>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>com.google.errorprone</groupId>
+									<artifactId>error_prone_core</artifactId>
+									<version>${error-prone.version}</version>
+								</path>
+								<path>
+									<groupId>com.uber.nullaway</groupId>
+									<artifactId>nullaway</artifactId>
+									<version>${nullaway.version}</version>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
