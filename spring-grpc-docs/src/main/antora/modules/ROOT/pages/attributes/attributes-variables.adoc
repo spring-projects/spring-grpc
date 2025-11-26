@@ -1,0 +1,5 @@
+:spring-grpc-version: 1.0.x
+:spring-framework-version: 7.0.1
+:spring-boot-version: 4.0.x
+:spring-framework-docs: https://spring.io/projects/spring-framework#learn
+:spring-boot-docs: https://spring.io/projects/spring-boot#learn

@@ -1,5 +1,12 @@
 # Contribution Guidelines
 
+## Building from Source
+
+Java 25 is the preferred version to build with as we leverage [JSpecify](https://jspecify.dev/docs/start-here/) to validate nullability constraints in the source code.
+
+However, if you can not use Java 25 for some reason, you can still build locally with Java 17.
+In this scenario the nullability constraints will not be validated locally but rather via the continuous integration pull request workflow.
+
 ## Code Formatting and Javadoc
 
 Before submitting a PR, please run the following commands to ensure proper formatting and Javadoc processing

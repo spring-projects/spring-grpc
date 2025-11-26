@@ -1,0 +1,11 @@
+[[system-requirements]]
+= System Requirements
+
+include::./attributes/attributes-variables.adoc[]
+
+Spring gRPC `{spring-grpc-version}` requires the following:
+
+- https://www.java.com[Java 17] and is compatible up to and including Java 25
+- {spring-framework-docs}[Spring Framework `{spring-framework-version}`] or above
+
+We recommend a Spring Boot first approach and Spring gRPC `{spring-grpc-version}` supports {spring-boot-docs}[Spring Boot] `{spring-boot-version}.`

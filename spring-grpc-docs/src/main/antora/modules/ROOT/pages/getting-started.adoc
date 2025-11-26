@@ -1,6 +1,10 @@
 [[getting-started]]
 = Getting Started
 
+include::./attributes/attributes-variables.adoc[]
+
+NOTE: Spring gRPC `{spring-grpc-version}` supports Spring Boot `{spring-boot-version}`
+
 This section offers jumping off points for how to get started using Spring gRPC. There is a simple sample project in the `samples` directory (e.g. https://github.com/spring-projects/spring-grpc/tree/main/samples/grpc-server[`grpc-server`]). You can run it with `mvn spring-boot:run` or `gradle bootRun`. You will see the following code in that sample.
 
 Want to get started? Let's speedrun a working service.
@@ -145,8 +149,6 @@ More details on what is going on in the next section.
 == Details
 
 You should follow the steps in each of the following section according to your needs.
-
-NOTE: Spring gRPC supports Spring Boot 3.4.x and 3.5.x
 
 [[repositories]]
 === Add Milestone and Snapshot Repositories
