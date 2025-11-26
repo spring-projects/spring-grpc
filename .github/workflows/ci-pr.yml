@@ -17,6 +17,8 @@ jobs:
         include:
           - javaVersion: 25
             distribution: 'liberica'
+          - javaVersion: 17
+            distribution: 'temurin'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
