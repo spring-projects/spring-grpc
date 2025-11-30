@@ -10,7 +10,7 @@ For further information go to our [Spring gRPC reference documentation](https://
 # Getting Started
 
 **📌 NOTE**\
-Spring gRPC `1.0.x` supports Spring Boot `4.0.x.`
+Spring gRPC `1.0.x` supports Spring Boot `4.0.x`
 
 This section offers jumping off points for how to get started using Spring gRPC. There is a simple sample project in the `samples` directory (e.g. [`grpc-server`](https://github.com/spring-projects/spring-grpc/tree/main/samples/grpc-server)). You can run it with `mvn spring-boot:run` or `gradle bootRun`. You will see the following code in that sample.
 
