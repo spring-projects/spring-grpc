@@ -27,13 +27,12 @@ jobs:
       - name: Build and run samples w/ Java 25 $ {{ matrix.distribution }} (non-kotlin)
         if: ${{ matrix.javaVersion == 25 }}
         run: |
-          pushd samples > dev/null
+          cd samples
           ./gradlew clean build \
             -x :grpc-server-kotlin:build \
             -PtestToolchain=25 \
             --rerun-tasks --no-build-cache \
             build
-          popd > dev/null
 
       - name: Setup Java 24 for grpc-server-kotlin w/ Java 24
         if: ${{ matrix.javaVersion == 25 }}
@@ -45,7 +44,7 @@ jobs:
       - name: Build and run samples w/ Java grpc-server-kotlin w/ Java 24
         if: ${{ matrix.javaVersion == 25 }}
         run: |
-          pushd samples > dev/null
+          cd samples
           ./gradlew :grpc-server-kotlin:build \
             -PtestToolchain=24 \
             --rerun-tasks --no-build-cache
