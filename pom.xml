@@ -438,6 +438,13 @@
 							<source>${java.version}</source>
 							<target>${java.version}</target>
 							<compilerArgument>-parameters</compilerArgument>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-configuration-processor</artifactId>
+									<version>${spring-boot.version}</version>
+								</path>
+							</annotationProcessorPaths>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -491,6 +498,11 @@
 									<groupId>com.uber.nullaway</groupId>
 									<artifactId>nullaway</artifactId>
 									<version>${nullaway.version}</version>
+								</path>
+								<path>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-configuration-processor</artifactId>
+									<version>${spring-boot.version}</version>
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
