@@ -20,14 +20,16 @@ import java.util.List;
 
 import io.grpc.ChannelCredentials;
 import io.grpc.netty.NettyChannelBuilder;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
-import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollIoHandler;
 import io.netty.channel.unix.DomainSocketAddress;
 
 /**
  * {@link GrpcChannelFactory} that creates Netty-based gRPC channels.
  *
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 public class NettyGrpcChannelFactory extends DefaultGrpcChannelFactory<NettyChannelBuilder> {
 
@@ -48,7 +50,7 @@ public class NettyGrpcChannelFactory extends DefaultGrpcChannelFactory<NettyChan
 			target = target.substring(5);
 			return NettyChannelBuilder.forAddress(new DomainSocketAddress(target))
 				.channelType(EpollDomainSocketChannel.class)
-				.eventLoopGroup(new EpollEventLoopGroup());
+				.eventLoopGroup(new MultiThreadIoEventLoopGroup(EpollIoHandler.newFactory()));
 		}
 		return NettyChannelBuilder.forTarget(target, credentials);
 	}
