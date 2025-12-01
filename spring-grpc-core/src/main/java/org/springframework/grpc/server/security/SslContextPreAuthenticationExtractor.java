@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
+import org.springframework.security.web.authentication.preauth.x509.SubjectX500PrincipalExtractor;
 import org.springframework.security.web.authentication.preauth.x509.X509PrincipalExtractor;
 import org.springframework.util.Assert;
 
@@ -46,7 +46,7 @@ public class SslContextPreAuthenticationExtractor implements GrpcAuthenticationE
 	private X509PrincipalExtractor principalExtractor;
 
 	public SslContextPreAuthenticationExtractor() {
-		this(new SubjectDnX509PrincipalExtractor());
+		this(new SubjectX500PrincipalExtractor());
 	}
 
 	public SslContextPreAuthenticationExtractor(X509PrincipalExtractor principalExtractor) {
