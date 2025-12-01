@@ -26,8 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Conditional;
 
-import io.grpc.servlet.jakarta.GrpcServlet;
-
 /**
  * {@link Conditional @Conditional} that determines if the Servlet container should be
  * used to run the gRPC server. The condition matches only when the app is a servlet web
@@ -42,7 +40,8 @@ import io.grpc.servlet.jakarta.GrpcServlet;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass(GrpcServlet.class)
+// https://github.com/spring-projects/spring-framework/issues/35927
+@ConditionalOnClass(name = "io.grpc.servlet.jakarta.GrpcServlet")
 @ConditionalOnProperty(prefix = "spring.grpc.server", name = "servlet.enabled", havingValue = "true",
 		matchIfMissing = true)
 public @interface ConditionalOnGrpcServletServer {
