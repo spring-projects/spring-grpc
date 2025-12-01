@@ -48,7 +48,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	testImplementation 'org.springframework.grpc:spring-grpc-test'
-	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0-RC1'
+	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
