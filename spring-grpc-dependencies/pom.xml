@@ -52,8 +52,8 @@
 	<properties>
 		<grpc.version>1.77.0</grpc.version>
 		<grpc-kotlin.version>1.5.0</grpc-kotlin.version>
-		<protobuf-java.version>4.32.1</protobuf-java.version>
-		<google-common-protos.version>2.61.2</google-common-protos.version>
+		<protobuf-java.version>4.33.1</protobuf-java.version>
+		<google-common-protos.version>2.63.1</google-common-protos.version>
 		<reactor-grpc.version>1.2.4</reactor-grpc.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
