@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '1.0.0-SNAPSHOT'
+version = '1.0.0'
 
 def toolchainVersion() {
 	if (project.hasProperty('testToolchain')) {
@@ -28,7 +28,7 @@ repositories {
     maven { url 'https://repo.spring.io/snapshot' }
 }
 
-def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.0.0-SNAPSHOT'
+def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.0.0'
 
 dependencyManagement {
     imports {
