@@ -18,7 +18,10 @@ $ ./mvnw spring-boot:run
 message: "Hello ==> Alien"
 ```
 
-The server has to be running on port 9090. You can use the `grpc-server` sample for that.
+You will need to set the property `launched.grpc.port` to the port the server is running on.
+If the server is running on port 9090, the property can be set using an environment variable.
+For example: `export LAUNCHED_GRPC_PORT=9090`.
+The `grpc-server` sample can be used for the server.
 
 You can also build and run the application as a native image using GraalVM, in the normal way for a Spring Boot application. E.g:
 
