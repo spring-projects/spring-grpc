@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.grpc</groupId>
 		<artifactId>spring-grpc</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-grpc-docs</artifactId>
 	<name>Spring gRPC Docs</name>
@@ -62,11 +62,11 @@
 				<configuration>
 					<playbook>src/main/antora/antora-playbook.yml</playbook>
 					<packages>
-						<package>@antora/atlas-extension@1.0.0-alpha.1</package>
-						<package>@antora/collector-extension@1.0.0-alpha.3</package>
-						<package>@asciidoctor/tabs@1.0.0-beta.3</package>
+						<package>@antora/atlas-extension@1.0.1-SNAPSHOT-alpha.1</package>
+						<package>@antora/collector-extension@1.0.1-SNAPSHOT-alpha.3</package>
+						<package>@asciidoctor/tabs@1.0.1-SNAPSHOT-beta.3</package>
 						<package>@springio/antora-extensions@1.5.0</package>
-						<package>@springio/asciidoctor-extensions@1.0.0-alpha.9</package>
+						<package>@springio/asciidoctor-extensions@1.0.1-SNAPSHOT-alpha.9</package>
 						<package>@djencks/asciidoctor-mathjax@0.0.9</package>
 					</packages>
 				</configuration>
