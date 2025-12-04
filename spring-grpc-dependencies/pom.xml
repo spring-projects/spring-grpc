@@ -6,7 +6,7 @@
 
 	<groupId>org.springframework.grpc</groupId>
 	<artifactId>spring-grpc-dependencies</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring gRPC (Bill of Materials)</name>
