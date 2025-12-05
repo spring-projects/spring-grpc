@@ -55,7 +55,7 @@ public class ShadedNettyGrpcServerFactory extends DefaultGrpcServerFactory<Netty
 				.bossEventLoopGroup(new EpollEventLoopGroup(1))
 				.workerEventLoopGroup(new EpollEventLoopGroup());
 		}
-		return super.newServerBuilder();
+		return NettyServerBuilder.forAddress(socketAddress(), credentials());
 	}
 
 }

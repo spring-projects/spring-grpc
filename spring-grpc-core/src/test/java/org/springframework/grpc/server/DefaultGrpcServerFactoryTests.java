@@ -17,13 +17,18 @@
 package org.springframework.grpc.server;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 import io.grpc.ServerServiceDefinition;
 
@@ -79,6 +84,39 @@ class DefaultGrpcServerFactoryTests {
 			assertThat(serverFactory)
 				.extracting("serviceList", InstanceOfAssertFactories.list(ServerServiceDefinition.class))
 				.containsExactly(serviceDef1);
+		}
+
+	}
+
+	@Nested
+	class AddressParser {
+
+		@TestFactory
+		List<DynamicTest> ipAddress() {
+			return List.of(testIpAddress(":9999", new InetSocketAddress(9999)),
+					testIpAddress("localhost:9999", new InetSocketAddress("localhost", 9999)),
+					testIpAddress("localhost", new InetSocketAddress("localhost", 9090)),
+					testIpAddress("*", new InetSocketAddress(9090)),
+					testIpAddress("*:8888", new InetSocketAddress(8888)),
+					testIpAddress("", new InetSocketAddress(9090)));
+		}
+
+		private DynamicTest testIpAddress(String address, SocketAddress expected) {
+			return DynamicTest.dynamicTest("Socket address: " + address, () -> {
+				var factory = new DefaultGrpcServerFactory<>(address, List.of());
+				assertThat(factory.socketAddress()).isEqualTo(expected);
+			});
+		}
+
+		@TestFactory
+		List<DynamicTest> unsupportedAddress() {
+			return List.of(testThrows("unix:dummy"), testThrows("in-process:"));
+		}
+
+		private DynamicTest testThrows(String address) {
+			return DynamicTest.dynamicTest("Socket address: " + address,
+					() -> assertThatExceptionOfType(UnsupportedOperationException.class)
+						.isThrownBy(() -> new DefaultGrpcServerFactory<>(address, List.of()).socketAddress()));
 		}
 
 	}

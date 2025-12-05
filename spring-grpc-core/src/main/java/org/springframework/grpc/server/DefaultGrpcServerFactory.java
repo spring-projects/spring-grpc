@@ -16,6 +16,8 @@
 
 package org.springframework.grpc.server;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +33,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.grpc.internal.GrpcUtils;
 import org.springframework.grpc.server.service.ServerInterceptorFilter;
+import org.springframework.util.StringUtils;
 
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
@@ -188,6 +191,28 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 			this.logger.info("Registered gRPC service: " + serviceName);
 			builder.addService(service);
 		});
+	}
+
+	protected String hostName() {
+		return address().split(":")[0].trim();
+	}
+
+	protected SocketAddress socketAddress() {
+		String address = address();
+		if (address.startsWith("unix:")) {
+			throw new UnsupportedOperationException("Unix socket addresses not supported");
+		}
+		if (address.startsWith("in-process:")) {
+			throw new UnsupportedOperationException("In-Process addresses not supported");
+		}
+
+		var host = hostName();
+		if (StringUtils.hasText(host) && !Objects.equals(host, "*")) {
+			return new InetSocketAddress(host, port());
+		}
+		else {
+			return new InetSocketAddress(port());
+		}
 	}
 
 }

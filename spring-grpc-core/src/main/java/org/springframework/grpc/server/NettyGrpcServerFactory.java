@@ -56,7 +56,7 @@ public class NettyGrpcServerFactory extends DefaultGrpcServerFactory<NettyServer
 				.bossEventLoopGroup(new MultiThreadIoEventLoopGroup(1, EpollIoHandler.newFactory()))
 				.workerEventLoopGroup(new MultiThreadIoEventLoopGroup(EpollIoHandler.newFactory()));
 		}
-		return super.newServerBuilder();
+		return NettyServerBuilder.forAddress(socketAddress(), credentials());
 	}
 
 }
