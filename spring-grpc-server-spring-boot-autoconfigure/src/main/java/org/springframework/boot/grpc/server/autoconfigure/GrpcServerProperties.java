@@ -99,7 +99,15 @@ public class GrpcServerProperties {
 	 * @return the address to bind to
 	 */
 	public String determineAddress() {
-		return (this.address != null) ? this.address : this.host + ":" + this.port;
+		return (this.address != null) ? this.address : getAddressFromHostAndPort();
+	}
+
+	private String getAddressFromHostAndPort() {
+		return isIpV6() ? "[%s]:%d".formatted(this.host, this.port) : this.host + ":" + this.port;
+	}
+
+	private boolean isIpV6() {
+		return GrpcUtils.countColons(this.host) >= 2;
 	}
 
 	public String getHost() {

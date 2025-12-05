@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
@@ -185,6 +187,28 @@ class GrpcServerPropertiesTests {
 			map.put("spring.grpc.server.port", "10000");
 			GrpcServerProperties properties = bindProperties(map);
 			assertThat(properties.getAddress()).isEqualTo("my-server-ip:3130");
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "dummy.springframework.org", "127.0.0.1", "0.0.0.0", "192.168.1.2" })
+		void hostnameOrIpv4HostAndPort(String hostName) {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.server.host", hostName);
+			map.put("spring.grpc.server.port", "1234");
+			GrpcServerProperties properties = bindProperties(map);
+			assertThat(properties.getAddress()).isNullOrEmpty();
+			assertThat(properties.determineAddress()).isEqualTo(hostName + ":1234");
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "::", "1:2:3:4:5:6:7:8", "::1" })
+		void ipv6HostAndPort(String ipv6Address) {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.server.host", ipv6Address);
+			map.put("spring.grpc.server.port", "1234");
+			GrpcServerProperties properties = bindProperties(map);
+			assertThat(properties.getAddress()).isNullOrEmpty();
+			assertThat(properties.determineAddress()).isEqualTo("[" + ipv6Address + "]:1234");
 		}
 
 	}

@@ -23,6 +23,8 @@ import javax.net.ssl.TrustManagerFactory;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.grpc.internal.GrpcUtils;
+
 import io.grpc.TlsServerCredentials.ClientAuth;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoopGroup;
@@ -55,7 +57,7 @@ public class ShadedNettyGrpcServerFactory extends DefaultGrpcServerFactory<Netty
 				.bossEventLoopGroup(new EpollEventLoopGroup(1))
 				.workerEventLoopGroup(new EpollEventLoopGroup());
 		}
-		return super.newServerBuilder();
+		return NettyServerBuilder.forAddress(GrpcUtils.getSocketAddress(address()), credentials());
 	}
 
 }
