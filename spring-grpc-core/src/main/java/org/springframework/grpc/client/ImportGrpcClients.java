@@ -67,14 +67,14 @@ public @interface ImportGrpcClients {
 	Class<? extends StubFactory<?>> factory() default UnspecifiedStubFactory.class;
 
 	/**
-	 * The base package classes to scan for annotated components. If not specified,
+	 * The base package classes to scan for stub implementations. If not specified,
 	 * scanning will be done from the package of the class with this annotation.
 	 * @return the base package classes for scanning
 	 */
 	Class<?>[] basePackageClasses() default {};
 
 	/**
-	 * The base packages to scan for annotated components.
+	 * The base packages to scan for stub implementations.
 	 * @return the base packages for scanning
 	 */
 	String[] basePackages() default {};
