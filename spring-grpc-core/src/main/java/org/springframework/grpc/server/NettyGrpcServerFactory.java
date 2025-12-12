@@ -60,8 +60,8 @@ public class NettyGrpcServerFactory extends DefaultGrpcServerFactory<NettyServer
 				.bossEventLoopGroup(new MultiThreadIoEventLoopGroup(1, EpollIoHandler.newFactory()))
 				.workerEventLoopGroup(new MultiThreadIoEventLoopGroup(EpollIoHandler.newFactory()));
 		}
-		String host = GrpcUtils.getHostName(address);
-		int port = GrpcUtils.getPort(address);
+		String host = super.hostname();
+		int port = super.port();
 		if (host == null || host.equals(GrpcUtils.ANY_IP_ADDRESS)) {
 			logger.debug("Host for address %s is %s - creating builder w/ port %d only".formatted(address, host, port));
 			return NettyServerBuilder.forPort(port, credentials());

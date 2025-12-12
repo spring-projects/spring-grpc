@@ -128,18 +128,27 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 	 */
 	@SuppressWarnings("unchecked")
 	protected T newServerBuilder() {
-		return (T) Grpc.newServerBuilderForPort(GrpcUtils.getPort(address()), credentials());
+		return (T) Grpc.newServerBuilderForPort(port(), credentials());
 	}
 
 	/**
-	 * Returns the port number on which the server should listen. Use 0 to let the system
-	 * choose a port. Use -1 to denote that this server does not listen on a socket.
-	 * @return the port number
-	 * @deprecated deprecated in favor of {@link GrpcUtils#getPort(String)}
+	 * Returns the port number on which the server should listen as defined by. Subclasses
+	 * can override and return 0 to let the system choose a port or -1 to denote that this
+	 * server does not listen on a socket.
+	 * @return the port number as defined by {@link GrpcUtils#getPort(String)}
+	 * @see GrpcUtils#getPort(String)
 	 */
-	@Deprecated(since = "1.0.0", forRemoval = true)
 	protected int port() {
 		return GrpcUtils.getPort(address());
+	}
+
+	/**
+	 * Returns the hostname on which the server should listen.
+	 * @return the hostname as defined by {@link GrpcUtils#getHostName(String)}
+	 * @see GrpcUtils#getHostName(String)
+	 */
+	protected @Nullable String hostname() {
+		return GrpcUtils.getHostName(address());
 	}
 
 	/**

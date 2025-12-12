@@ -23,6 +23,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Provides convenience methods for various gRPC functions.
+ * <p>
+ * NOTE: Even though this class visibility is `public` it is intended for internal use
+ * only and not recommended for direct use.
  *
  * @author David Syer
  * @author Chris Bono
