@@ -16,12 +16,16 @@
 
 package org.springframework.grpc.server;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.jspecify.annotations.Nullable;
+
+import org.springframework.grpc.internal.GrpcUtils;
 
 import io.grpc.TlsServerCredentials.ClientAuth;
 import io.grpc.netty.NettyServerBuilder;
@@ -56,7 +60,15 @@ public class NettyGrpcServerFactory extends DefaultGrpcServerFactory<NettyServer
 				.bossEventLoopGroup(new MultiThreadIoEventLoopGroup(1, EpollIoHandler.newFactory()))
 				.workerEventLoopGroup(new MultiThreadIoEventLoopGroup(EpollIoHandler.newFactory()));
 		}
-		return super.newServerBuilder();
+		String host = GrpcUtils.getHostName(address);
+		int port = GrpcUtils.getPort(address);
+		if (host == null || host.equals(GrpcUtils.ANY_IP_ADDRESS)) {
+			logger.debug("Host for address %s is %s - creating builder w/ port %d only".formatted(address, host, port));
+			return NettyServerBuilder.forPort(port, credentials());
+		}
+		logger.debug("Creating builder for address %s w/ host %s and port %d".formatted(address, host, port));
+		SocketAddress socketAddress = new InetSocketAddress(host, port);
+		return NettyServerBuilder.forAddress(socketAddress, credentials());
 	}
 
 }
