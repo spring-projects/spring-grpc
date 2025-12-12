@@ -68,13 +68,16 @@ public @interface ImportGrpcClients {
 
 	/**
 	 * The base package classes to scan for stub implementations. If not specified,
-	 * scanning will be done from the package of the class with this annotation.
+	 * scanning will be done from the package of the class with this annotation. When a
+	 * stub is found, a client bean will be created for it using the configured
+	 * {@link #factory()}.
 	 * @return the base package classes for scanning
 	 */
 	Class<?>[] basePackageClasses() default {};
 
 	/**
-	 * The base packages to scan for stub implementations.
+	 * The base packages to scan for stub implementations. When a stub is found, a client
+	 * bean will be created for it using the configured {@link #factory()}.
 	 * @return the base packages for scanning
 	 */
 	String[] basePackages() default {};
