@@ -61,8 +61,8 @@ public class GrpcServerLifecycle implements SmartLifecycle {
 	 */
 	public GrpcServerLifecycle(GrpcServerFactory factory, Duration shutdownGracePeriod,
 			ApplicationEventPublisher eventPublisher) {
-		this.factory = requireNonNull(factory, "factory");
-		this.shutdownGracePeriod = requireNonNull(shutdownGracePeriod, "shutdownGracePeriod");
+		this.factory = requireNonNull(factory, "factory must not be null");
+		this.shutdownGracePeriod = requireNonNull(shutdownGracePeriod, "shutdownGracePeriod must not be null");
 		this.eventPublisher = eventPublisher;
 	}
 
