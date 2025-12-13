@@ -43,7 +43,7 @@ public abstract class GrpcServerLifecycleEvent extends ApplicationEvent {
 	 */
 	protected GrpcServerLifecycleEvent(final GrpcServerLifecycle lifecyle, final Clock clock, final Server server) {
 		super(lifecyle, clock);
-		this.server = requireNonNull(server, "server");
+		this.server = requireNonNull(server, "server must not be null");
 	}
 
 	/**
@@ -53,7 +53,7 @@ public abstract class GrpcServerLifecycleEvent extends ApplicationEvent {
 	 */
 	protected GrpcServerLifecycleEvent(final GrpcServerLifecycle lifecyle, final Server server) {
 		super(lifecyle);
-		this.server = requireNonNull(server, "server");
+		this.server = requireNonNull(server, "server must not be null");
 	}
 
 	/**

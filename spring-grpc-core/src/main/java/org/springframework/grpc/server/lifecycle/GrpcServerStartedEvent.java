@@ -49,7 +49,7 @@ public class GrpcServerStartedEvent extends GrpcServerLifecycleEvent {
 			final String address, final int port) {
 
 		super(lifecyle, clock, server);
-		this.address = requireNonNull(address, "address");
+		this.address = requireNonNull(address, "address must not be null");
 		this.port = port;
 	}
 
@@ -65,7 +65,7 @@ public class GrpcServerStartedEvent extends GrpcServerLifecycleEvent {
 			final int port) {
 
 		super(lifecyle, server);
-		this.address = requireNonNull(address, "address");
+		this.address = requireNonNull(address, "address must not be null");
 		this.port = port;
 	}
 

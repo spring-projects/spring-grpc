@@ -37,7 +37,7 @@ public class DefaultDeadlineSetupClientInterceptor implements ClientInterceptor 
 	private final Duration defaultDeadline;
 
 	public DefaultDeadlineSetupClientInterceptor(Duration defaultDeadline) {
-		this.defaultDeadline = requireNonNull(defaultDeadline, "defaultDeadline");
+		this.defaultDeadline = requireNonNull(defaultDeadline, "defaultDeadline must not be null");
 	}
 
 	@Override
