@@ -106,7 +106,7 @@ public final class GrpcSecurity
 
 	@Override
 	protected AuthenticationProcessInterceptor performBuild() {
-		Objects.requireNonNull(this.authorizationManager, "AuthorizationManager is required");
+		Objects.requireNonNull(this.authorizationManager, "authorizationManager must not null");
 		if (this.authenticationManager != null) {
 			setSharedObject(AuthenticationManager.class, this.authenticationManager);
 		}

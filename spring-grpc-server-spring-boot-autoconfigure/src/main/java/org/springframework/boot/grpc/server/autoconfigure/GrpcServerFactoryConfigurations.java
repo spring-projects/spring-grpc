@@ -171,7 +171,7 @@ class GrpcServerFactoryConfigurations {
 			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			String inProcessName = Objects.requireNonNull(properties.getInprocess().getName(),
-					"The InProcess name property must be set");
+					"the 'inprocess.name' property must not be null");
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(inProcessName, builderCustomizers);
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 			factory.setServiceFilter(serviceFilter.getIfAvailable());

@@ -76,7 +76,7 @@ public class ReactiveStubBeanDefinitionRegistrar implements ImportBeanDefinition
 		}
 
 		private ApplicationContext requireNonNullContext() {
-			return Objects.requireNonNull(this.context, "Context must not be null");
+			return Objects.requireNonNull(this.context, "context must not be null");
 		}
 
 		private Throwable onErrorMap(Throwable throwable) {

@@ -79,7 +79,7 @@ public class GrpcClientFactory implements ApplicationContextAware {
 	}
 
 	private ApplicationContext requireNonNullContext() {
-		return Objects.requireNonNull(this.context, "ApplicationContext is required");
+		return Objects.requireNonNull(this.context, "applicationContext must not be null");
 	}
 
 	public <T> T getClient(String target, Class<T> type, Class<?> factory) {

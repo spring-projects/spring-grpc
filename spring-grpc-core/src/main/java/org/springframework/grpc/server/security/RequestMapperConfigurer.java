@@ -171,7 +171,7 @@ public class RequestMapperConfigurer extends SecurityConfigurerAdapter<Authentic
 			for (AuthorizedCall authorizedCall : this.authorizedCalls) {
 				if (authorizedCall.matcher.matches(context)) {
 					result = Objects
-						.requireNonNull(authorizedCall.authorizationManager, "AuthorizationManager is required")
+						.requireNonNull(authorizedCall.authorizationManager, "authorizationManager must not be null")
 						.authorize(authentication, context);
 					break;
 				}

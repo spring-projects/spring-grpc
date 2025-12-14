@@ -61,7 +61,7 @@ public class SslContextPreAuthenticationExtractor implements GrpcAuthenticationE
 			X509Certificate[] certificates = initCertificates(session);
 			if (certificates != null) {
 				Assert.notEmpty(certificates, "Must contain at least 1 non-null certificate");
-				X509Certificate certificate = Objects.requireNonNull(certificates[0], "Certificate must not be null");
+				X509Certificate certificate = Objects.requireNonNull(certificates[0], "certificate must not be null");
 				return new PreAuthenticatedAuthenticationToken(this.principalExtractor.extractPrincipal(certificate),
 						certificate);
 			}

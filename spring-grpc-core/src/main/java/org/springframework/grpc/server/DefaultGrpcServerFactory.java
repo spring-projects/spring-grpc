@@ -78,7 +78,8 @@ public class DefaultGrpcServerFactory<T extends ServerBuilder<T>> implements Grp
 
 	public DefaultGrpcServerFactory(String address, List<ServerBuilderCustomizer<T>> serverBuilderCustomizers) {
 		this.address = address;
-		this.serverBuilderCustomizers = Objects.requireNonNull(serverBuilderCustomizers, "serverBuilderCustomizers must not be null");
+		this.serverBuilderCustomizers = Objects.requireNonNull(serverBuilderCustomizers,
+				"serverBuilderCustomizers must not be null");
 	}
 
 	public DefaultGrpcServerFactory(String address, List<ServerBuilderCustomizer<T>> serverBuilderCustomizers,
