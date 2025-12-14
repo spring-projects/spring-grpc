@@ -1,5 +1,23 @@
 {
-  "groups": [],
+  "groups": [
+    {
+      "name": "spring.grpc.client",
+      "type": "org.springframework.boot.grpc.client.autoconfigure.GrpcClientProperties",
+      "description": "Configuration properties for gRPC clients."
+    },
+    {
+      "name": "spring.grpc.client.default-channel",
+      "type": "org.springframework.boot.grpc.client.autoconfigure.GrpcClientProperties$ChannelConfig",
+      "sourceType": "org.springframework.boot.grpc.client.autoconfigure.GrpcClientProperties",
+      "description": "Default channel configuration used as a template for all channels."
+    },
+    {
+      "name": "spring.grpc.client.channels",
+      "type": "java.util.Map<java.lang.String,org.springframework.boot.grpc.client.autoconfigure.GrpcClientProperties$ChannelConfig>",
+      "sourceType": "org.springframework.boot.grpc.client.autoconfigure.GrpcClientProperties",
+      "description": "Named channel configurations. Each key represents a channel name with its specific configuration."
+    }
+  ],
   "properties": [
     {
       "name": "spring.grpc.client.enabled",
@@ -24,6 +42,163 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Observations on the client.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.default-stub-factory",
+      "type": "java.lang.Class<? extends org.springframework.grpc.client.StubFactory<?>>",
+      "description": "Default stub factory to use for all gRPC client stubs. Determines the type of stub (blocking, async, reactive) created for gRPC services.",
+      "defaultValue": "org.springframework.grpc.client.BlockingStubFactory"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.address",
+      "type": "java.lang.String",
+      "description": "The target address URI to connect to. Supports various schemes including 'static://', 'dns://', 'unix:', and custom resolvers.",
+      "defaultValue": "static://localhost:9090"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.default-deadline",
+      "type": "java.time.Duration",
+      "description": "The default deadline (timeout) for RPCs performed on this channel. If not set, RPCs will have no deadline."
+    },
+    {
+      "name": "spring.grpc.client.default-channel.default-load-balancing-policy",
+      "type": "java.lang.String",
+      "description": "The load balancing policy the channel should use. Common values include 'round_robin' and 'pick_first'.",
+      "defaultValue": "round_robin"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.enable-keep-alive",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable keep-alive pings on the channel. When enabled, the channel will send periodic pings to keep the connection alive.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.grpc.client.default-channel.health.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable client-side health checking for the channel. When enabled, the channel will monitor the server's health status.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.grpc.client.default-channel.health.service-name",
+      "type": "java.lang.String",
+      "description": "Name of the service to check health on. If not specified, the overall server health will be checked."
+    },
+    {
+      "name": "spring.grpc.client.default-channel.idle-timeout",
+      "type": "java.time.Duration",
+      "description": "The duration without ongoing RPCs before the channel enters idle mode to reduce resource usage.",
+      "defaultValue": "20s"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.keep-alive-time",
+      "type": "java.time.Duration",
+      "description": "The delay before sending a keep-alive ping. Shorter intervals increase network burden. This value cannot be lower than the server's 'permitKeepAliveTime' setting.",
+      "defaultValue": "5m"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.keep-alive-timeout",
+      "type": "java.time.Duration",
+      "description": "The timeout for keep-alive ping requests. If the server doesn't respond within this time, the connection is considered dead.",
+      "defaultValue": "20s"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.keep-alive-without-calls",
+      "type": "java.lang.Boolean",
+      "description": "Whether to perform keep-alive pings even when there are no active RPCs on the connection.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.grpc.client.default-channel.max-inbound-message-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum message size allowed to be received by the channel. Set to '-1' to use the highest possible limit (Integer.MAX_VALUE), though this is not recommended for production use.",
+      "defaultValue": "4MB"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.max-inbound-metadata-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum metadata (headers) size allowed to be received by the channel. Set to '-1' to use the highest possible limit (Integer.MAX_VALUE), though this is not recommended for production use.",
+      "defaultValue": "8KB"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.negotiation-type",
+      "type": "org.springframework.grpc.client.NegotiationType",
+      "description": "The negotiation type for the connection. Use 'TLS' for encrypted connections, 'PLAINTEXT' for unencrypted connections, or 'PLAINTEXT_UPGRADE' to start with plaintext and upgrade to TLS.",
+      "defaultValue": "PLAINTEXT"
+    },
+    {
+      "name": "spring.grpc.client.default-channel.secure",
+      "type": "java.lang.Boolean",
+      "description": "Flag indicating whether strict SSL certificate validation is enabled. When false, the remote certificate validation is relaxed (use with caution).",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.default-channel.service-config",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>",
+      "description": "Service configuration in map format. Used to configure advanced features like retry policies, hedging policies, load balancing, and method-specific configurations. See gRPC service config documentation for available options."
+    },
+    {
+      "name": "spring.grpc.client.default-channel.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable SSL/TLS for the channel. Automatically enabled if 'bundle' is specified."
+    },
+    {
+      "name": "spring.grpc.client.default-channel.ssl.bundle",
+      "type": "java.lang.String",
+      "description": "Name of the SSL bundle to use for secure connections. References an SSL bundle configured via Spring Boot's SSL bundle support."
+    },
+    {
+      "name": "spring.grpc.client.default-channel.user-agent",
+      "type": "java.lang.String",
+      "description": "Custom User-Agent string to be sent with requests from this channel. Useful for identifying the client application to the server."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.grpc.client.default-stub-factory",
+      "values": [
+        {
+          "value": "org.springframework.grpc.client.BlockingStubFactory",
+          "description": "Creates blocking/synchronous stubs."
+        },
+        {
+          "value": "org.springframework.grpc.client.AsyncStubFactory",
+          "description": "Creates asynchronous stubs with callback-based API."
+        },
+        {
+          "value": "org.springframework.grpc.client.ReactiveStubFactory",
+          "description": "Creates reactive stubs using Project Reactor."
+        }
+      ]
+    },
+    {
+      "name": "spring.grpc.client.default-channel.negotiation-type",
+      "values": [
+        {
+          "value": "PLAINTEXT",
+          "description": "Unencrypted connection."
+        },
+        {
+          "value": "TLS",
+          "description": "Encrypted connection using TLS."
+        },
+        {
+          "value": "PLAINTEXT_UPGRADE",
+          "description": "Start with plaintext and upgrade to TLS."
+        }
+      ]
+    },
+    {
+      "name": "spring.grpc.client.default-channel.default-load-balancing-policy",
+      "values": [
+        {
+          "value": "round_robin",
+          "description": "Distributes requests evenly across available backends."
+        },
+        {
+          "value": "pick_first",
+          "description": "Uses the first available backend."
+        }
+      ]
     }
   ]
 }
