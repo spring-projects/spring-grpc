@@ -37,6 +37,13 @@ import org.springframework.util.unit.DataSize;
 
 import io.grpc.ManagedChannel;
 
+/**
+ * Configuration properties for the gRPC client side.
+ *
+ * @author Dave Syer
+ * @author Chris Bono
+ * @author Vahid Ramezani
+ */
 @ConfigurationProperties(prefix = "spring.grpc.client")
 public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
@@ -361,8 +368,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			copy.maxInboundMetadataSize = this.maxInboundMetadataSize;
 			copy.userAgent = this.userAgent;
 			copy.defaultDeadline = this.defaultDeadline;
-			copy.secure = this.secure;
 			copy.health.copyValuesFrom(this.getHealth());
+			copy.secure = this.secure;
 			copy.ssl.copyValuesFrom(this.getSsl());
 			copy.serviceConfig.putAll(this.serviceConfig);
 			return copy;

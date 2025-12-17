@@ -41,6 +41,7 @@ import org.springframework.util.unit.DataSize;
  * Tests for {@link GrpcClientProperties}.
  *
  * @author Chris Bono
+ * @author Vahid Ramezani
  */
 class GrpcClientPropertiesTests {
 
