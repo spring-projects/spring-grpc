@@ -44,6 +44,7 @@ import io.grpc.StatusException;
  * returns a null.
  *
  * @author Dave Syer
+ * @author Andrey Litvitski
  * @see ServerInterceptor
  * @see GrpcExceptionHandler
  */
@@ -81,7 +82,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 			this.logger.trace("Failed to start exception handler call", t);
 			StatusException statusEx = fallbackHandler.handleException(t);
 			exceptionHandledServerCall.close(statusEx != null ? statusEx.getStatus() : Status.fromThrowable(t),
-					headers(t));
+					headers(statusEx != null ? statusEx : t));
 			return new Listener<>() {
 			};
 		}
