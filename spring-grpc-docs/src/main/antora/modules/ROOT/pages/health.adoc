@@ -7,6 +7,8 @@ The health service is registered with the gRPC server and a `HealthStatusManager
 
 IMPORTANT: The health service resides in the `io.grpc:grpc-services` library which is marked as `optional` by Spring gRPC. You must add this dependency to your application in order for it to be autoconfigured.
 
+NOTE: Server-side gRPC health is enabled by default when the application defines at least one  `BindableService`. If no server-side gRPC services are present, health is disabled by default and must be explicitly enabled using `spring.grpc.server.health.enabled=true`.
+
 == Actuator Health
 When Spring Boot Actuator is added to your project and the {spring-boot-docs}/actuator/endpoints.html#actuator.endpoints.health[Health endpoint] is available, the framework will automatically periodically update the health status of a configured list of Spring Boot {spring-boot-docs}/actuator/endpoints.html#actuator.endpoints.health.auto-configured-health-indicators[health indicators], including any ({spring-boot-docs}/actuator/endpoints.html#actuator.endpoints.health.writing-custom-health-indicators[custom indicators]).
 By default, the aggregate status of the individual indicators is also used to update the overall server status (`""`).
