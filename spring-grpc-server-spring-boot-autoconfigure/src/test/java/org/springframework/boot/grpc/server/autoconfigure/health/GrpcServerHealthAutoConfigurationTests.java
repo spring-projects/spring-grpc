@@ -130,6 +130,19 @@ class GrpcServerHealthAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(GrpcServerHealthAutoConfiguration.class));
 	}
 
+	@Test
+	void whenNoBindableServiceAndHealthPropertyNotSetDoesNotAutoConfigureBeans() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(GrpcServerHealthAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerHealthAutoConfiguration.class));
+	}
+
+	@Test
+	void whenNoBindableServiceAndHealthPropertyTrueAutoConfiguresBeans() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(GrpcServerHealthAutoConfiguration.class))
+			.withPropertyValues("spring.grpc.server.health.enabled=true")
+			.run((context) -> assertThat(context).hasSingleBean(GrpcServerHealthAutoConfiguration.class));
+	}
+
 	@Disabled("Will be tested in an integration test once the Actuator adapter is implemented")
 	@Test
 	void enterTerminalStateIsCalledWhenStatusManagerIsStopped() {
