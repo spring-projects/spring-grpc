@@ -28,7 +28,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import io.grpc.ForwardingServerCallListener.SimpleForwardingServerCallListener;
+import io.grpc.Context;
+import io.grpc.Contexts;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
@@ -97,67 +98,13 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 
 		SecurityContext currentContext = SecurityContextHolder.getContext();
 		try {
-			return new SecurityContextClearingListener<>(next.startCall(call, headers), currentContext);
+			Context context = Context.current().withValue(GrpcSecurity.SECURITY_CONTEXT_KEY, currentContext);
+			return new SecurityContextHandlerListener<ReqT, RespT>(Contexts.interceptCall(context, call, headers, next),
+					currentContext);
 		}
 		finally {
 			SecurityContextHolder.clearContext();
 		}
-	}
-
-	static class SecurityContextClearingListener<ReqT> extends SimpleForwardingServerCallListener<ReqT> {
-
-		private final SecurityContext securityContext;
-
-		SecurityContextClearingListener(ServerCall.Listener<ReqT> delegate, SecurityContext securityContext) {
-			super(delegate);
-			this.securityContext = securityContext;
-		}
-
-		@Override
-		public void onMessage(ReqT message) {
-			SecurityContextHolder.setContext(this.securityContext);
-			try {
-				super.onMessage(message);
-			}
-			finally {
-				SecurityContextHolder.clearContext();
-			}
-		}
-
-		@Override
-		public void onHalfClose() {
-			SecurityContextHolder.setContext(this.securityContext);
-			try {
-				super.onHalfClose();
-			}
-			finally {
-				SecurityContextHolder.clearContext();
-			}
-		}
-
-		@Override
-		public void onReady() {
-			SecurityContextHolder.setContext(this.securityContext);
-			try {
-				super.onReady();
-			}
-			finally {
-				SecurityContextHolder.clearContext();
-			}
-		}
-
-		@Override
-		public void onCancel() {
-			super.onCancel();
-			SecurityContextHolder.clearContext();
-		}
-
-		@Override
-		public void onComplete() {
-			super.onComplete();
-			SecurityContextHolder.clearContext();
-		}
-
 	}
 
 }

@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
+import org.springframework.grpc.server.security.CoroutineSecurityContextInterceptor;
 import org.springframework.grpc.server.security.GrpcSecurity;
 import org.springframework.grpc.server.security.SecurityContextServerInterceptor;
 import org.springframework.grpc.server.security.SecurityGrpcExceptionHandler;
@@ -108,6 +109,19 @@ public final class GrpcSecurityAutoConfiguration {
 		@ConditionalOnMissingBean(GrpcServerExecutorProvider.class)
 		GrpcServerExecutorProvider grpcServerExecutorProvider() {
 			return () -> new DelegatingSecurityContextExecutor(GrpcUtil.SHARED_CHANNEL_EXECUTOR.create());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "io.grpc.kotlin.CoroutineContextServerInterceptor")
+	static class GrpcClientCoroutineStubConfiguration {
+
+		@Bean
+		@GlobalServerInterceptor
+		@ConditionalOnMissingBean
+		CoroutineSecurityContextInterceptor coroutineSecurityContextInterceptor() {
+			return new CoroutineSecurityContextInterceptor();
 		}
 
 	}

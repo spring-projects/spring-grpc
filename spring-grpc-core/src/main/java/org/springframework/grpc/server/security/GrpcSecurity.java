@@ -34,10 +34,12 @@ import org.springframework.security.config.annotation.AbstractConfiguredSecurity
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
 
 import io.grpc.Attributes;
+import io.grpc.Context;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
 import io.micrometer.observation.ObservationRegistry;
@@ -77,6 +79,11 @@ public final class GrpcSecurity
 	 * value indicates higher precedence.
 	 */
 	public static final int CONTEXT_FILTER_ORDER = 0;
+
+	/**
+	 * Key for the SecurityContext in the gRPC Context.
+	 */
+	public static Context.Key<SecurityContext> SECURITY_CONTEXT_KEY = Context.key("spring-security-context");
 
 	private @Nullable AuthenticationManager authenticationManager;
 

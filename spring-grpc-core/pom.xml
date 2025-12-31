@@ -79,6 +79,18 @@
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-kotlin-stub</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-coroutines-core</artifactId>
+			<optional>true</optional>
+			<version>${kotlin.coroutines.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.salesforce.servicelibs</groupId>

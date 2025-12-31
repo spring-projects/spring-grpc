@@ -20,7 +20,8 @@ import org.springframework.core.Ordered;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import io.grpc.ForwardingServerCallListener.SimpleForwardingServerCallListener;
+import io.grpc.Context;
+import io.grpc.Contexts;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
@@ -38,63 +39,9 @@ public class SecurityContextServerInterceptor implements ServerInterceptor, Orde
 	public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 			ServerCallHandler<ReqT, RespT> next) {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		return new SecurityContextHandlerListener<ReqT, RespT>(next.startCall(call, headers), securityContext);
-	}
-
-	static class SecurityContextHandlerListener<ReqT, RespT> extends SimpleForwardingServerCallListener<ReqT> {
-
-		private SecurityContext securityContext;
-
-		SecurityContextHandlerListener(ServerCall.Listener<ReqT> delegate, SecurityContext securityContext) {
-			super(delegate);
-			this.securityContext = securityContext;
-		}
-
-		@Override
-		public void onMessage(ReqT message) {
-			SecurityContextHolder.setContext(this.securityContext);
-			try {
-				super.onMessage(message);
-			}
-			finally {
-				SecurityContextHolder.clearContext();
-			}
-		}
-
-		@Override
-		public void onHalfClose() {
-			SecurityContextHolder.setContext(this.securityContext);
-			try {
-				super.onHalfClose();
-			}
-			finally {
-				SecurityContextHolder.clearContext();
-			}
-		}
-
-		@Override
-		public void onReady() {
-			SecurityContextHolder.setContext(this.securityContext);
-			try {
-				super.onReady();
-			}
-			finally {
-				SecurityContextHolder.clearContext();
-			}
-		}
-
-		@Override
-		public void onCancel() {
-			super.onCancel();
-			SecurityContextHolder.clearContext();
-		}
-
-		@Override
-		public void onComplete() {
-			super.onComplete();
-			SecurityContextHolder.clearContext();
-		}
-
+		Context context = Context.current().withValue(GrpcSecurity.SECURITY_CONTEXT_KEY, securityContext);
+		return new SecurityContextHandlerListener<ReqT, RespT>(Contexts.interceptCall(context, call, headers, next),
+				securityContext);
 	}
 
 }
