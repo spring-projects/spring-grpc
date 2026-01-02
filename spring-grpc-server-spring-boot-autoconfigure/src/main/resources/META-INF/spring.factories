@@ -3,3 +3,6 @@ org.springframework.boot.grpc.server.autoconfigure.security.GrpcDisableCsrfHttpC
 
 org.springframework.boot.EnvironmentPostProcessor=\
 org.springframework.boot.grpc.server.autoconfigure.ServletEnvironmentPostProcessor
+
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.grpc.server.autoconfigure.GrpcSecurityInServletFailureAnalyzer
