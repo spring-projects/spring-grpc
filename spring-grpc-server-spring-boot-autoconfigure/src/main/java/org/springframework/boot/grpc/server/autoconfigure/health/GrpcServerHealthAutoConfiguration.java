@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -55,13 +54,14 @@ import io.grpc.protobuf.services.HealthStatusManager;
  *
  * @author Daniel Theuke (daniel.theuke@heuboe.de)
  * @author Chris Bono
+ * @author Andrey Litvitski
  * @since 1.0.0
  */
 @AutoConfiguration(before = GrpcServerFactoryAutoConfiguration.class)
 @ConditionalOnSpringGrpc
 @ConditionalOnClass(HealthStatusManager.class)
 @ConditionalOnGrpcServerEnabled("health")
-@ConditionalOnBean(BindableService.class)
+@Conditional(GrpcServerHealthAutoConfiguration.OnHealthDefaultEnablementCondition.class)
 public final class GrpcServerHealthAutoConfiguration {
 
 	@Bean(destroyMethod = "enterTerminalState")
@@ -125,6 +125,27 @@ public final class GrpcServerHealthAutoConfiguration {
 			}
 			return ConditionOutcome.noMatch(
 					messageBuilder.because("property %s not found with at least one entry".formatted(propertyName)));
+		}
+
+	}
+
+	static class OnHealthDefaultEnablementCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			String propertyName = "spring.grpc.server.health.enabled";
+			BindResult<Boolean> enabled = Binder.get(context.getEnvironment()).bind(propertyName, Boolean.class);
+			if (enabled.isBound()) {
+				return enabled.get() ? ConditionOutcome.match("Health explicitly enabled")
+						: ConditionOutcome.noMatch("Health explicitly disabled");
+			}
+			if (context.getBeanFactory() == null) {
+				return ConditionOutcome.noMatch("Context bean factory is null");
+			}
+			String[] bindableServices = context.getBeanFactory()
+				.getBeanNamesForType(BindableService.class, false, false);
+			return (bindableServices.length > 0) ? ConditionOutcome.match("BindableService found")
+					: ConditionOutcome.noMatch("No BindableService found and health not explicitly enabled");
 		}
 
 	}
