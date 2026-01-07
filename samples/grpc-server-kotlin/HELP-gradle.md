@@ -34,7 +34,7 @@ $ ./gradlew bootBuildImage
 Then, you can run the app like any other container:
 
 ```
-$ docker run --rm grpc-server:1.0.1-SNAPSHOT
+$ docker run --rm grpc-server:1.0.1
 ```
 
 ### Executable with Native Build Tools
