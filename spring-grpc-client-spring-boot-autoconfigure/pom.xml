@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.grpc</groupId>
 		<artifactId>spring-grpc</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-grpc-client-spring-boot-autoconfigure</artifactId>
 	<packaging>jar</packaging>
