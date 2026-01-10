@@ -30,7 +30,8 @@
 		<module>spring-grpc-spring-boot-starter</module>
 		<module>spring-grpc-test</module>
 		<module>spring-grpc-test-spring-boot-autoconfigure</module>
-	</modules>
+        <module>spring-grpc-client-spring-cloud-starter</module>
+    </modules>
 
 	<organization>
 		<name>Broadcom Inc.</name>
