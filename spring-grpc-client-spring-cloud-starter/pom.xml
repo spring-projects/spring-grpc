@@ -14,8 +14,20 @@
     <description>Spring gRPC Client Spring Cloud Starter</description>
 
     <properties>
-        <spring-cloud-commons.version>5.0.0</spring-cloud-commons.version>
+        <spring-cloud.version>2025.1.0</spring-cloud.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -25,12 +37,10 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-            <version>${spring-cloud-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-commons</artifactId>
-            <version>${spring-cloud-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
