@@ -59,7 +59,7 @@ public class DefaultGrpcChannelFactory<T extends ManagedChannelBuilder<T>>
 
 	private ChannelCredentialsProvider credentials = ChannelCredentialsProvider.INSECURE;
 
-	private VirtualTargets targets = VirtualTargets.DEFAULT;
+	protected VirtualTargets targets = VirtualTargets.DEFAULT;
 
 	public void setInterceptorFilter(@Nullable ClientInterceptorFilter interceptorFilter) {
 		this.interceptorFilter = interceptorFilter;
@@ -80,15 +80,17 @@ public class DefaultGrpcChannelFactory<T extends ManagedChannelBuilder<T>>
 	}
 
 	/**
-	 * Whether this factory supports the given target string. The target can be either a
-	 * valid nameresolver-compliant URI or an authority string as described in
-	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}.
+	 * {@inheritDoc}
 	 * @param target the target string as described in method javadocs
 	 * @return true unless the target begins with 'in-process:'
 	 */
 	@Override
 	public boolean supports(String target) {
-		return !target.startsWith("in-process:");
+		if (target.startsWith("in-process:")) {
+			return false;
+		}
+		var targetUri = this.targets.getTarget(target);
+		return !targetUri.startsWith("in-process:");
 	}
 
 	@Override

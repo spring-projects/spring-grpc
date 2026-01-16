@@ -102,10 +102,12 @@ class GrpcChannelFactoryConfigurations {
 	@ConditionalOnMissingBean(InProcessGrpcChannelFactory.class)
 	@ConditionalOnProperty(prefix = "spring.grpc.client.inprocess", name = "enabled", havingValue = "true",
 			matchIfMissing = true)
+	@EnableConfigurationProperties(GrpcClientProperties.class)
 	static class InProcessChannelFactoryConfiguration {
 
 		@Bean
-		InProcessGrpcChannelFactory inProcessGrpcChannelFactory(ChannelBuilderCustomizers channelBuilderCustomizers,
+		InProcessGrpcChannelFactory inProcessGrpcChannelFactory(GrpcClientProperties properties,
+				ChannelBuilderCustomizers channelBuilderCustomizers,
 				ClientInterceptorsConfigurer interceptorsConfigurer,
 				ObjectProvider<ClientInterceptorFilter> interceptorFilter,
 				ObjectProvider<GrpcChannelFactoryCustomizer> channelFactoryCustomizers) {
@@ -116,6 +118,7 @@ class GrpcChannelFactoryConfigurations {
 			if (interceptorFilter != null) {
 				factory.setInterceptorFilter(interceptorFilter.getIfAvailable(() -> null));
 			}
+			factory.setVirtualTargets(properties);
 			channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 			return factory;
 		}

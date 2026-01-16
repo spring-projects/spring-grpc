@@ -187,33 +187,41 @@ class GrpcChannelFactoryTests {
 		@Test
 		void defaultSupportsEverythingExceptInProcess() {
 			var channelFactory = new DefaultGrpcChannelFactory(List.of(), mock());
+			channelFactory.setVirtualTargets((path) -> path.equals("default") ? "in-process:default" : path);
 			assertThat(channelFactory.supports("foo")).isTrue();
 			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
 			assertThat(channelFactory.supports("in-process:foo")).isFalse();
+			assertThat(channelFactory.supports("default")).isFalse();
 		}
 
 		@Test
 		void nettySupportsEverythingExceptInProcess() {
 			var channelFactory = new NettyGrpcChannelFactory(List.of(), mock());
+			channelFactory.setVirtualTargets((path) -> path.equals("default") ? "in-process:default" : path);
 			assertThat(channelFactory.supports("foo")).isTrue();
 			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
 			assertThat(channelFactory.supports("in-process:foo")).isFalse();
+			assertThat(channelFactory.supports("default")).isFalse();
 		}
 
 		@Test
 		void shadedNettySupportsEverythingExceptInProcess() {
 			var channelFactory = new ShadedNettyGrpcChannelFactory(List.of(), mock());
+			channelFactory.setVirtualTargets((path) -> path.equals("default") ? "in-process:default" : path);
 			assertThat(channelFactory.supports("foo")).isTrue();
 			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
 			assertThat(channelFactory.supports("in-process:foo")).isFalse();
+			assertThat(channelFactory.supports("default")).isFalse();
 		}
 
 		@Test
 		void inProcessSupportsOnlyInProcess() {
 			var channelFactory = new InProcessGrpcChannelFactory(List.of(), mock());
+			channelFactory.setVirtualTargets((path) -> path.equals("default") ? "in-process:default" : path);
 			assertThat(channelFactory.supports("foo")).isFalse();
 			assertThat(channelFactory.supports("static:127.0.0.1")).isFalse();
 			assertThat(channelFactory.supports("in-process:foo")).isTrue();
+			assertThat(channelFactory.supports("default")).isTrue();
 		}
 
 	}

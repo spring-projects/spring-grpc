@@ -19,7 +19,6 @@ package org.springframework.grpc.client;
 import java.util.List;
 
 import io.grpc.ChannelCredentials;
-import io.grpc.Grpc;
 import io.grpc.inprocess.InProcessChannelBuilder;
 
 /**
@@ -44,15 +43,17 @@ public class InProcessGrpcChannelFactory extends DefaultGrpcChannelFactory<InPro
 	}
 
 	/**
-	 * Whether this factory supports the given target string. The target can be either a
-	 * valid nameresolver-compliant URI or an authority string as described in
-	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}.
+	 * {@inheritDoc}
 	 * @param target the target string as described in method javadocs
 	 * @return true if the target begins with 'in-process:'
 	 */
 	@Override
 	public boolean supports(String target) {
-		return target.startsWith("in-process:");
+		if (target.startsWith("in-process:")) {
+			return true;
+		}
+		var targetUri = this.targets.getTarget(target);
+		return targetUri.startsWith("in-process:");
 	}
 
 	@Override
