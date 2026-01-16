@@ -31,8 +31,9 @@ public interface GrpcChannelFactory {
 
 	/**
 	 * Whether this factory supports the given target string. The target can be either a
-	 * valid nameresolver-compliant URI or an authority string as described in
-	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}.
+	 * valid nameresolver-compliant URI, an authority string as described in
+	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or a named channel
+	 * which will use the address of a user-configured channel as the target to check.
 	 * @param target the target string as described in method javadocs
 	 * @return whether this factory supports the given target string
 	 */

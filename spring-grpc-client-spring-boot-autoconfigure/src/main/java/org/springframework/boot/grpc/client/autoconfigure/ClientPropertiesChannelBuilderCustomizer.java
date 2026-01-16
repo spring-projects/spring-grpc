@@ -52,7 +52,7 @@ class ClientPropertiesChannelBuilderCustomizer<T extends ManagedChannelBuilder<T
 		ChannelConfig channel = this.properties.getChannel(authority);
 		PropertyMapper mapper = PropertyMapper.get();
 		mapper.from(channel.getUserAgent()).to(builder::userAgent);
-		if (!authority.startsWith("unix:") && !authority.startsWith("in-process:")) {
+		if (targetAllowsLoadBalancer(authority)) {
 			mapper.from(channel.getDefaultLoadBalancingPolicy()).to(builder::defaultLoadBalancingPolicy);
 		}
 		mapper.from(channel.getMaxInboundMessageSize()).asInt(DataSize::toBytes).to(builder::maxInboundMessageSize);
@@ -73,6 +73,12 @@ class ClientPropertiesChannelBuilderCustomizer<T extends ManagedChannelBuilder<T
 		if (channel.getDefaultDeadline() != null && channel.getDefaultDeadline().toMillis() > 0L) {
 			builder.intercept(new DefaultDeadlineSetupClientInterceptor(channel.getDefaultDeadline()));
 		}
+	}
+
+	private boolean targetAllowsLoadBalancer(String authority) {
+		var targetUri = this.properties.getTarget(authority);
+		return !authority.startsWith("unix:") && !authority.startsWith("in-process:") && !targetUri.startsWith("unix:")
+				&& !targetUri.startsWith("in-process:");
 	}
 
 	Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {
