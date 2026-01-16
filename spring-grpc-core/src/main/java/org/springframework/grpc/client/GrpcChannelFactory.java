@@ -30,11 +30,12 @@ import io.grpc.ManagedChannel;
 public interface GrpcChannelFactory {
 
 	/**
-	 * Whether this factory supports the given target string. The target can be either a
-	 * valid nameresolver-compliant URI, an authority string as described in
-	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or a named channel
-	 * which will use the address of a user-configured channel as the target to check.
-	 * @param target the target string as described in method javadocs
+	 * Whether this factory supports the given target string.
+	 * <p>
+	 * The target can be either a valid nameresolver-compliant URI or an authority string
+	 * as described in {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or the
+	 * name of a user-configured channel (e.g. 'my-channel').
+	 * @param target the target string
 	 * @return whether this factory supports the given target string
 	 */
 	boolean supports(String target);
@@ -49,14 +50,15 @@ public interface GrpcChannelFactory {
 	}
 
 	/**
-	 * Creates a {@link ManagedChannel} for the given target string. The target can be
-	 * either a valid nameresolver-compliant URI, an authority string as described in
-	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or a named channel
-	 * which will return a builder that is based on a user-configured channel.
+	 * Creates a {@link ManagedChannel} for the given target string.
+	 * <p>
+	 * The target can be either a valid nameresolver-compliant URI or an authority string
+	 * as described in {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or the
+	 * name of a user-configured channel (e.g. 'my-channel').
 	 * <p>
 	 * The returned channel is configured to use all globally registered
 	 * {@link ClientInterceptor interceptors}.
-	 * @param target the target string as described in method javadocs
+	 * @param target the target string
 	 * @return a channel for the given target
 	 */
 	default ManagedChannel createChannel(String target) {
@@ -65,9 +67,10 @@ public interface GrpcChannelFactory {
 
 	/**
 	 * Creates a {@link ManagedChannel} for the given target string. The target can be
-	 * either a valid nameresolver-compliant URI, an authority string as described in
-	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or a named channel
-	 * which will return a builder that is based on a user-configured channel.
+	 * <p>
+	 * The target can be either a valid nameresolver-compliant URI or an authority string
+	 * as described in {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or the
+	 * name of a user-configured channel (e.g. 'my-channel').
 	 * <p>
 	 * The returned channel is configured to use all globally registered
 	 * {@link ClientInterceptor interceptors} and any user-provided interceptor if

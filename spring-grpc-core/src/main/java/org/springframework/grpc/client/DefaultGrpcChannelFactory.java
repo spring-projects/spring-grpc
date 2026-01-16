@@ -81,7 +81,7 @@ public class DefaultGrpcChannelFactory<T extends ManagedChannelBuilder<T>>
 
 	/**
 	 * {@inheritDoc}
-	 * @param target the target string as described in method javadocs
+	 * @param target the target string
 	 * @return true unless the target begins with 'in-process:'
 	 */
 	@Override

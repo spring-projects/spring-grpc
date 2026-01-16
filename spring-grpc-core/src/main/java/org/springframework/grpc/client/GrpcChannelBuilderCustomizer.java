@@ -18,11 +18,13 @@ package org.springframework.grpc.client;
 
 import java.util.function.Consumer;
 
+import io.grpc.ChannelCredentials;
+import io.grpc.Grpc;
 import io.grpc.ManagedChannelBuilder;
 
 /**
  * Callback interface that can be used to customize a {@link ManagedChannelBuilder} for a
- * specific authority.
+ * specific target.
  *
  * @param <T> type of builder
  * @author Dave Syer
@@ -33,16 +35,19 @@ public interface GrpcChannelBuilderCustomizer<T extends ManagedChannelBuilder<T>
 
 	/**
 	 * Callback to customize a {@link ManagedChannelBuilder channel builder} instance for
-	 * a specific target authority.
-	 * @param authority the target authority for the channel
+	 * a specific target string. The target can be either a valid nameresolver-compliant
+	 * URI or an authority string as described in
+	 * {@link Grpc#newChannelBuilder(String, ChannelCredentials)}, or the name of a
+	 * user-configured channel (e.g. 'my-channel').
+	 * @param target the target string
 	 * @param builder the builder to customize
 	 */
-	void customize(String authority, T builder);
+	void customize(String target, T builder);
 
 	default GrpcChannelBuilderCustomizer<T> then(GrpcChannelBuilderCustomizer<T> other) {
-		return (authority, builder) -> {
-			customize(authority, builder);
-			other.customize(authority, builder);
+		return (target, builder) -> {
+			customize(target, builder);
+			other.customize(target, builder);
 		};
 	}
 
@@ -58,8 +63,8 @@ public interface GrpcChannelBuilderCustomizer<T extends ManagedChannelBuilder<T>
 
 	static <T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> matching(String pattern,
 			Consumer<ManagedChannelBuilder<T>> consumer) {
-		return (authority, channel) -> {
-			if (pattern.matches(authority)) {
+		return (target, channel) -> {
+			if (pattern.matches(target)) {
 				consumer.accept(channel);
 			}
 		};
