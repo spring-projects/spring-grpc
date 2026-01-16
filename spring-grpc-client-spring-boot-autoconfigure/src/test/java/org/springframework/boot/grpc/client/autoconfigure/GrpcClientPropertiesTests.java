@@ -209,14 +209,14 @@ class GrpcClientPropertiesTests {
 		}
 
 		@Test
-		void withKnownNameReturnsKnownChannel() {
+		void withKnownNameReturnsMergedChannel() {
 			Map<String, String> map = new HashMap<>();
 			// we have to at least bind one property or bind() fails
 			map.put("spring.grpc.client.channels.c1.enable-keep-alive", "false");
 			GrpcClientProperties properties = bindProperties(map);
 			var channel = properties.getChannel("c1");
-			assertThat(properties).extracting("channels", InstanceOfAssertFactories.MAP)
-				.containsExactly(entry("c1", channel));
+			assertThat(properties).extracting("channels", InstanceOfAssertFactories.MAP).containsKey("c1");
+			assertThat(channel.isEnableKeepAlive()).isFalse();
 		}
 
 		@Test
@@ -306,6 +306,111 @@ class GrpcClientPropertiesTests {
 			var newChannel = defaultChannel.copy();
 			assertThat(newChannel).usingRecursiveComparison().isEqualTo(defaultChannel);
 			assertThat(newChannel.getServiceConfig()).isEqualTo(defaultChannel.getServiceConfig());
+		}
+
+	}
+
+	@Nested
+	class ChannelInheritanceAPI {
+
+		@Test
+		void namedChannelInheritsFromDefaultChannel() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.max-inbound-message-size", "5MB");
+			map.put("spring.grpc.client.default-channel.max-inbound-metadata-size", "1MB");
+			map.put("spring.grpc.client.default-channel.enable-keep-alive", "true");
+			map.put("spring.grpc.client.channels.service-a.address", "static://service-a:6565");
+			GrpcClientProperties properties = bindProperties(map);
+
+			var channel = properties.getChannel("service-a");
+
+			assertThat(channel.getMaxInboundMessageSize()).isEqualTo(DataSize.ofMegabytes(5));
+			assertThat(channel.getMaxInboundMetadataSize()).isEqualTo(DataSize.ofMegabytes(1));
+			assertThat(channel.isEnableKeepAlive()).isTrue();
+			assertThat(channel.getAddress()).isEqualTo("static://service-a:6565");
+		}
+
+		@Test
+		void namedChannelOverridesDefaultChannelSettings() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.max-inbound-message-size", "5MB");
+			map.put("spring.grpc.client.default-channel.enable-keep-alive", "true");
+			map.put("spring.grpc.client.default-channel.idle-timeout", "30s");
+			map.put("spring.grpc.client.channels.service-a.address", "static://service-a:6565");
+			map.put("spring.grpc.client.channels.service-a.max-inbound-message-size", "10MB");
+			map.put("spring.grpc.client.channels.service-a.enable-keep-alive", "false");
+			GrpcClientProperties properties = bindProperties(map);
+
+			var channel = properties.getChannel("service-a");
+
+			assertThat(channel.getMaxInboundMessageSize()).isEqualTo(DataSize.ofMegabytes(10));
+			assertThat(channel.isEnableKeepAlive()).isFalse();
+			assertThat(channel.getIdleTimeout()).isEqualTo(Duration.ofSeconds(30));
+		}
+
+		@Test
+		void namedChannelMergesNestedHealthConfig() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.health.enabled", "true");
+			map.put("spring.grpc.client.default-channel.health.service-name", "default-service");
+			map.put("spring.grpc.client.channels.service-a.address", "static://service-a:6565");
+			map.put("spring.grpc.client.channels.service-a.health.service-name", "service-a-health");
+			GrpcClientProperties properties = bindProperties(map);
+
+			var channel = properties.getChannel("service-a");
+
+			assertThat(channel.getHealth().isEnabled()).isTrue();
+			assertThat(channel.getHealth().getServiceName()).isEqualTo("service-a-health");
+		}
+
+		@Test
+		void namedChannelMergesNestedSslConfig() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.ssl.enabled", "true");
+			map.put("spring.grpc.client.default-channel.ssl.bundle", "default-bundle");
+			map.put("spring.grpc.client.channels.service-a.address", "static://service-a:6565");
+			map.put("spring.grpc.client.channels.service-a.ssl.bundle", "service-a-bundle");
+			GrpcClientProperties properties = bindProperties(map);
+
+			var channel = properties.getChannel("service-a");
+
+			assertThat(channel.getSsl().isEnabled()).isTrue();
+			assertThat(channel.getSsl().getBundle()).isEqualTo("service-a-bundle");
+		}
+
+		@Test
+		void namedChannelMergesServiceConfig() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.service-config.default-key", "default-value");
+			map.put("spring.grpc.client.channels.service-a.address", "static://service-a:6565");
+			map.put("spring.grpc.client.channels.service-a.service-config.custom-key", "custom-value");
+			GrpcClientProperties properties = bindProperties(map);
+
+			var channel = properties.getChannel("service-a");
+
+			assertThat(channel.getServiceConfig()).containsKey("default-key");
+			assertThat(channel.getServiceConfig()).containsKey("custom-key");
+		}
+
+		@Test
+		void multipleNamedChannelsAllInheritFromDefault() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.max-inbound-message-size", "5MB");
+			map.put("spring.grpc.client.default-channel.enable-keep-alive", "true");
+			map.put("spring.grpc.client.channels.service-a.address", "static://service-a:6565");
+			map.put("spring.grpc.client.channels.service-b.address", "static://service-b:6565");
+			GrpcClientProperties properties = bindProperties(map);
+
+			var channelA = properties.getChannel("service-a");
+			var channelB = properties.getChannel("service-b");
+
+			assertThat(channelA.getMaxInboundMessageSize()).isEqualTo(DataSize.ofMegabytes(5));
+			assertThat(channelA.isEnableKeepAlive()).isTrue();
+			assertThat(channelA.getAddress()).isEqualTo("static://service-a:6565");
+
+			assertThat(channelB.getMaxInboundMessageSize()).isEqualTo(DataSize.ofMegabytes(5));
+			assertThat(channelB.isEnableKeepAlive()).isTrue();
+			assertThat(channelB.getAddress()).isEqualTo("static://service-b:6565");
 		}
 
 	}
