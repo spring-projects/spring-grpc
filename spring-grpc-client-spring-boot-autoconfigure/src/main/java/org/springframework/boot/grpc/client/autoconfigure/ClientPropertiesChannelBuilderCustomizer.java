@@ -48,11 +48,11 @@ class ClientPropertiesChannelBuilderCustomizer<T extends ManagedChannelBuilder<T
 	}
 
 	@Override
-	public void customize(String authority, T builder) {
-		ChannelConfig channel = this.properties.getChannel(authority);
+	public void customize(String target, T builder) {
+		ChannelConfig channel = this.properties.getChannel(target);
 		PropertyMapper mapper = PropertyMapper.get();
 		mapper.from(channel.getUserAgent()).to(builder::userAgent);
-		if (targetAllowsLoadBalancer(authority)) {
+		if (targetAllowsLoadBalancer(target)) {
 			mapper.from(channel.getDefaultLoadBalancingPolicy()).to(builder::defaultLoadBalancingPolicy);
 		}
 		mapper.from(channel.getMaxInboundMessageSize()).asInt(DataSize::toBytes).to(builder::maxInboundMessageSize);

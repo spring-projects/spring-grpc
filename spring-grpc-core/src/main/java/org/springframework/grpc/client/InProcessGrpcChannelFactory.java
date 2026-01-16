@@ -44,7 +44,7 @@ public class InProcessGrpcChannelFactory extends DefaultGrpcChannelFactory<InPro
 
 	/**
 	 * {@inheritDoc}
-	 * @param target the target string as described in method javadocs
+	 * @param target the target string
 	 * @return true if the target begins with 'in-process:'
 	 */
 	@Override
