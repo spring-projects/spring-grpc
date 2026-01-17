@@ -32,6 +32,7 @@ import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.CoroutineStubFactory;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
+import org.springframework.grpc.client.GrpcClientBeanPostProcessor;
 import org.springframework.grpc.client.GrpcClientFactory;
 
 import io.grpc.CompressorRegistry;
@@ -50,6 +51,12 @@ public final class GrpcClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	ClientInterceptorsConfigurer clientInterceptorsConfigurer(ApplicationContext applicationContext) {
 		return new ClientInterceptorsConfigurer(applicationContext);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	static GrpcClientBeanPostProcessor grpcClientBeanPostProcessor() {
+		return new GrpcClientBeanPostProcessor();
 	}
 
 	@Bean

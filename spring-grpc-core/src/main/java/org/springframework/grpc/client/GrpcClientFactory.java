@@ -83,9 +83,13 @@ public class GrpcClientFactory implements ApplicationContextAware {
 	}
 
 	public <T> T getClient(String target, Class<T> type, Class<?> factory) {
+		return getClient(target, type, factory, ChannelBuilderOptions.defaults());
+	}
+
+	public <T> T getClient(String target, Class<T> type, Class<?> factory, ChannelBuilderOptions options) {
 		@SuppressWarnings("unchecked")
 		StubFactory<T> stubs = (StubFactory<T>) findFactory(factory, type);
-		T client = (T) stubs.create(() -> channels().createChannel(target, ChannelBuilderOptions.defaults()), type);
+		T client = (T) stubs.create(() -> channels().createChannel(target, options), type);
 		return client;
 	}
 
