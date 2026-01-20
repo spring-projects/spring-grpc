@@ -43,7 +43,8 @@ public class GrpcExceptionHandlerMethodResolver implements InitializingBean {
 
 	private final GrpcAdviceDiscoverer grpcAdviceDiscoverer;
 
-	private Class<? extends Throwable>[] annotatedExceptions;
+	@SuppressWarnings("unchecked")
+	private Class<? extends Throwable>[] annotatedExceptions = new Class[0];
 
 	/**
 	 * Create a new instance.
