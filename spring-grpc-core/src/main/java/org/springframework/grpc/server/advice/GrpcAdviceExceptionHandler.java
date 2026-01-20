@@ -130,7 +130,7 @@ public class GrpcAdviceExceptionHandler implements org.springframework.grpc.serv
 			return null;
 		}
 
-		Entry<Object, Method> methodWithInstance = this.grpcExceptionHandlerMethodResolver
+		Entry<@Nullable Object, @Nullable Method> methodWithInstance = this.grpcExceptionHandlerMethodResolver
 			.resolveMethodWithInstance(exceptionClass);
 		Method mappedMethod = methodWithInstance.getValue();
 		Object instanceOfMappedMethod = methodWithInstance.getKey();

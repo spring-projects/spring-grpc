@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnGrpcServerEnabled;
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnSpringGrpc;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.server.advice.GrpcAdvice;
 import org.springframework.grpc.server.advice.GrpcAdviceDiscoverer;
@@ -43,8 +44,8 @@ public class GrpcAdviceAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	GrpcAdviceDiscoverer grpcAdviceDiscoverer() {
-		return new GrpcAdviceDiscoverer();
+	GrpcAdviceDiscoverer grpcAdviceDiscoverer(ApplicationContext applicationContext) {
+		return new GrpcAdviceDiscoverer(applicationContext);
 	}
 
 	@Bean

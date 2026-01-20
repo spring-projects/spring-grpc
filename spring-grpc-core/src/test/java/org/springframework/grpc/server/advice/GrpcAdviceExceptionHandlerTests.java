@@ -22,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -120,8 +121,8 @@ class GrpcAdviceExceptionHandlerTests {
 	static class TestConfig {
 
 		@Bean
-		GrpcAdviceDiscoverer grpcAdviceDiscoverer() {
-			return new GrpcAdviceDiscoverer();
+		GrpcAdviceDiscoverer grpcAdviceDiscoverer(ApplicationContext applicationContext) {
+			return new GrpcAdviceDiscoverer(applicationContext);
 		}
 
 		@Bean

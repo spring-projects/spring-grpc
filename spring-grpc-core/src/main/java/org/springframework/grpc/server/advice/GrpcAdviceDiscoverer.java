@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.Assert;
@@ -39,7 +39,7 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
  *
  * @author Oleksandr Shevchenko
  */
-public class GrpcAdviceDiscoverer implements InitializingBean, ApplicationContextAware {
+public class GrpcAdviceDiscoverer implements InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(GrpcAdviceDiscoverer.class);
 
@@ -49,30 +49,31 @@ public class GrpcAdviceDiscoverer implements InitializingBean, ApplicationContex
 	public static final MethodFilter EXCEPTION_HANDLER_METHODS = method -> AnnotatedElementUtils.hasAnnotation(method,
 			GrpcExceptionHandler.class);
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	private Map<String, Object> annotatedBeans;
+	private @Nullable Map<String, Object> annotatedBeans;
 
-	private Set<Method> annotatedMethods;
+	private @Nullable Set<Method> annotatedMethods;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
+	public GrpcAdviceDiscoverer(ApplicationContext applicationContext) {
+		Assert.notNull(applicationContext, "applicationContext must not be null");
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
 	public void afterPropertiesSet() {
-		this.annotatedBeans = this.applicationContext.getBeansWithAnnotation(GrpcAdvice.class);
-		this.annotatedBeans.forEach((key, value) -> {
+		Map<String, Object> beans = this.applicationContext.getBeansWithAnnotation(GrpcAdvice.class);
+		beans.forEach((key, value) -> {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Found gRPC advice: " + key + ", class: " + value.getClass().getName());
 			}
 		});
-		this.annotatedMethods = findAnnotatedMethods();
+		this.annotatedBeans = beans;
+		this.annotatedMethods = findAnnotatedMethods(beans);
 	}
 
-	private Set<Method> findAnnotatedMethods() {
-		return this.annotatedBeans.values()
+	private Set<Method> findAnnotatedMethods(Map<String, Object> beans) {
+		return beans.values()
 			.stream()
 			.map(Object::getClass)
 			.map(this::findAnnotatedMethods)
