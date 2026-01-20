@@ -3,9 +3,12 @@
 name: Deploy Jars
 on:
   push:
-    branches: [ main ]
+    branches:
+      - 'main'
+      - '1.0.x'
     paths-ignore:
       - '.github/**'
+
 
 jobs:
   build:
@@ -16,7 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 25 (main)
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
         java-version: '25'
