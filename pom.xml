@@ -81,7 +81,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
 		<!-- internal dependencies -->
-		<spring-boot.version>4.1.0-SNAPSHOT</spring-boot.version>
+		<spring-boot.version>4.1.0-M1</spring-boot.version>
 		<jackson.version>2.21.0</jackson.version>
 		<junit.version>6.0.2</junit.version>
 		<kotlin.coroutines.version>1.10.2</kotlin.coroutines.version>
