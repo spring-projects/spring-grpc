@@ -58,14 +58,14 @@ public final class GrpcClientAutoConfiguration {
 	 * compressionClientCustomizer} used to set the compressor registry on the channel
 	 * builder.
 	 */
-	public static final int COMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 1;
+	public static final int COMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 5;
 
 	/**
 	 * Order applied to the {@link GrpcChannelBuilderCustomizer
 	 * decompressionClientCustomizer} used to set the decompressor registry on the channel
 	 * builder.
 	 */
-	public static final int DECOMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 2;
+	public static final int DECOMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 10;
 
 	@Bean
 	@ConditionalOnMissingBean
