@@ -48,6 +48,7 @@ import org.springframework.grpc.client.GrpcClientFactory;
 import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.client.NettyGrpcChannelFactory;
 import org.springframework.grpc.client.ShadedNettyGrpcChannelFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import io.grpc.Codec;
 import io.grpc.CompressorRegistry;
@@ -228,6 +229,21 @@ class GrpcClientAutoConfigurationTests {
 				.extracting("customizers", InstanceOfAssertFactories.list(GrpcChannelBuilderCustomizer.class))
 				.contains(ChannelBuilderCustomizersConfig.CUSTOMIZER_BAR,
 						ChannelBuilderCustomizersConfig.CUSTOMIZER_FOO));
+	}
+
+	@Test
+	void userDefinedCustomizerCanRunBeforeAndAfterClientPropsCustomizer() {
+		this.contextRunner().withUserConfiguration(UserClientPropsCustomizerConfig.class).run((context) -> {
+			// NOTE: AssertJ "extract list + satisfies" balks about generic types
+			// so we have to do this the old fashion way.
+			var clientPropsCustomizer = context.getBean(ClientPropertiesChannelBuilderCustomizer.class);
+			var channelBuilderCustomizers = context.getBean(ChannelBuilderCustomizers.class);
+			List<GrpcChannelBuilderCustomizer<?>> customizers = (List<GrpcChannelBuilderCustomizer<?>>) ReflectionTestUtils
+				.getField(channelBuilderCustomizers, "customizers");
+			assertThat(customizers).isNotNull();
+			assertThat(customizers).containsSequence(UserClientPropsCustomizerConfig.CUSTOMIZER_PRE_CLIENT_PROPS,
+					clientPropsCustomizer, UserClientPropsCustomizerConfig.CUSTOMIZER_POST_CLIENT_PROPS);
+		});
 	}
 
 	@Test
@@ -443,6 +459,27 @@ class GrpcClientAutoConfigurationTests {
 		@Order(100)
 		GrpcChannelBuilderCustomizer<?> customizerBar() {
 			return CUSTOMIZER_BAR;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserClientPropsCustomizerConfig {
+
+		static GrpcChannelBuilderCustomizer<?> CUSTOMIZER_PRE_CLIENT_PROPS = mock();
+
+		static GrpcChannelBuilderCustomizer<?> CUSTOMIZER_POST_CLIENT_PROPS = mock();
+
+		@Bean
+		@Order(GrpcClientAutoConfiguration.CLIENT_PROPS_CHANNEL_BUILDER_CUSTOMIZER_ORDER - 1)
+		GrpcChannelBuilderCustomizer<?> customizerFoo() {
+			return CUSTOMIZER_PRE_CLIENT_PROPS;
+		}
+
+		@Bean
+		@Order(GrpcClientAutoConfiguration.CLIENT_PROPS_CHANNEL_BUILDER_CUSTOMIZER_ORDER + 1)
+		GrpcChannelBuilderCustomizer<?> customizerBar() {
+			return CUSTOMIZER_POST_CLIENT_PROPS;
 		}
 
 	}

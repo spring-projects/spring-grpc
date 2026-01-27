@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.CoroutineStubFactory;
@@ -46,6 +47,26 @@ import io.grpc.ManagedChannelBuilder;
 		GrpcChannelFactoryConfigurations.InProcessChannelFactoryConfiguration.class, ClientScanConfiguration.class })
 public final class GrpcClientAutoConfiguration {
 
+	/**
+	 * Order applied to the {@link ClientPropertiesChannelBuilderCustomizer} used to apply
+	 * {@link GrpcClientProperties} to channel builders.
+	 */
+	public static final int CLIENT_PROPS_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 0;
+
+	/**
+	 * Order applied to the {@link GrpcChannelBuilderCustomizer
+	 * compressionClientCustomizer} used to set the compressor registry on the channel
+	 * builder.
+	 */
+	public static final int COMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 1;
+
+	/**
+	 * Order applied to the {@link GrpcChannelBuilderCustomizer
+	 * decompressionClientCustomizer} used to set the decompressor registry on the channel
+	 * builder.
+	 */
+	public static final int DECOMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER = 2;
+
 	@Bean
 	@ConditionalOnMissingBean
 	ClientInterceptorsConfigurer clientInterceptorsConfigurer(ApplicationContext applicationContext) {
@@ -59,6 +80,7 @@ public final class GrpcClientAutoConfiguration {
 	}
 
 	@Bean
+	@Order(CLIENT_PROPS_CHANNEL_BUILDER_CUSTOMIZER_ORDER)
 	<T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> clientPropertiesChannelCustomizer(
 			GrpcClientProperties properties) {
 		return new ClientPropertiesChannelBuilderCustomizer<>(properties);
@@ -66,6 +88,7 @@ public final class GrpcClientAutoConfiguration {
 
 	@ConditionalOnBean(CompressorRegistry.class)
 	@Bean
+	@Order(COMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER)
 	<T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> compressionClientCustomizer(
 			CompressorRegistry registry) {
 		return (name, builder) -> builder.compressorRegistry(registry);
@@ -73,6 +96,7 @@ public final class GrpcClientAutoConfiguration {
 
 	@ConditionalOnBean(DecompressorRegistry.class)
 	@Bean
+	@Order(DECOMPRESSION_CHANNEL_BUILDER_CUSTOMIZER_ORDER)
 	<T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> decompressionClientCustomizer(
 			DecompressorRegistry registry) {
 		return (name, builder) -> builder.decompressorRegistry(registry);
