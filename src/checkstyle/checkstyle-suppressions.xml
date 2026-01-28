@@ -8,7 +8,8 @@
 	<suppress files="Proto" checks=".*"/>
 	<suppress files=".*Tests" checks="HideUtilityClassConstructor" />
 	<suppress files=".*Tests" checks="RegexpSinglelineJava" id="toLowerCaseWithoutLocale"/>
-	<suppress files=".*Tests" checks="RegexpSinglelineJava" id="toUpperCaseWithoutLocale"/>
+	<suppress files="GrpcClientFactoryTests" checks="RegexpSinglelineJava" id="toUpperCaseWithoutLocale"/>
+	<suppress files="" checks="RedundantModifier" />
 	<suppress files="[\\/]spring-grpc-docs[\\/]" checks="JavadocPackage|JavadocType|JavadocVariable|SpringDeprecatedCheck" />
 	<suppress files="[\\/]spring-grpc-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-grpc-docs[\\/].*jooq" checks="AvoidStaticImport" />
