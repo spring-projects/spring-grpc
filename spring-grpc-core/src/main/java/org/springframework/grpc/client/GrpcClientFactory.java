@@ -325,11 +325,8 @@ public class GrpcClientFactory implements ApplicationContextAware {
 
 		public GrpcClientRegistrationSpec packageClasses(Class<?>... packageClasses) {
 			String[] packages = new String[packageClasses.length];
-			for (Class<?> basePackageClass : packageClasses) {
-				for (int i = 0; i < packageClasses.length; i++) {
-					String basePackage = ClassUtils.getPackageName(basePackageClass);
-					packages[i] = basePackage;
-				}
+			for (int i = 0; i < packageClasses.length; i++) {
+				packages[i] = ClassUtils.getPackageName(packageClasses[i]);
 			}
 			return packages(packages);
 		}

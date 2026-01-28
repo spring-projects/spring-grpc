@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.util.function.Supplier;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -30,6 +32,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.grpc.client.GrpcClientFactory.GrpcClientRegistrationSpec;
 import org.springframework.grpc.client.GrpcClientFactoryTests.MyProto.MyStub;
+import org.springframework.grpc.client.bar.Bar;
+import org.springframework.grpc.client.foo.ExtraFoo;
+import org.springframework.grpc.client.foo.Foo;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -37,7 +42,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.kotlin.AbstractCoroutineStub;
 import io.grpc.stub.AbstractStub;
 
-public class GrpcClientFactoryTests {
+class GrpcClientFactoryTests {
 
 	private GrpcChannelFactory channelFactory = Mockito.mock(GrpcChannelFactory.class);
 
@@ -112,6 +117,42 @@ public class GrpcClientFactoryTests {
 					.types(MyCoroutineStub.class));
 		assertThat(factory.getClient("local", MyCoroutineStub.class, null)).isNotNull();
 		assertThat(factory.getClient("local", MyStub.class, null)).isNotNull();
+	}
+
+	@Nested // GH-361
+	class GrpcClientRegistrationSpecPackageClassesShould {
+
+		private GrpcClientRegistrationSpec spec = GrpcClientRegistrationSpec.of("local");
+
+		@Test
+		void returnSinglePackageGivenSingleClass() {
+			assertThat(spec.packageClasses(Foo.class)).extracting(GrpcClientRegistrationSpec::packages)
+				.asInstanceOf(InstanceOfAssertFactories.array(String[].class))
+				.containsExactly("org.springframework.grpc.client.foo");
+		}
+
+		@Test
+		void returnSinglePackageGivenMultipleClassesInSamePackage() {
+			assertThat(spec.packageClasses(Foo.class, ExtraFoo.class)).extracting(GrpcClientRegistrationSpec::packages)
+				.asInstanceOf(InstanceOfAssertFactories.array(String[].class))
+				.containsExactly("org.springframework.grpc.client.foo");
+		}
+
+		@Test
+		void returnMultiPackagesGivenMultipleClassesInDifferentPackage() {
+			assertThat(spec.packageClasses(Foo.class, Bar.class)).extracting(GrpcClientRegistrationSpec::packages)
+				.asInstanceOf(InstanceOfAssertFactories.array(String[].class))
+				.containsExactly("org.springframework.grpc.client.foo", "org.springframework.grpc.client.bar");
+		}
+
+		@Test
+		void returnMultiPackagesGivenMultipleClassesInSameAndDifferentPackage() {
+			assertThat(spec.packageClasses(Foo.class, Bar.class, ExtraFoo.class))
+				.extracting(GrpcClientRegistrationSpec::packages)
+				.asInstanceOf(InstanceOfAssertFactories.array(String[].class))
+				.containsExactly("org.springframework.grpc.client.foo", "org.springframework.grpc.client.bar");
+		}
+
 	}
 
 	static class OtherStubFactory implements StubFactory<OtherStub> {
