@@ -96,11 +96,10 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 			throw new BadCredentialsException("not authenticated");
 		}
 
-		SecurityContext currentContext = SecurityContextHolder.getContext();
 		try {
-			Context context = Context.current().withValue(GrpcSecurity.SECURITY_CONTEXT_KEY, currentContext);
+			Context context = Context.current().withValue(GrpcSecurity.SECURITY_CONTEXT_KEY, securityContext);
 			return new SecurityContextHandlerListener<ReqT, RespT>(Contexts.interceptCall(context, call, headers, next),
-					currentContext);
+					securityContext);
 		}
 		finally {
 			SecurityContextHolder.clearContext();
