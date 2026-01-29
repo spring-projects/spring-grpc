@@ -30,7 +30,7 @@ jobs:
           cache: maven
       - name: Build, test, and run samples (Java ${{ matrix.javaVersion }} ${{ matrix.distribution }})
         run: |
-          ./mvnw -B clean install
+          ./mvnw -B clean install-Dgpg.skip=true
       - name: Upload Build Reports (Java ${{ matrix.javaVersion }} ${{ matrix.distribution }})
         if: failure()
         uses: actions/upload-artifact@v4
