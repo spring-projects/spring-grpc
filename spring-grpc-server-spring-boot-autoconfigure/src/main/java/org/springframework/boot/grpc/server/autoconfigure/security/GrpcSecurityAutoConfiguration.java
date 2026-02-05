@@ -72,7 +72,7 @@ public final class GrpcSecurityAutoConfiguration {
 
 		@Bean
 		GrpcExceptionHandler accessExceptionHandler() {
-			return new SecurityGrpcExceptionHandler();
+			return new SecurityGrpcExceptionHandler(0);
 		}
 
 	}

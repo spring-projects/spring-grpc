@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.core.Ordered;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -27,9 +28,15 @@ import org.springframework.security.core.AuthenticationException;
 import io.grpc.Status;
 import io.grpc.StatusException;
 
-public class SecurityGrpcExceptionHandler implements GrpcExceptionHandler {
+public class SecurityGrpcExceptionHandler implements GrpcExceptionHandler, Ordered {
 
 	private static final Log logger = LogFactory.getLog(SecurityGrpcExceptionHandler.class);
+
+	private final int order;
+
+	public SecurityGrpcExceptionHandler(int order) {
+		this.order = order;
+	}
 
 	@Override
 	public @Nullable StatusException handleException(Throwable exception) {
@@ -46,6 +53,11 @@ public class SecurityGrpcExceptionHandler implements GrpcExceptionHandler {
 			return Status.PERMISSION_DENIED.withDescription(exception.getMessage()).asException();
 		}
 		return null;
+	}
+
+	@Override
+	public int getOrder() {
+		return this.order;
 	}
 
 }
