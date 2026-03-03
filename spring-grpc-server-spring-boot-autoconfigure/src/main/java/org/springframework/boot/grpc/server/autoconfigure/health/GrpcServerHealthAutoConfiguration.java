@@ -43,6 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -129,7 +130,12 @@ public final class GrpcServerHealthAutoConfiguration {
 
 	}
 
-	static class OnHealthDefaultEnablementCondition extends SpringBootCondition {
+	static class OnHealthDefaultEnablementCondition extends SpringBootCondition implements ConfigurationCondition {
+
+		@Override
+		public ConfigurationCondition.ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationCondition.ConfigurationPhase.REGISTER_BEAN;
+		}
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthAutoConfiguration.ActuatorHealthAdapterConfiguration;
@@ -36,6 +37,7 @@ import org.springframework.boot.health.autoconfigure.registry.HealthContributorR
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.util.StringUtils;
 
@@ -179,6 +181,24 @@ class GrpcServerHealthAutoConfigurationTests {
 	private String beanDefinitionNameForConfigClass(Class<?> configClass) {
 		var fullName = configClass.getName();
 		return StringUtils.uncapitalize(fullName);
+	}
+
+	@Test
+	void whenBindableServiceRegisteredViaAutoConfigurationHealthIsEnabled() {
+		new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(LateBindableServiceAutoConfiguration.class,
+					GrpcServerHealthAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(GrpcServerHealthAutoConfiguration.class));
+	}
+
+	@AutoConfiguration(before = GrpcServerHealthAutoConfiguration.class)
+	static class LateBindableServiceAutoConfiguration {
+
+		@Bean
+		BindableService bindableService() {
+			return Mockito.mock(BindableService.class);
+		}
+
 	}
 
 	@Nested
