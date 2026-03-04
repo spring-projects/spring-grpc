@@ -70,7 +70,7 @@ public class GrpcServerStartedEvent extends GrpcServerLifecycleEvent {
 	}
 
 	/**
-	 * Gets the address the server server was started with.
+	 * Gets the address the server was started with.
 	 * @return The address to use.
 	 */
 	public String getAddress() {
