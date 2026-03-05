@@ -17,6 +17,9 @@
 package org.springframework.boot.grpc.client.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
@@ -63,6 +66,7 @@ import io.grpc.stub.AbstractStub;
  * Tests for {@link GrpcClientAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Andrey Litvitski
  */
 @SuppressWarnings({ "unchecked" })
 class GrpcClientAutoConfigurationTests {
@@ -244,6 +248,21 @@ class GrpcClientAutoConfigurationTests {
 			assertThat(customizers).containsSequence(UserClientPropsCustomizerConfig.CUSTOMIZER_PRE_CLIENT_PROPS,
 					clientPropsCustomizer, UserClientPropsCustomizerConfig.CUSTOMIZER_POST_CLIENT_PROPS);
 		});
+	}
+
+	@Test
+	void keepAliveSettingsNotAppliedWhenDisabled() {
+		this.contextRunner()
+			.withPropertyValues("spring.grpc.client.default-channel.enable-keep-alive=false")
+			.run((context) -> {
+				var customizer = context.getBean("clientPropertiesChannelCustomizer",
+						GrpcChannelBuilderCustomizer.class);
+				ManagedChannelBuilder<?> builder = Mockito.mock();
+				customizer.customize("default", builder);
+				then(builder).should(never()).keepAliveTime(anyLong(), any());
+				then(builder).should(never()).keepAliveTimeout(anyLong(), any());
+				then(builder).should(never()).keepAliveWithoutCalls(anyBoolean());
+			});
 	}
 
 	@Test
