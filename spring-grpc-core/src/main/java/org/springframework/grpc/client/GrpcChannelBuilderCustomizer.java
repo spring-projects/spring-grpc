@@ -64,7 +64,7 @@ public interface GrpcChannelBuilderCustomizer<T extends ManagedChannelBuilder<T>
 	static <T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> matching(String pattern,
 			Consumer<ManagedChannelBuilder<T>> consumer) {
 		return (target, channel) -> {
-			if (pattern.matches(target)) {
+			if (target.matches(pattern)) {
 				consumer.accept(channel);
 			}
 		};
