@@ -104,8 +104,8 @@ You can switch to a shaded Netty implementation provided by the gRPC team by add
 [source,xml]
 ----
 <dependency>
-	<groupId>org.springframework.grpc</groupId>
-	<artifactId>spring-grpc-spring-boot-starter</artifactId>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-grpc-client</artifactId>
 	<exclusions>
 		<exclusion>
 			<groupId>io.grpc</groupId>
@@ -124,7 +124,7 @@ For Gradle users
 [source,gradle]
 ----
 dependencies {
-	implementation "org.springframework.grpc:spring-grpc-spring-boot-starter"
+	implementation "org.springframework.boot:spring-boot-starter-grpc-client"
 	implementation 'io.grpc:grpc-netty-shaded'
 	modules {
 		module("io.grpc:grpc-netty") {

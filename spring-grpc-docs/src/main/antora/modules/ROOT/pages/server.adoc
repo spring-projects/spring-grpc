@@ -58,8 +58,8 @@ You can switch to a shaded Netty provided by the gRPC team by adding the `grpc-n
 [source,xml]
 ----
 <dependency>
-	<groupId>org.springframework.grpc</groupId>
-	<artifactId>spring-grpc-spring-boot-starter</artifactId>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-grpc-server</artifactId>
 	<exclusions>
 		<exclusion>
 			<groupId>io.grpc</groupId>
@@ -78,7 +78,7 @@ For Gradle users
 [source,gradle]
 ----
 dependencies {
-	implementation "org.springframework.grpc:spring-grpc-spring-boot-starter"
+	implementation "org.springframework.boot:spring-boot-starter-grpc-server"
 	implementation 'io.grpc:grpc-netty-shaded'
 	modules {
 		module("io.grpc:grpc-netty") {
@@ -91,15 +91,23 @@ dependencies {
 == Servlet Server
 
 Any servlet container can be used to run a gRPC server.
-Spring gRPC includes autoconfiguration that configures the server to use the servlet container if it detects that it is in a web application.
-Spring gRPC also provides a convenience starter that includes the required dependencies (`spring-boot-starter-web` and the `grpc-servlet-jakarta`) for this scenario.
-So all you have to do is include the `spring-boot-starter-web` dependency as follows:
+Spring Boot gRPC includes autoconfiguration that configures the server to use the servlet container if it detects that it is in a web application.
+
+To run in this mode you must enable HTTP2 on the server by setting `server.http2.enabled` to `true` and include the required dependencies as follows:
 
 [source,xml]
 ----
 <dependency>
-	<groupId>org.springframework.grpc</groupId>
-	<artifactId>spring-grpc-server-web-spring-boot-starter</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-grpc-server</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-servlet-jakarta</artifactId>
 </dependency>
 ----
 
@@ -108,7 +116,9 @@ For Gradle users
 [source,gradle]
 ----
 dependencies {
-    implementation "org.springframework.grpc:spring-grpc-server-web-spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-grpc-server"
+    implementation "io.grpc:grpc-servlet-jakarta"
 }
 ----
 
