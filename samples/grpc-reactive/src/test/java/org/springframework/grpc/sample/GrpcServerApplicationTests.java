@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureInProcessTransport;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.grpc.client.ImportGrpcClients;
@@ -20,7 +20,7 @@ import reactor.test.StepVerifier;
 
 @SpringBootTest
 @DirtiesContext
-@AutoConfigureInProcessTransport
+@AutoConfigureTestGrpcTransport
 public class GrpcServerApplicationTests {
 
 	private static Log log = LogFactory.getLog(GrpcServerApplicationTests.class);

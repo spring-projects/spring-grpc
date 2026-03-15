@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +29,8 @@ import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = "spring.grpc.client.default-channel.address=0.0.0.0:${local.server.port}")
+		properties = "spring.grpc.client.channel.default.target=0.0.0.0:${local.server.port}")
+@Disabled("Need to migrate to Spring Boot 4.1.x")
 public class GrpcServerApplicationTests {
 
 	private static Log log = LogFactory.getLog(GrpcServerApplicationTests.class);

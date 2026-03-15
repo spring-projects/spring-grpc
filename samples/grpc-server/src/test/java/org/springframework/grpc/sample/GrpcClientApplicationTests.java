@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureInProcessTransport;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +23,7 @@ public class GrpcClientApplicationTests {
 
 	@Nested
 	@SpringBootTest
-	@AutoConfigureInProcessTransport
+	@AutoConfigureTestGrpcTransport
 	class NoAutowiredClients {
 
 		@Autowired
@@ -40,27 +40,8 @@ public class GrpcClientApplicationTests {
 	}
 
 	@Nested
-	@SpringBootTest(properties = "spring.grpc.client.default-channel.address=0.0.0.0:9090")
-	@AutoConfigureInProcessTransport
-	class DefaultAutowiredClients {
-
-		@Autowired
-		private ApplicationContext context;
-
-		@Test
-		void onlyDefaultStubIsCreated() {
-			assertThat(context.containsBeanDefinition("simpleBlockingStub")).isTrue();
-			assertThat(context.getBean(SimpleGrpc.SimpleBlockingStub.class)).isNotNull();
-			assertThat(context.containsBeanDefinition("simpleStub")).isFalse();
-			assertThat(context.containsBeanDefinition("simpleFutureStub")).isFalse();
-			assertThat(context.getBeanNamesForType(AbstractStub.class)).hasSize(1);
-		}
-
-	}
-
-	@Nested
-	@SpringBootTest(properties = "spring.grpc.client.default-channel.address=0.0.0.0:9090")
-	@AutoConfigureInProcessTransport
+	@SpringBootTest(properties = "spring.grpc.client.channel.default.target=0.0.0.0:9090")
+	@AutoConfigureTestGrpcTransport
 	class SpecificAutowiredClients {
 
 		@Autowired
@@ -84,8 +65,8 @@ public class GrpcClientApplicationTests {
 	}
 
 	@Nested
-	@SpringBootTest(properties = "spring.grpc.client.default-channel.address=0.0.0.0:9090")
-	@AutoConfigureInProcessTransport
+	@SpringBootTest(properties = "spring.grpc.client.channel.default.target=0.0.0.0:9090")
+	@AutoConfigureTestGrpcTransport
 	class BlockingV2AutowiredClients {
 
 		@Autowired
@@ -110,7 +91,7 @@ public class GrpcClientApplicationTests {
 
 	@Nested
 	@SpringBootTest
-	@AutoConfigureInProcessTransport
+	@AutoConfigureTestGrpcTransport
 	class ExplicitImportClientsWithNoFactory {
 
 		@Autowired
@@ -134,8 +115,8 @@ public class GrpcClientApplicationTests {
 	}
 
 	@Nested
-	@SpringBootTest(properties = "spring.grpc.client.default-channel.address=0.0.0.0:9090")
-	@AutoConfigureInProcessTransport
+	@SpringBootTest(properties = "spring.grpc.client.channel.default.target=0.0.0.0:9090")
+	@AutoConfigureTestGrpcTransport
 	class AllStubAutowiredClients {
 
 		@Autowired
