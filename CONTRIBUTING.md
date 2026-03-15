@@ -11,7 +11,7 @@ In this scenario the nullability constraints will not be validated locally but r
 
 Before submitting a PR, please run the following commands to ensure proper formatting and Javadoc processing
 
-```
+```shell
 ./mvnw spring-javaformat:apply javadoc:javadoc -Pjavadoc
 ```
 
