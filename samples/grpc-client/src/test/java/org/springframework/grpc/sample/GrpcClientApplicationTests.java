@@ -14,11 +14,13 @@ import org.springframework.experimental.boot.server.exec.CommonsExecWebServerFac
 import org.springframework.experimental.boot.server.exec.MavenClasspathEntry;
 import org.springframework.experimental.boot.test.context.DynamicProperty;
 import org.springframework.experimental.boot.test.context.EnableDynamicProperty;
+import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest
 @DirtiesContext
 @EnabledIf("serverJarAvailable")
+@ImportGrpcClients
 public class GrpcClientApplicationTests {
 
 	public static void main(String[] args) {

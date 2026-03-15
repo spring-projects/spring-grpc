@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.grpc.test.autoconfigure.LocalGrpcPort;
+import org.springframework.boot.grpc.test.autoconfigure.LocalGrpcServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ import com.example.demo.proto.HelloReply;
 import com.example.demo.proto.HelloRequest;
 import com.example.demo.proto.SimpleGrpc;
 
-@SpringBootTest(properties = { "spring.grpc.server.port=0" })
+@SpringBootTest(properties = { "spring.grpc.server.address=0.0.0.0:0" })
 @DirtiesContext
 public class DemoApplicationTests {
 
@@ -48,7 +48,7 @@ public class DemoApplicationTests {
 
 		@Bean
 		@Lazy
-		SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channels, @LocalGrpcPort int port) {
+		SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channels, @LocalGrpcServerPort int port) {
 			return SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:" + port));
 		}
 

@@ -21,9 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureInProcessTransport;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.sample.GrpcServerSideTests.TestConfig;
 import org.springframework.grpc.sample.proto.HelloReply;
 import org.springframework.grpc.sample.proto.HelloRequest;
@@ -31,9 +32,10 @@ import org.springframework.grpc.sample.proto.SimpleGrpc.SimpleBlockingStub;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@TestPropertySource(properties = { "spring.grpc.client.default-channel.address=localhost:9090" })
+@TestPropertySource(properties = { "spring.grpc.client.channel.default.target=localhost:9090" })
 @SpringJUnitConfig(TestConfig.class)
-@AutoConfigureInProcessTransport
+@AutoConfigureTestGrpcTransport
+@ImportGrpcClients
 public class GrpcServerSideTests {
 
 	@Autowired

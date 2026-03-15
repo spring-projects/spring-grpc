@@ -7,18 +7,22 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.grpc.sample.proto.HelloReply;
+import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(
-		properties = { "spring.grpc.server.port=0",
-				"spring.grpc.client.default-channel.address=0.0.0.0:${local.grpc.port}" },
+		properties = { "spring.grpc.server.address=0.0.0.0:0",
+				"spring.grpc.client.channel.default.target=0.0.0.0:${local.grpc.sever.port}" },
 		useMainMethod = UseMainMethod.ALWAYS)
 @DirtiesContext
+@AutoConfigureTestGrpcTransport
+@ImportGrpcClients
 public class GrpcServerApplicationTests {
 
 	private static Log log = LogFactory.getLog(GrpcServerApplicationTests.class);

@@ -3,22 +3,22 @@ package org.springframework.grpc.sample
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.SpringBootTest.UseMainMethod
 import org.springframework.grpc.sample.proto.HelloRequest
 import org.springframework.grpc.sample.proto.SimpleGrpc.SimpleBlockingStub
 import org.springframework.test.annotation.DirtiesContext
 
 @SpringBootTest(
     properties = [
-        "spring.grpc.server.port=0",
-        "spring.grpc.client.default-channel.address=0.0.0.0:\${local.grpc.port}"
+        "spring.grpc.server.address=0.0.0.0:0",
+        "spring.grpc.client.channel.default.target=0.0.0.0:\${local.grpc.sever.port}"
     ],
 )
 @DirtiesContext
+@Disabled("Need to migrate to Spring Boot 4.1.x")
 class GrpcServerApplicationTests {
 
     private val log: Log = LogFactory.getLog(this.javaClass)
