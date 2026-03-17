@@ -5,8 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.grpc.server.exception.GrpcExceptionHandler
+import org.springframework.grpc.client.ImportGrpcClients;
+import org.springframework.grpc.sample.proto.SimpleGrpc;
 
 @SpringBootApplication
+@ImportGrpcClients(basePackageClasses = [SimpleGrpc::class])
 open class GrpcServerApplication {
 
     @Bean

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.0-GRPC-SNAPSHOT</version>
+		<version>4.1.0-SNAPSHOT</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.springframework.grpc</groupId>
@@ -30,8 +30,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
-		<protobuf-java.version>4.34.0</protobuf-java.version>
-		<grpc.version>1.79.0</grpc.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -133,25 +131,24 @@
 			<plugin>
 				<groupId>io.github.ascopes</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>4.0.3</version>
+
 				<configuration>
-					<protocVersion>${protobuf-java.version}</protocVersion>
-					<binaryMavenPlugins>
-						<binaryMavenPlugin>
+					<protoc>${protobuf-java.version}</protoc>
+					<plugins>
+						<plugin kind="binary-maven">
 							<groupId>io.grpc</groupId>
 							<artifactId>protoc-gen-grpc-java</artifactId>
-							<version>${grpc.version}</version>
+							<version>${grpc-java.version}</version>
 							<options>@generated=omit</options>
-						</binaryMavenPlugin>
-					</binaryMavenPlugins>
-					<jvmMavenPlugins>
-						<jvmMavenPlugin>
+						</plugin>
+						<plugin kind="jvm-maven">
 							<groupId>com.salesforce.servicelibs</groupId>
 							<artifactId>reactor-grpc</artifactId>
 							<version>1.2.4</version>
-						</jvmMavenPlugin>
-					</jvmMavenPlugins>
+						</plugin>
+					</plugins>
 				</configuration>
+
 				<executions>
 					<execution>
 						<goals>

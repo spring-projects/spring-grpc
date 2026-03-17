@@ -19,7 +19,7 @@ import com.example.demo.proto.HelloReply;
 import com.example.demo.proto.HelloRequest;
 import com.example.demo.proto.SimpleGrpc;
 
-@SpringBootTest(properties = { "spring.grpc.server.address=0.0.0.0:0" })
+@SpringBootTest(properties = { "spring.grpc.server.port=0" })
 @DirtiesContext
 public class DemoApplicationTests {
 

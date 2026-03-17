@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -16,10 +15,9 @@ import org.springframework.grpc.sample.proto.SimpleGrpc;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.grpc.client.channel.default.target=0.0.0.0:${local.grpc.sever.port}",
-				"spring.grpc.server.address=0.0.0.0:0" })
+		properties = { "spring.grpc.client.channel.default.target=0.0.0.0:${local.grpc.server.port}",
+				"spring.grpc.server.port=0" })
 @DirtiesContext
-@Disabled("Need to migrate to Spring Boot 4.1.x")
 public class GrpcServerApplicationTests {
 
 	private static Log log = LogFactory.getLog(GrpcServerApplicationTests.class);

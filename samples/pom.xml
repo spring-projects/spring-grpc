@@ -15,6 +15,11 @@
 	<packaging>pom</packaging>
 	<name>Parent Demo</name>
 
+	<!-- 
+		Run tests on command line:
+			../mvnw clean install -Dmaven-checkstyle-plugin.config.location=../src/checkstyle
+	-->
+
 	<modules>
 		<module>grpc-server</module>
 		<module>grpc-client</module>
