@@ -16,15 +16,18 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 
+import io.micrometer.core.instrument.binder.grpc.GrpcServerObservationConvention;
 import io.micrometer.core.instrument.binder.grpc.ObservationGrpcServerInterceptor;
 import io.micrometer.core.instrument.kotlin.ObservationCoroutineContextServerInterceptor;
 import io.micrometer.observation.ObservationRegistry;
@@ -35,6 +38,7 @@ import io.micrometer.observation.ObservationRegistry;
  * @author Sunny Tang
  * @author Chris Bono
  * @author Dave Syer
+ * @author Andrey Litvitski
  * @since 1.0.0
  */
 @AutoConfiguration(
@@ -48,8 +52,14 @@ public final class GrpcServerObservationAutoConfiguration {
 	@Bean
 	@Order(0)
 	@GlobalServerInterceptor
-	ObservationGrpcServerInterceptor observationGrpcServerInterceptor(ObservationRegistry observationRegistry) {
-		return new ObservationGrpcServerInterceptor(observationRegistry);
+	@ConditionalOnMissingBean
+	ObservationGrpcServerInterceptor observationGrpcServerInterceptor(ObservationRegistry observationRegistry,
+			ObjectProvider<GrpcServerObservationConvention> convention) {
+		ObservationGrpcServerInterceptor interceptor = new ObservationGrpcServerInterceptor(observationRegistry);
+		if (convention.getIfAvailable() != null) {
+			interceptor.setCustomConvention(convention.getIfAvailable());
+		}
+		return interceptor;
 	}
 
 	@Configuration(proxyBeanMethods = false)
