@@ -71,7 +71,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
 		<!-- internal dependencies -->
-		<spring-boot.version>4.1.0-M1</spring-boot.version>
 		<jackson.version>2.21.1</jackson.version>
 		<junit.version>6.0.3</junit.version>
 		<kotlin.coroutines.version>1.10.2</kotlin.coroutines.version>
@@ -429,13 +428,6 @@
 							<source>${java.version}</source>
 							<target>${java.version}</target>
 							<compilerArgument>-parameters</compilerArgument>
-							<annotationProcessorPaths>
-								<path>
-									<groupId>org.springframework.boot</groupId>
-									<artifactId>spring-boot-configuration-processor</artifactId>
-									<version>${spring-boot.version}</version>
-								</path>
-							</annotationProcessorPaths>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -489,11 +481,6 @@
 									<groupId>com.uber.nullaway</groupId>
 									<artifactId>nullaway</artifactId>
 									<version>${nullaway.version}</version>
-								</path>
-								<path>
-									<groupId>org.springframework.boot</groupId>
-									<artifactId>spring-boot-configuration-processor</artifactId>
-									<version>${spring-boot.version}</version>
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
