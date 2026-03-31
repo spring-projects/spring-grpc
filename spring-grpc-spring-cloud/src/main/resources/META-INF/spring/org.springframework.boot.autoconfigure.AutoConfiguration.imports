@@ -1,1 +1,2 @@
 org.springframework.grpc.client.discovery.autoconfigure.DiscoveryClientNameResolverAutoConfiguration
+org.springframework.grpc.client.discovery.autoconfigure.GrpcDiscoveryServiceRegistryAutoConfiguration

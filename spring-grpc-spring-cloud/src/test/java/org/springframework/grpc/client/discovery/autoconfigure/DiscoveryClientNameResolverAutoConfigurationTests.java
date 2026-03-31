@@ -23,9 +23,12 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.client.discovery.DiscoveryClientNameResolverProvider;
 import org.springframework.grpc.client.discovery.DiscoveryNameResolverRefresher;
 import org.springframework.grpc.client.discovery.DiscoveryNameResolverRegistrar;
+import org.springframework.grpc.client.discovery.GrpcDiscoveryConstants;
+import org.springframework.grpc.client.discovery.GrpcPortMetadataRegistrationBeanPostProcessor;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 /**
@@ -66,6 +69,88 @@ class DiscoveryClientNameResolverAutoConfigurationTests {
 			context.refresh();
 			assertThat(context.getBeansOfType(DiscoveryClientNameResolverProvider.class)).isEmpty();
 		}
+	}
+
+	@Test
+	void channelFactoryDependsOnDiscoveryRegistrar() {
+		try (var context = new AnnotationConfigApplicationContext()) {
+			context.registerBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class));
+			context.registerBean("grpcChannelFactory", GrpcChannelFactory.class, () -> mock(GrpcChannelFactory.class));
+			context.register(DiscoveryClientNameResolverAutoConfiguration.class);
+			context.refresh();
+			assertThat(context.getBeanFactory().getBeanDefinition("grpcChannelFactory").getDependsOn())
+				.contains("discoveryNameResolverRegistrar");
+		}
+	}
+
+	@Test
+	void serviceRegistrationMetadataIsPublishedWhenEnabled() {
+		try (var context = new AnnotationConfigApplicationContext()) {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, "spring.grpc.server.port=9091");
+			context.register(TestRegistrationConfiguration.class, GrpcDiscoveryServiceRegistryAutoConfiguration.class);
+			context.refresh();
+			TestRegistration registration = context.getBean(TestRegistration.class);
+			assertThat(registration.getMetadata()).containsEntry(GrpcDiscoveryConstants.GRPC_PORT_METADATA_KEY, "9091");
+			assertThat(context.getBeansOfType(GrpcPortMetadataRegistrationBeanPostProcessor.class)).hasSize(1);
+		}
+	}
+
+	@Test
+	void serviceRegistrationMetadataPublicationCanBeDisabled() {
+		try (var context = new AnnotationConfigApplicationContext()) {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, "spring.grpc.server.port=9091",
+					"spring.grpc.server.discovery.publish-metadata=false");
+			context.register(TestRegistrationConfiguration.class, GrpcDiscoveryServiceRegistryAutoConfiguration.class);
+			context.refresh();
+			TestRegistration registration = context.getBean(TestRegistration.class);
+			assertThat(registration.getMetadata()).doesNotContainKey(GrpcDiscoveryConstants.GRPC_PORT_METADATA_KEY);
+			assertThat(context.getBeansOfType(GrpcPortMetadataRegistrationBeanPostProcessor.class)).isEmpty();
+		}
+	}
+
+	static class TestRegistrationConfiguration {
+
+		@org.springframework.context.annotation.Bean
+		TestRegistration registration() {
+			return new TestRegistration();
+		}
+
+	}
+
+	static class TestRegistration implements org.springframework.cloud.client.serviceregistry.Registration {
+
+		private final java.util.Map<String, String> metadata = new java.util.LinkedHashMap<>();
+
+		@Override
+		public String getServiceId() {
+			return "test-service";
+		}
+
+		@Override
+		public String getHost() {
+			return "127.0.0.1";
+		}
+
+		@Override
+		public int getPort() {
+			return 8080;
+		}
+
+		@Override
+		public boolean isSecure() {
+			return false;
+		}
+
+		@Override
+		public java.net.URI getUri() {
+			return java.net.URI.create("http://127.0.0.1:8080");
+		}
+
+		@Override
+		public java.util.Map<String, String> getMetadata() {
+			return this.metadata;
+		}
+
 	}
 
 }

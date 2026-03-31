@@ -178,6 +178,16 @@ spring.grpc.client.discovery.load-balancing-policy=round_robin
 
 Each resolved service instance uses the `gRPC_port` metadata entry when present and
 falls back to the regular instance port otherwise.
+When the same module is used in a gRPC server application with Spring Cloud service
+registration, it also publishes the configured `spring.grpc.server.port` as
+`gRPC_port` metadata when the underlying `Registration` exposes mutable metadata.
+You can disable that behavior with:
+
+[source,properties]
+----
+spring.grpc.server.discovery.publish-metadata=false
+----
+
 Discovery-based channels are refreshed automatically when Spring Cloud publishes a
 `HeartbeatEvent`.
 

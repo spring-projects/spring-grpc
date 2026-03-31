@@ -28,6 +28,7 @@ import org.springframework.grpc.client.discovery.DiscoveryClientNameResolverProv
 import org.springframework.grpc.client.discovery.DiscoveryClientResolverProperties;
 import org.springframework.grpc.client.discovery.DiscoveryNameResolverRefresher;
 import org.springframework.grpc.client.discovery.DiscoveryNameResolverRegistrar;
+import org.springframework.grpc.client.discovery.DiscoveryNameResolverRegistrarBeanFactoryPostProcessor;
 
 import io.grpc.NameResolver;
 
@@ -44,6 +45,8 @@ import io.grpc.NameResolver;
 @EnableConfigurationProperties(DiscoveryClientResolverProperties.class)
 public class DiscoveryClientNameResolverAutoConfiguration {
 
+	private static final String DISCOVERY_NAME_RESOLVER_REGISTRAR_BEAN_NAME = "discoveryNameResolverRegistrar";
+
 	@Bean
 	@ConditionalOnMissingBean
 	DiscoveryClientNameResolverProvider discoveryClientNameResolverProvider(DiscoveryClient discoveryClient,
@@ -55,6 +58,11 @@ public class DiscoveryClientNameResolverAutoConfiguration {
 	@ConditionalOnMissingBean
 	DiscoveryNameResolverRegistrar discoveryNameResolverRegistrar(DiscoveryClientNameResolverProvider provider) {
 		return new DiscoveryNameResolverRegistrar(provider);
+	}
+
+	@Bean
+	static DiscoveryNameResolverRegistrarBeanFactoryPostProcessor discoveryNameResolverRegistrarBeanFactoryPostProcessor() {
+		return new DiscoveryNameResolverRegistrarBeanFactoryPostProcessor(DISCOVERY_NAME_RESOLVER_REGISTRAR_BEAN_NAME);
 	}
 
 	@Bean

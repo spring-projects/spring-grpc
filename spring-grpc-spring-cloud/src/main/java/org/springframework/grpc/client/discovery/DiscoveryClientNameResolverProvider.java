@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -61,7 +62,7 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 	}
 
 	@Override
-	public NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
+	public @Nullable NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
 		if (!GrpcDiscoveryConstants.DISCOVERY_SCHEME.equals(targetUri.getScheme())) {
 			return null;
 		}
@@ -92,7 +93,7 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 			.forEach((resolvers) -> resolvers.forEach((resolver) -> resolver.resolveNow(reason)));
 	}
 
-	private static String extractServiceName(URI targetUri) {
+	private static @Nullable String extractServiceName(URI targetUri) {
 		String path = targetUri.getPath();
 		if (StringUtils.hasText(path)) {
 			return (path.startsWith("/")) ? path.substring(1) : path;
@@ -121,9 +122,9 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 
 		private final Args args;
 
-		private volatile Listener2 listener;
+		private volatile @Nullable Listener2 listener;
 
-		private volatile ResolutionResult lastResolutionResult;
+		private volatile @Nullable ResolutionResult lastResolutionResult;
 
 		private DiscoveryClientNameResolver(String serviceName, Args args) {
 			this.serviceName = serviceName;
@@ -153,7 +154,8 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 		}
 
 		private void resolveNow(String reason) {
-			if (this.listener == null) {
+			Listener2 listener = this.listener;
+			if (listener == null) {
 				return;
 			}
 			Executor executor = this.args.getOffloadExecutor();
@@ -173,7 +175,7 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 					}
 					ResolutionResult result = resultBuilder.build();
 					this.lastResolutionResult = result;
-					this.args.getSynchronizationContext().execute(() -> this.listener.onResult(result));
+					this.args.getSynchronizationContext().execute(() -> listener.onResult(result));
 				}
 				catch (RuntimeException ex) {
 					handleResolutionError(reason, ex);
@@ -197,7 +199,10 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 				.warn(() -> "No instances found for discovery target. serviceName=" + this.serviceName + ", reason="
 						+ reason);
 			Status status = Status.UNAVAILABLE.withDescription("No instance for " + this.serviceName);
-			this.args.getSynchronizationContext().execute(() -> this.listener.onError(status));
+			Listener2 listener = this.listener;
+			if (listener != null) {
+				this.args.getSynchronizationContext().execute(() -> listener.onError(status));
+			}
 		}
 
 		private void handleResolutionError(String reason, RuntimeException ex) {
@@ -206,10 +211,13 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 			Status status = Status.UNAVAILABLE
 				.withDescription("Failed to resolve discovery target '" + this.serviceName + "'")
 				.withCause(ex);
-			this.args.getSynchronizationContext().execute(() -> this.listener.onError(status));
+			Listener2 listener = this.listener;
+			if (listener != null) {
+				this.args.getSynchronizationContext().execute(() -> listener.onError(status));
+			}
 		}
 
-		private ConfigOrError buildServiceConfig() {
+		private @Nullable ConfigOrError buildServiceConfig() {
 			String policy = DiscoveryClientNameResolverProvider.this.properties.getLoadBalancingPolicy();
 			if (!StringUtils.hasText(policy)) {
 				return null;
@@ -229,7 +237,8 @@ public class DiscoveryClientNameResolverProvider extends NameResolverProvider {
 		}
 
 		private int resolveGrpcPort(ServiceInstance instance) {
-			String grpcPort = instance.getMetadata().get(GrpcDiscoveryConstants.GRPC_PORT_METADATA_KEY);
+			Map<String, String> metadata = instance.getMetadata();
+			String grpcPort = (metadata != null) ? metadata.get(GrpcDiscoveryConstants.GRPC_PORT_METADATA_KEY) : null;
 			if (!StringUtils.hasText(grpcPort)) {
 				return instance.getPort();
 			}
