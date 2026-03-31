@@ -54,6 +54,8 @@
 		<grpc-kotlin.version>1.5.0</grpc-kotlin.version>
 		<jspecify.version>1.0.0</jspecify.version>
 		<protobuf-java.version>4.34.0</protobuf-java.version>
+		<spring-boot.version>4.1.0-SNAPSHOT</spring-boot.version>
+		<spring-cloud-commons.version>5.0.1</spring-cloud-commons.version>
 		<spring-framework.version>7.0.6</spring-framework.version>
 		<spring-security.version>7.1.0-M2</spring-security.version>
 		<micrometer.version>1.17.0-M3</micrometer.version>
@@ -98,6 +100,21 @@
 				<version>${micrometer.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-autoconfigure</artifactId>
+				<version>${spring-boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-configuration-processor</artifactId>
+				<version>${spring-boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-commons</artifactId>
+				<version>${spring-cloud-commons.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jspecify</groupId>

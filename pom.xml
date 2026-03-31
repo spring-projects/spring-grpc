@@ -17,6 +17,7 @@
 		<!-- Spring gRPC modules -->
 		<module>spring-grpc-build-dependencies</module>
 		<module>spring-grpc-core</module>
+		<module>spring-grpc-spring-cloud</module>
 		<module>spring-grpc-dependencies</module>
 		<module>spring-grpc-docs</module>
 <!--		<module>samples</module>-->

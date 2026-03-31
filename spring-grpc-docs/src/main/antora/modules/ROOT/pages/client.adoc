@@ -146,6 +146,41 @@ NOTE: To use the inprocess server the channel target must be set to `in-process:
 
 To disable the inprocess channel factory, you can set the `spring.grpc.client.inprocess.enabled` property to false.
 
+== Spring Cloud Discovery
+
+If you want to resolve gRPC clients through Spring Cloud `DiscoveryClient`, add the
+`spring-grpc-spring-cloud` module to your application.
+
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.grpc</groupId>
+	<artifactId>spring-grpc-spring-cloud</artifactId>
+</dependency>
+----
+
+Then configure the channel target with the `discovery` scheme:
+
+[source,properties]
+----
+spring.grpc.client.channels.orders.address=discovery:///orders-service
+----
+
+By default the discovery resolver applies the `round_robin` load-balancing policy to
+resolved addresses.
+You can customize or disable that integration with:
+
+[source,properties]
+----
+spring.grpc.client.discovery.enabled=true
+spring.grpc.client.discovery.load-balancing-policy=round_robin
+----
+
+Each resolved service instance uses the `gRPC_port` metadata entry when present and
+falls back to the regular instance port otherwise.
+Discovery-based channels are refreshed automatically when Spring Cloud publishes a
+`HeartbeatEvent`.
+
 == Channel Configuration
 The channel factory provides an API to create channels.
 The channel creation process can be configured as follows.
