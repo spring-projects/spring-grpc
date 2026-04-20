@@ -95,7 +95,8 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 		else if (user == null || !user.isAuthenticated()) {
 			throw new BadCredentialsException("not authenticated");
 		}
-		// Only if successfully authenticated and authorized do we set the context for the call
+		// Only if successfully authenticated and authorized do we set the context for the
+		// call
 		SecurityContextHolder.setContext(securityContext);
 
 		try {
