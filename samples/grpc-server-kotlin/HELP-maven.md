@@ -33,7 +33,7 @@ $ ./mvnw spring-boot:build-image -Pnative
 Then, you can run the app like any other container:
 
 ```
-$ docker run --rm grpc-server-sample:1.0.3-SNAPSHOT
+$ docker run --rm grpc-server-sample:1.0.3
 ```
 
 ### Executable with Native Build Tools
