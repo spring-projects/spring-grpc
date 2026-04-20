@@ -42,13 +42,13 @@ public class SecurityGrpcExceptionHandler implements GrpcExceptionHandler {
 			if (logger.isDebugEnabled()) {
 				logger.error("Failed to authenticate", exception);
 			}
-			return Status.UNAUTHENTICATED.withDescription(exception.getMessage()).asException();
+			return Status.UNAUTHENTICATED.withDescription("Authentication failed").asException();
 		}
 		if (exception instanceof AccessDeniedException) {
 			if (logger.isDebugEnabled()) {
 				logger.error("Failed to authorize", exception);
 			}
-			return Status.PERMISSION_DENIED.withDescription(exception.getMessage()).asException();
+			return Status.PERMISSION_DENIED.withDescription("Access denied").asException();
 		}
 		return null;
 	}
