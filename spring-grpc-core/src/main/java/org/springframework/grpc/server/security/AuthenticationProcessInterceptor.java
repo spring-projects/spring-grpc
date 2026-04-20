@@ -68,7 +68,7 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 	@Override
 	public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 			ServerCallHandler<ReqT, RespT> next) {
-		SecurityContext securityContext = SecurityContextHolder.getContext();
+		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 		Authentication user = this.extractor.extract(headers, call.getAttributes(), call.getMethodDescriptor());
 		if (user != null) {
 			user = this.authenticationManager.authenticate(user);
@@ -95,12 +95,13 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 		else if (user == null || !user.isAuthenticated()) {
 			throw new BadCredentialsException("not authenticated");
 		}
+		// Only if successfully authenticated and authorized do we set the context for the call
+		SecurityContextHolder.setContext(securityContext);
 
-		SecurityContext currentContext = SecurityContextHolder.getContext();
 		try {
-			Context context = Context.current().withValue(GrpcSecurity.SECURITY_CONTEXT_KEY, currentContext);
+			Context context = Context.current().withValue(GrpcSecurity.SECURITY_CONTEXT_KEY, securityContext);
 			return new SecurityContextHandlerListener<ReqT, RespT>(Contexts.interceptCall(context, call, headers, next),
-					currentContext);
+					securityContext);
 		}
 		finally {
 			SecurityContextHolder.clearContext();
