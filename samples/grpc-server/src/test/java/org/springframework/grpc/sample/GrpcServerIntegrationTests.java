@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -350,6 +351,49 @@ class GrpcServerIntegrationTests {
 		@Test
 		void clientChannelWithSsl(@Autowired GrpcChannelFactory channels) {
 			assertThatResponseIsServedToChannel(channels.createChannel("test-channel"));
+		}
+
+	}
+
+	@Nested
+	@SpringBootTest
+	@AutoConfigureTestGrpcTransport
+	class ServerWithGzipCompression {
+
+		@Test
+		void clientSendsGzipCompressedRequest(@Autowired GrpcChannelFactory channels) {
+			TestConfig.reset();
+			ManagedChannel channel = channels.createChannel("0.0.0.0:0");
+			SimpleGrpc.SimpleBlockingStub client = SimpleGrpc.newBlockingStub(channel).withCompression("gzip");
+			HelloReply response = client.sayHello(HelloRequest.newBuilder().setName("Compressed").build());
+			assertThat(response.getMessage()).isEqualTo("Hello ==> Compressed");
+			assertThat(TestConfig.requestEncoding.get()).isEqualTo("gzip");
+		}
+
+		@TestConfiguration
+		static class TestConfig {
+
+			static AtomicReference<String> requestEncoding = new AtomicReference<>();
+
+			static void reset() {
+				requestEncoding.set(null);
+			}
+
+			@Bean
+			@GlobalServerInterceptor
+			ServerInterceptor compressionCapturingInterceptor() {
+				return new ServerInterceptor() {
+					@Override
+					public <ReqT, RespT> Listener<ReqT> interceptCall(io.grpc.ServerCall<ReqT, RespT> call,
+							Metadata headers, io.grpc.ServerCallHandler<ReqT, RespT> next) {
+						String encoding = headers
+							.get(Metadata.Key.of("grpc-encoding", Metadata.ASCII_STRING_MARSHALLER));
+						requestEncoding.set(encoding);
+						return next.startCall(call, headers);
+					}
+				};
+			}
+
 		}
 
 	}
