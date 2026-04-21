@@ -38,6 +38,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
@@ -262,9 +263,42 @@ public class GrpcClientFactory implements ApplicationContextAware {
 					@Override
 					public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 							throws IOException {
+						if (!isAbstractStub(metadataReader.getClassMetadata(), metadataReaderFactory)) {
+							return false;
+						}
 						Class<?> type = ClassUtils.resolveClassName(metadataReader.getClassMetadata().getClassName(),
 								ClasspathScanner.class.getClassLoader());
 						return supports(factoryToUse, type);
+					}
+
+					private boolean isAbstractStub(ClassMetadata classMetadata,
+							MetadataReaderFactory metadataReaderFactory) {
+						if (classMetadata.isInterface() || classMetadata.isAbstract()) {
+							return false;
+						}
+						while (classMetadata != null) {
+							if (Object.class.getName().equals(classMetadata.getClassName())) {
+								return false;
+							}
+							if (AbstractStub.class.getName().equals(classMetadata.getClassName())) {
+								return true;
+							}
+							try {
+								String superClassName = classMetadata.getSuperClassName();
+								if (superClassName == null) {
+									return false;
+								}
+								MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(superClassName);
+								if (metadataReader == null) {
+									return false;
+								}
+								classMetadata = metadataReader.getClassMetadata();
+							}
+							catch (IOException e) {
+								return false;
+							}
+						}
+						return false;
 					}
 				};
 				for (Class<?> type : SCANNER.scan(basePackage, filter)) {
