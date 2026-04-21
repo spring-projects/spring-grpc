@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 /**
  * Annotation to create gRPC client beans.
@@ -57,7 +58,15 @@ public @interface ImportGrpcClients {
 	 * Concrete types of the stubs to create.
 	 * @return the types of the stubs
 	 */
+	@AliasFor("value")
 	Class<?>[] types() default {};
+
+	/**
+	 * Concrete types of the stubs to create.
+	 * @return the types of the stubs
+	 */
+	@AliasFor("types")
+	Class<?>[] value() default {};
 
 	/**
 	 * The factory type to use to create the stubs. Only needed if you are scanning (with
