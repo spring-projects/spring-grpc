@@ -26,7 +26,7 @@ public class GrpcClientApplicationTests {
 	}
 
 	static boolean serverJarAvailable() {
-		return new File("../grpc-server/target/grpc-server-sample-1.0.3.jar").exists();
+		return new File("../grpc-server/target/grpc-server-sample-1.0.4-SNAPSHOT.jar").exists();
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class GrpcClientApplicationTests {
 		static CommonsExecWebServerFactoryBean grpcServer() {
 			return CommonsExecWebServerFactoryBean.builder()
 				.classpath(classpath -> classpath
-					.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.0.3"))
+					.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.0.4-SNAPSHOT"))
 					.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 					.files("target/test-classes"));
 		}
