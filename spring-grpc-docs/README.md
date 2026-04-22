@@ -15,6 +15,6 @@ The Spring gRPC configuration properties are automatically documented as follows
 
 To build the Antora site locally run the following command from the project root directory:
 ```
-./mvnw -pl spring-grpc-docs process-resources antora -P docs
+./mvnw -pl spring-grpc-docs process-resources antora
 ```
 You can then view the output by opening `spring-grpc-docs/target/antora/site/index.html`. 
