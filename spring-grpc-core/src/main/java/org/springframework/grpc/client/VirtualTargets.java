@@ -16,20 +16,13 @@
 
 package org.springframework.grpc.client;
 
-import java.util.regex.Pattern;
-
 public interface VirtualTargets {
 
-	/** Regex to match the default authority pattern. */
-	Pattern AUTHORITY_PATTERN = Pattern.compile("([^:]+)(?::(\\d+))?");
-
-	/** Default VirtualTargets instance. */
-	VirtualTargets DEFAULT = path -> {
-		if (AUTHORITY_PATTERN.matcher(path).matches()) {
-			return "static://" + path;
-		}
-		return path;
-	};
+	/**
+	 * Default VirtualTargets instance that resolves the logical name "default" to
+	 * "localhost:9090" and returns all other targets as-is.
+	 */
+	VirtualTargets DEFAULT = path -> "default".equals(path) ? "localhost:9090" : path;
 
 	String getTarget(String path);
 
