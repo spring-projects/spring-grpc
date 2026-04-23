@@ -208,7 +208,7 @@ class GrpcChannelFactoryTests {
 			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
 			assertThat(channelFactory.supports("in-process:foo")).isFalse();
 			assertThat(channelFactory.supports("default")).isFalse();
-		}	
+		}
 
 		@Test
 		void nettySupportsEverythingExceptInProcess() {
