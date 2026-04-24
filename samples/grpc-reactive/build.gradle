@@ -30,21 +30,15 @@ repositories {
 
 def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.0-SNAPSHOT'
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
-    }
-}
-
 dependencies {
-    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.projectreactor:reactor-core'
 	implementation 'com.salesforce.servicelibs:reactor-grpc-stub:1.2.4'
 
     compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
     testImplementation 'io.projectreactor:reactor-test'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

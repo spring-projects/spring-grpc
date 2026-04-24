@@ -22,17 +22,11 @@ repositories {
 	maven { url 'https://repo.spring.io/snapshot' }
 }
 
-dependencyManagement {
-	imports {
-		mavenBom 'org.springframework.grpc:spring-grpc-dependencies:1.1.0-SNAPSHOT'
-	}
-}
-
 dependencies {
-    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

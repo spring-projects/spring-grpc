@@ -34,21 +34,15 @@ repositories {
 
 def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.0-SNAPSHOT'
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
-    }
-}
-
 dependencies {
 
-    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
     implementation("io.grpc:grpc-kotlin-stub")
 	implementation("io.micrometer:context-propagation")
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
 
 	testRuntimeOnly "io.netty:netty-transport-native-epoll::linux-x86_64"
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -31,18 +31,14 @@ repositories {
 
 def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.0-SNAPSHOT'
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
-    }
-}
-
 dependencies {
-	implementation 'org.springframework.grpc:spring-grpc-server-web-spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
+    implementation 'io.grpc:grpc-servlet-jakarta'
 	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

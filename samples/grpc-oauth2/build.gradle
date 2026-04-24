@@ -35,17 +35,11 @@ repositories {
 
 def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.0-SNAPSHOT'
 
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
-	}
-}
-
 dependencies {
-    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
-	testImplementation 'org.springframework.grpc:spring-grpc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0'
 
