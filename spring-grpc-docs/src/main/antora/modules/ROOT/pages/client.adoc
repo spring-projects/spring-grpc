@@ -6,8 +6,8 @@ The Protobuf-generated sources in your project will contain the stub classes, an
 The Protobuf files will be provided by the service you are connecting to.
 
 == Application Properties
-You can inject a `GrpcChannelFactory` into your application configuration and use it to create a gRPC channel.
-The default `GrpcChannelFactory` implementation can create a "named" channel, which you can then use to extract the configuration to connect to the server.
+You can inject a javadoc:org.springframework.grpc.client.GrpcChannelFactory[] into your application configuration and use it to create a gRPC channel.
+The default javadoc:org.springframework.grpc.client.GrpcChannelFactory[] implementation can create a "named" channel, which you can then use to extract the configuration to connect to the server.
 For example:
 
 [source,java]
@@ -29,17 +29,17 @@ There is a default named channel that you can configure as `spring.grpc.client.d
 
 == Automatic Client Configuration
 
-The automatic creation of beans for gRPC stubs is switched on by the `@ImportGrpcClients` annotation.
+The automatic creation of beans for gRPC stubs is switched on by the javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotation.
 A Spring Boot application will have one of these by default, but you can add your own safely if you want to change the defaults, for instance to change the base type of the stubs or to scan a different package.
 Spring gRPC will scan the application packages for gRPC stubs and automatically create bean definitions, as long as the default channel is configured via `spring.grpc.client.default-channel.*` (it needs at least a target URL to work).
 
 === Package Scanning
 
-The `@ImportGrpcClients` annotation can be used to control the scan for gRPC stub implementations.
+The javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotation can be used to control the scan for gRPC stub implementations.
 To scan a package you can specify the `basePackages` or `basePackageClasses` attribute.
 Then elsewhere in the application you can `@Autowired` the generated gRPC stubs (the blocking sub-type by default).
-You can change the factory used to create the stubs from `BlockingStubFactory` by setting the `factory` attribute.
-There are standard factories pre-registered for common stub types, and if you want to register additional factories you can add a bean of type `StubFactory` (see below for details).
+You can change the factory used to create the stubs from javadoc:org.springframework.grpc.client.BlockingStubFactory[] by setting the `factory` attribute.
+There are standard factories pre-registered for common stub types, and if you want to register additional factories you can add a bean of type javadoc:org.springframework.grpc.client.StubFactory[] (see below for details).
 
 The default behaviour in a Spring Boot application is equivalent to the following configuration on your `@SpringBootApplication` class:
 
@@ -53,11 +53,11 @@ class MyApplication {
 }
 ----
 
-You can enhance and modify the configuration by providing `spring.grpc.client.*` application properties or by defining your own `GrpcChannelBuilderCustomizer` beans.
+You can enhance and modify the configuration by providing `spring.grpc.client.*` application properties or by defining your own javadoc:org.springframework.grpc.client.GrpcChannelBuilderCustomizer[] beans.
 
 === More Complex Examples
 
-A `GrpcChannelBuilderCustomizer` can also control the creation of the channels and add custom behaviour to stubs (individually or via a scan).
+A javadoc:org.springframework.grpc.client.GrpcChannelBuilderCustomizer[] can also control the creation of the channels and add custom behaviour to stubs (individually or via a scan).
 For example, to add a custom security interceptor to only clients using the "stub" channel:
 
 [source,java]
@@ -79,12 +79,12 @@ In this example, instead of scanning for all stubs, we register a specific stub 
 The prefix `secure` is used as a bean definition name prefix, so the resulting bean definition in this case is "secureSimpleBlockingStub".
 This feature is useful when you want to have multiple instances of the same stub class with different configurations.
 
-If you have a custom `StubFactory` then add it as a `@Bean` and ensure that the bean definition has the correct concrete type. Then refer to that in the `@ImportGrpcClients` as its factory type. A custom factory type usually has a static method `supports(Class<?> type)` returning a boolean indicating whether the factory can create a stub of the given type. If it does not have the static method, then the factory will be used for all explicit stub types listed (but it cannot be used in a scan). The `supports` method has to be
+If you have a custom javadoc:org.springframework.grpc.client.StubFactory[] then add it as a `@Bean` and ensure that the bean definition has the correct concrete type. Then refer to that in the `@ImportGrpcClients` as its factory type. A custom factory type usually has a static method `supports(Class<?> type)` returning a boolean indicating whether the factory can create a stub of the given type. If it does not have the static method, then the factory will be used for all explicit stub types listed (but it cannot be used in a scan). The `supports` method has to be
 static because it is used before the factory is created, to generate bean definitions for the stubs.
 
 == Create a Client Manually
 
-Instead of using the `@ImportGrpcClients` or `GrpcClientFactory` features, we can create a client `@Bean` manually.
+Instead of using the `@ImportGrpcClients` or javadoc:org.springframework.grpc.client.GrpcClientFactory[] features, we can create a client `@Bean` manually.
 The most common usage of a channel is to create a client that binds to a service.
 For example:
 
@@ -154,8 +154,8 @@ The channel creation process can be configured as follows.
 The `ManagedChannelBuilder` used by the factory to create the channel can be customized prior to channel creation.
 
 ==== Global
-To customize the builder used for all created channels you can register one more `GrpcChannelBuilderCustomizer` beans.
-The customizers are applied to the auto-configured `GrpcChannelFactory` in order according to their bean natural ordering (i.e. `@Order`).
+To customize the builder used for all created channels you can register one more javadoc:org.springframework.grpc.client.GrpcChannelBuilderCustomizer[] beans.
+The customizers are applied to the auto-configured javadoc:org.springframework.grpc.client.GrpcChannelFactory[] in order according to their bean natural ordering (i.e. `@Order`).
 
 [source,java]
 ----
@@ -173,10 +173,10 @@ GrpcChannelBuilderCustomizer<NettyChannelBuilder> flowControlCustomizer() {
 ----
 
 In the preceding example, the `flowControlCustomizer` customizer is applied prior to the `retryChannelCustomizer`.
-Furthermore, the `flowControlCustomizer` is only applied if the auto-configured channel factory is a `NettyGrpcChannelFactory`.
+Furthermore, the `flowControlCustomizer` is only applied if the auto-configured channel factory is a javadoc:org.springframework.grpc.client.NettyGrpcChannelFactory[].
 
 ==== Per-channel
-To customize an individual channel you can specify a `GrpcChannelBuilderCustomizer` on the options passed to the factory during channel creation.
+To customize an individual channel you can specify a javadoc:org.springframework.grpc.client.GrpcChannelBuilderCustomizer[] on the options passed to the factory during channel creation.
 The per-channel customizer will be applied after any global customizers.
 
 [source,java]
@@ -225,7 +225,7 @@ You can lazily resolve `local.grpc.port` in the customizer by using the `Environ
 == Client Interceptors
 
 === Global
-To add a client interceptor to be applied to all created channels you can simply register a client interceptor bean and then annotate it with `@GlobalClientInterceptor`.
+To add a client interceptor to be applied to all created channels you can simply register a client interceptor bean and then annotate it with javadoc:org.springframework.grpc.client.GlobalClientInterceptor[format=annotation].
 When you register multiple interceptor beans they are ordered according to their bean natural ordering (i.e. `@Order`).
 
 [source,java]
@@ -250,9 +250,9 @@ In the preceding example, the `globalLoggingInterceptor` is applied prior to the
 [[global-client-interceptor-filtering]]
 ==== Filtering
 All global interceptors are applied to all created channels by default.
-However, you can register a `ClientInterceptorFilter` to decide which interceptors are applied to which channel factories.
+However, you can register a javadoc:org.springframework.grpc.client.ClientInterceptorFilter[] to decide which interceptors are applied to which channel factories.
 
-The following example prevents the `ExtraThingsInterceptor` interceptor from being applied to any channels created by the `InProcessGrpcChannelFactory` channel factory.
+The following example prevents the `ExtraThingsInterceptor` interceptor from being applied to any channels created by the javadoc:org.springframework.grpc.client.InProcessGrpcChannelFactory[] channel factory.
 
 [source,java]
 ----
@@ -263,8 +263,8 @@ ClientInterceptorFilter myInterceptorFilter() {
 }
 ----
 
-The `InProcessGrpcChannelFactory` picks up the `ClientInterceptorFilter` bean automatically and applies it to the global interceptors.
-For other channel factories, you can set the `interceptorFilter` property on the `GrpcChannelFactory` bean to the filter bean using a `GrpcChannelFactoryCustomizer`.
+The javadoc:org.springframework.grpc.client.InProcessGrpcChannelFactory[] picks up the javadoc:org.springframework.grpc.client.ClientInterceptorFilter[] bean automatically and applies it to the global interceptors.
+For other channel factories, register a bean of type `java.util.function.Consumer<org.springframework.grpc.client.GrpcChannelFactory>` that casts to javadoc:org.springframework.grpc.client.DefaultGrpcChannelFactory[] (or another concrete implementation) and calls `setInterceptorFilter` with your filter.
 
 === Per-Channel
 To add one or more client interceptors to be applied to a single client channel you can simply set the interceptor instance(s) on the options passed to the channel factory when creating the channel.
@@ -290,7 +290,7 @@ If you do call `intercept` directly on the builder then those interceptors will 
 === Blended
 When a channel is constructed with both global and per-channel interceptors, the global interceptors are first applied in their sorted order followed by the per-channel interceptors in their sorted order.
 
-However, by setting the `withInterceptorsMerge` parameter on the `ChannelBuilderOptions` passed to the channel factory to `"true"` you can change this behavior so that the interceptors are all combined and then sorted according to their bean natural ordering (i.e. `@Order` or `Ordered` interface).
+However, by setting the `withInterceptorsMerge` parameter on the javadoc:org.springframework.grpc.client.ChannelBuilderOptions[] passed to the channel factory to `"true"` you can change this behavior so that the interceptors are all combined and then sorted according to their bean natural ordering (i.e. `@Order` or `Ordered` interface).
 
 You can use this option if you want to add a per-client interceptor between global interceptors.
 
@@ -341,7 +341,7 @@ Channel basic(GrpcChannelFactory channels) {
 ----
 
 Usage of the bearer token interceptor is similar.
-You can look at the implementation of those interceptors to see how to create your own for custom headers.
+You can look at the implementation of javadoc:org.springframework.grpc.client.interceptor.security.BasicAuthenticationInterceptor[] and javadoc:org.springframework.grpc.client.interceptor.security.BearerTokenAuthenticationInterceptor[] to see how to create your own for custom headers.
 
 === OAuth2 Clients
 

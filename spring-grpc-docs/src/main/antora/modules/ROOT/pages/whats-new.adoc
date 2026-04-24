@@ -25,10 +25,10 @@ This section covers the changes made from version 0.9.0 to version 1.0.0.
 This section covers the changes made from version 0.8.0 to version 0.9.0.
 
 * Upgrade to Spring Boot 3.5.0.
-* `StubFactory` contract changes: the "supports" method is now a static method (it is called before an instance is created).
-* Removed `GrpcClientFactoryCustomizer` in favour of `GrpcChannelBuilderCustomizer`.
+* javadoc:org.springframework.grpc.client.StubFactory[] contract changes: the "supports" method is now a static method (it is called before an instance is created).
+* Removed `GrpcClientFactoryCustomizer` in favour of javadoc:org.springframework.grpc.client.GrpcChannelBuilderCustomizer[].
 * Added ability to filter interceptors in in-process gRPC clients.
-* Added ability to filter global interceptors and service definitions - easy to do for `InProcessGrpcServer` and possible to do for `NettyGrpcServer` by registering a customizer.
+* Added ability to filter global interceptors and service definitions - easy to do for javadoc:org.springframework.grpc.server.InProcessGrpcServerFactory[] and possible to do for javadoc:org.springframework.grpc.server.NettyGrpcServerFactory[] by registering a customizer.
 
 [[what-s-new-in-0-6-0-since-0-5-0]]
 == What's New in 0.6.0 Since 0.5.0
@@ -36,8 +36,8 @@ This section covers the changes made from version 0.8.0 to version 0.9.0.
 This section covers the changes made from version 0.5.0 to version 0.6.0.
 
 === Renamed Client Autowired Annotations
-The old `@GrpcClient` annotation has been renamed to `@ImportGrpcClients` to better reflect its purpose, and to be more consistent with changes in the Spring framework.
-The customizer that is applied to generated gRPC clients is now a `GrpcClientFactoryCustomizer` - it's main use is to modify the channel that a client is created with beyond the limits of what can be configured with `spring.grpc.client.*` properties.
+The old `@GrpcClient` annotation has been renamed to javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] to better reflect its purpose, and to be more consistent with changes in the Spring framework.
+The customizer that is applied to generated gRPC clients is now a javadoc:org.springframework.grpc.client.GrpcChannelBuilderCustomizer[] — its main use is to modify the channel that a client is created with beyond the limits of what can be configured with `spring.grpc.client.*` properties.
 
 [[what-s-new-in-0-5-0-since-0-4-0]]
 == What's New in 0.5.0 Since 0.4.0
