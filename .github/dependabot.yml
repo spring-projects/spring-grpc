@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /spring-grpc-docs
+    schedule:
+      interval: weekly

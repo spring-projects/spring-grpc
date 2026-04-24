@@ -9,4 +9,6 @@ ext:
         command: mvnw package -P javadoc -DskipTests
         local: true
       scan:
-        dir: spring-grpc-docs/target/classes/antora-resources
+        - dir: spring-grpc-docs/target/classes/antora-resources
+        - dir: target/site/apidocs/
+          into: modules/ROOT/assets/attachments/api/java
