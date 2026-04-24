@@ -185,6 +185,22 @@ class GrpcChannelFactoryTests {
 	class SupportsApiTests {
 
 		@Test
+		void defaultDoesSomething() {
+			var channelFactory = new DefaultGrpcChannelFactory(List.of(), mock());
+			assertThat(channelFactory.supports("default")).isTrue();
+			channel = channelFactory.createChannel("default");
+			assertThat(channel).isNotNull();
+		}
+
+		@Test
+		void defaultVirtualTargets() {
+			var channelFactory = new DefaultGrpcChannelFactory(List.of(), mock());
+			assertThat(channelFactory.supports("dns:///foo")).isTrue();
+			channel = channelFactory.createChannel("dns:///foo");
+			assertThat(channel).isNotNull();
+		}
+
+		@Test
 		void defaultSupportsEverythingExceptInProcess() {
 			var channelFactory = new DefaultGrpcChannelFactory(List.of(), mock());
 			channelFactory.setVirtualTargets((path) -> path.equals("default") ? "in-process:default" : path);
@@ -192,7 +208,7 @@ class GrpcChannelFactoryTests {
 			assertThat(channelFactory.supports("static:127.0.0.1")).isTrue();
 			assertThat(channelFactory.supports("in-process:foo")).isFalse();
 			assertThat(channelFactory.supports("default")).isFalse();
-		}
+		}	
 
 		@Test
 		void nettySupportsEverythingExceptInProcess() {

@@ -47,8 +47,8 @@
 	</dependencyManagement>
 	<dependencies>
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-grpc-server</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-grpc-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -59,13 +59,18 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>io.grpc</groupId>
-		    <artifactId>grpc-servlet-jakarta</artifactId>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-servlet-jakarta</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-grpc-test</artifactId>
+			<artifactId>spring-boot-starter-grpc-client-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-grpc-server-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
