@@ -19,7 +19,7 @@
 		<module>spring-grpc-core</module>
 		<module>spring-grpc-dependencies</module>
 		<module>spring-grpc-docs</module>
-<!--		<module>samples</module>-->
+		<!--		<module>samples</module>-->
 	</modules>
 
 	<organization>
@@ -159,12 +159,14 @@
 						<phase>validate</phase>
 						<inherited>true</inherited>
 						<configuration>
-							<configLocation>${maven-checkstyle-plugin.config.location}/checkstyle.xml</configLocation>
+							<configLocation>
+								${maven-checkstyle-plugin.config.location}/checkstyle.xml</configLocation>
 							<propertyExpansion>
 								config_loc=${maven-checkstyle-plugin.config.location}
 							</propertyExpansion>
 							<skip>${disable.checkstyle.checks}</skip>
-							<includeTestSourceDirectory>${maven-checkstyle-plugin.includeTestSourceDirectory}</includeTestSourceDirectory>
+							<includeTestSourceDirectory>
+								${maven-checkstyle-plugin.includeTestSourceDirectory}</includeTestSourceDirectory>
 							<failsOnError>${maven-checkstyle-plugin.failsOnError}</failsOnError>
 							<failOnViolation>${maven-checkstyle-plugin.failOnViolation}</failOnViolation>
 							<consoleOutput>true</consoleOutput>
@@ -210,6 +212,7 @@
 						<id>javadoc</id>
 						<goals>
 							<goal>jar</goal>
+							<goal>aggregate-no-fork</goal>
 						</goals>
 						<phase>package</phase>
 					</execution>
@@ -457,19 +460,12 @@
 								<compilerArg>-Werror</compilerArg>
 								<compilerArg>-XDcompilePolicy=simple</compilerArg>
 								<compilerArg>--should-stop=ifError=FLOW</compilerArg>
-								<compilerArg>
-									-Xplugin:ErrorProne
-									<!-- Disable all built-in error prone checks -->
-									-XepDisableAllChecks
-									<!-- JSpecify mode https://github.com/uber/NullAway/wiki/JSpecify-Support -->
-									-XepOpt:NullAway:JSpecifyMode=true
-									<!-- Check JSpecify annotations -->
-									-Xep:NullAway:ERROR
+								<compilerArg> -Xplugin:ErrorProne <!-- Disable all built-in error prone checks --> -XepDisableAllChecks <!-- JSpecify mode
+									https://github.com/uber/NullAway/wiki/JSpecify-Support -->
+									-XepOpt:NullAway:JSpecifyMode=true <!-- Check JSpecify annotations --> -Xep:NullAway:ERROR
 									-XepOpt:NullAway:OnlyNullMarked
-									-XepOpt:NullAway:TreatGeneratedAsUnannotated=true
-									<!-- https://github.com/uber/NullAway/issues/162 -->
-									-XepExcludedPaths:.*/src/test/java/.*
-								</compilerArg>
+									-XepOpt:NullAway:TreatGeneratedAsUnannotated=true <!-- https://github.com/uber/NullAway/issues/162 -->
+									-XepExcludedPaths:.*/src/test/java/.* </compilerArg>
 							</compilerArgs>
 							<annotationProcessorPaths>
 								<path>

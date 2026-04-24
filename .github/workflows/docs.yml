@@ -26,7 +26,7 @@ jobs:
         distribution: 'liberica'
         cache: maven
     - name: Set up refname build
-      if: github.event.inputs.build-refname
+      if: github.event.inputs.build-refname != 'all'
       run: |
         git fetch --depth 1 https://github.com/$GITHUB_REPOSITORY "$BUILD_REFNAME"
         export BUILD_REFNAME=${{ github.event.inputs.build-refname }}

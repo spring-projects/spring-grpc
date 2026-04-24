@@ -83,6 +83,15 @@
 					<finalName>spring-grpc-${project.version}</finalName>
 					<appendAssemblyId>true</appendAssemblyId>
 				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -154,7 +163,8 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<arguments>downdoc ${project.build.directory}/README.adoc -o ${project.parent.basedir}/README.md</arguments>
+							<arguments>downdoc ${project.build.directory}/README.adoc -o
+								${project.parent.basedir}/README.md</arguments>
 						</configuration>
 					</execution>
 					<execution>
@@ -165,7 +175,8 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<arguments>downdoc ${project.build.directory}/CONTRIBUTING.adoc -o ${project.parent.basedir}/CONTRIBUTING.md</arguments>
+							<arguments>downdoc ${project.build.directory}/CONTRIBUTING.adoc -o
+								${project.parent.basedir}/CONTRIBUTING.md</arguments>
 						</configuration>
 					</execution>
 				</executions>
