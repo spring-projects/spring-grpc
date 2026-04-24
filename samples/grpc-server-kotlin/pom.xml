@@ -63,11 +63,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-grpc-server-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<!-- for testing unix domain sockets -->
 			<groupId>io.netty</groupId>
 			<artifactId>netty-transport-native-epoll</artifactId>
