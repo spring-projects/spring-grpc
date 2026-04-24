@@ -78,6 +78,7 @@
 		<awaitility.version>4.3.0</awaitility.version>
 		<mockito.version>5.21.0</mockito.version>
 		<!-- documentation dependencies -->
+		<antora.maven.plugin.version>1.0.0-alpha.5</antora.maven.plugin.version>
 		<io.spring.maven.antora-version>0.0.4</io.spring.maven.antora-version>
 		<!-- FIXME build failure with version 2.3.9: -->
 		<asciidoctorj-pdf.version>1.6.2</asciidoctorj-pdf.version>
