@@ -212,7 +212,6 @@
 						<id>javadoc</id>
 						<goals>
 							<goal>jar</goal>
-							<goal>aggregate-no-fork</goal>
 						</goals>
 						<phase>package</phase>
 					</execution>
