@@ -13,6 +13,8 @@
 	<description>Spring gRPC documentation</description>
 
 	<properties>
+		<!-- Node for frontend-maven-plugin (Antora/downdoc). Sync engines.node in package.json when bumping. -->
+		<nodejs.docs.version>v24.15.0</nodejs.docs.version>
 		<maven-exec-plugin.version>3.4.1</maven-exec-plugin.version>
 		<maven-frontend-plugin.version>1.15.1</maven-frontend-plugin.version>
 		<maven-gem-plugin.version>3.0.3</maven-gem-plugin.version>
@@ -43,20 +45,19 @@
 		</extensions>
 		<plugins>
 			<plugin>
-				<groupId>io.spring.maven.antora</groupId>
+				<groupId>org.antora</groupId>
 				<artifactId>antora-maven-plugin</artifactId>
-				<version>${io.spring.maven.antora-version}</version>
+				<version>${antora.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<playbook>src/main/antora/antora-playbook.yml</playbook>
-					<packages>
-						<package>@antora/atlas-extension@1.0.0-alpha.1</package>
-						<package>@antora/collector-extension@1.0.0-alpha.3</package>
-						<package>@asciidoctor/tabs@1.0.0-beta.3</package>
-						<package>@springio/antora-extensions@1.5.0</package>
-						<package>@springio/asciidoctor-extensions@1.0.0-alpha.9</package>
-						<package>@djencks/asciidoctor-mathjax@0.0.9</package>
-					</packages>
+					<!-- npm + Antora CLI versions: package.json only (https://docs.antora.org/maven-plugin/latest/packages/). -->
+					<playbookFile>src/main/antora/antora-playbook.yml</playbookFile>
+					<nodeVersion>${nodejs.docs.version}</nodeVersion>
+					<nodeInstallDirectory>${project.basedir}</nodeInstallDirectory>
+					<options>
+						<option>to-dir ${project.build.directory}/antora/site</option>
+						<option>stacktrace</option>
+					</options>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -160,8 +161,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!-- Has to be the same as the antora lifecycle-->
-					<nodeVersion>v18.17.1</nodeVersion>
+					<!-- Match Node version used by org.antora:antora-maven-plugin -->
+					<nodeVersion>${nodejs.docs.version}</nodeVersion>
 				</configuration>
 			</plugin>
 		</plugins>
