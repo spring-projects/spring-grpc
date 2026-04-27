@@ -15,7 +15,6 @@ content:
   sources:
     - url: ./../../../..
       branches: [main, '1.+({0..9}).x']
-      tags: ['v1.0.3']
       start_path: spring-grpc-docs/src/main/antora
       worktrees: true
 asciidoc:
