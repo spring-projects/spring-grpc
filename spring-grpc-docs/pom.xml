@@ -131,14 +131,8 @@
 						<id>install node and npm</id>
 						<goals>
 							<goal>install-node-and-npm</goal>
-							<goal>npm</goal>
 						</goals>
 						<phase>generate-resources</phase>
-						<configuration>
-							<workingDirectory>${project.basedir}</workingDirectory>
-							<installDirectory>${project.basedir}</installDirectory>
-							<arguments>install --verbose</arguments>
-						</configuration>
 					</execution>
 					<execution>
 						<?m2e ignore?>
