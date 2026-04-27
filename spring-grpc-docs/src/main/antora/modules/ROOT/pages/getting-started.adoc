@@ -268,7 +268,7 @@ Run it from your IDE, or on the command line with `./mvnw spring-boot:run` or `.
 
 === gRPC Client
 
-To create a simple gRPC client, you can use the Spring Boot starter (see above - it's the same as for the server). Then you can inject a bean of type javadoc:org.springframework.grpc.client.GrpcChannelFactory[] and use it to create a gRPC channel. The most common usage of a channel is to create a client that binds to a service, such as the one above. The Protobuf-generated sources in your project will contain the stub classes, and they just need to be bound to a channel. For example, to bind to the `SimpleGrpc` service on a local server:
+To create a simple gRPC client, you can use the Spring Boot starter (see above - it's the same as for the server). Then you can inject a bean of type `GrpcChannelFactory` and use it to create a gRPC channel. The most common usage of a channel is to create a client that binds to a service, such as the one above. The Protobuf-generated sources in your project will contain the stub classes, and they just need to be bound to a channel. For example, to bind to the `SimpleGrpc` service on a local server:
 
 [source,java]
 ----
@@ -280,7 +280,7 @@ SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channels) {
 
 Then you can inject the stub and use it in your application.
 
-The default javadoc:org.springframework.grpc.client.GrpcChannelFactory[] implementation can also create a "named" channel, which you can then use to extract the configuration to connect to the server. For example:
+The default `GrpcChannelFactory` implementation can also create a "named" channel, which you can then use to extract the configuration to connect to the server. For example:
 
 [source,java]
 ----
