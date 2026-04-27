@@ -2,6 +2,8 @@
   "engines": {
     "node": "24.15.0"
   },
+  "name": "docs",
+  "version": "1.0.0",
   "dependencies": {
     "@antora/atlas-extension": "^1.0.0-alpha.5",
     "@antora/cli": "^3.2.0-alpha.11",
@@ -11,5 +13,8 @@
     "@springio/antora-extensions": "^1.14.11",
     "@springio/asciidoctor-extensions": "^1.0.0-alpha.18",
     "downdoc": "^1.1.0-stable"
+  },
+  "scripts": {
+    "build": "antora --stacktrace generate --to-dir `pwd`/target/antora/site --url https://docs.spring.io --log-level=debug src/main/antora/antora-playbook.yml"
   }
 }
