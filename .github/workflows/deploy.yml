@@ -2,10 +2,14 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 name: Deploy Jars
 on:
+  pull_request:
+    branches:
+      - 'main-internal'
+    paths-ignore:
+      - '.github/**'
   push:
     branches:
-      - 'main'
-      - '1.0.x'
+      - 'main-internal'
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
@@ -15,7 +19,7 @@ jobs:
     name: Build and Deploy On Push
 
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'spring-projects/spring-grpc' }}
+    if: ${{ github.repository == 'spring-projects/spring-grpc-commercial' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -27,15 +31,18 @@ jobs:
         cache: maven
     - name: Deploy with Maven
       env:
-        spring_username: ${{ secrets.ARTIFACTORY_USERNAME }}
-        spring_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        sonatype_username: ${{ secrets.OSSRH_S01_TOKEN_USERNAME }}
-        sonatype_password: ${{ secrets.OSSRH_S01_TOKEN_PASSWORD }}
-        central_username: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
-        central_password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+        COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
+        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+        deploy_repository_url: ${{ secrets.COMMERCIAL_ARTIFACTORY_URL }}
+        spring_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
+        spring_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+        central_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
+        central_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+        COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+        COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         signing_key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
       run: |
           echo "${signing_key}" > private.asc
           gpg --import --batch --no-tty private.asc
-          ./mvnw -B deploy -s .mvn/settings.xml
+          ./mvnw -B install

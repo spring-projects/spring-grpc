@@ -1,12 +1,17 @@
 name: Check Samples (Maven)
 
 on:
+  pull_request:
+    branches:
+      - 'main-internal'
+    paths-ignore:
+      - '.github/**'
   workflow_dispatch:
 
 jobs:
   check_samples:
     name: Check Samples project
-    if: ${{ github.repository == 'spring-projects/spring-grpc' }}
+    if: ${{ github.repository == 'spring-projects/spring-grpc-commercial' }}
     strategy:
       matrix:
         include:
@@ -23,6 +28,10 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
           distribution: ${{ matrix.distribution }}
           cache: maven
+
+      - name: Build project locally
+        run: |
+          ./mvnw install
 
       - name: Build and run samples w/ Java 25 ${{ matrix.distribution }}
         if: ${{ matrix.javaVersion == 25 }}

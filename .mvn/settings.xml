@@ -2,6 +2,27 @@
 <settings>
 	<profiles>
 		<profile>
+			<id>spring</id>
+			<repositories>
+				<repository>
+					<id>spring-commercial-release</id>
+					<name>Spring Commercial Release Repository</name>
+					<url>${env.COMMERCIAL_RELEASE_REPO_URL}</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-commercial-snapshot</id>
+					<name>Spring Commercial Snapshot Repository</name>
+					<url>${env.COMMERCIAL_SNAPSHOT_REPO_URL}</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
 			<id>release</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -21,6 +42,16 @@
 			<id>sonatype-nexus-staging</id>
 			<username>${env.sonatype_username}</username>
 			<password>${env.sonatype_password}</password>
+		</server>
+		<server>
+			<id>spring-commercial-snapshot</id>
+			<username>${env.COMMERCIAL_ARTIFACTORY_RO_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_RO_PASSWORD}</password>
+		</server>
+		<server>
+			<id>spring-commercial-release</id>
+			<username>${env.COMMERCIAL_ARTIFACTORY_RO_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_RO_PASSWORD}</password>
 		</server>
 		<server>
 			<id>repo.spring.io</id>
