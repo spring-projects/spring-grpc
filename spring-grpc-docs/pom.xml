@@ -142,7 +142,6 @@
 						<id>install node and npm</id>
 						<goals>
 							<goal>install-node-and-npm</goal>
-							<goal>npm</goal>
 						</goals>
 						<phase>generate-resources</phase>
 					</execution>
@@ -171,7 +170,7 @@
 				</executions>
 				<configuration>
 					<!-- Has to be the same as the antora lifecycle-->
-					<nodeVersion>v18.17.1</nodeVersion>
+					<nodeVersion>v24.15.0</nodeVersion>
 				</configuration>
 			</plugin>
 		</plugins>
