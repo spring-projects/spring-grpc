@@ -5,8 +5,8 @@ This section describes core concepts that Spring gRPC uses on the client side.
 The Protobuf-generated sources in your project will contain the stub classes, and they just need to be bound to a channel.
 The Protobuf files will be provided by the service you are connecting to.
 
-== Application Properties
-You can inject a javadoc:org.springframework.grpc.client.GrpcChannelFactory[] into your application configuration and use it to create a gRPC channel.
+== Channel Factory
+You can create and inject a javadoc:org.springframework.grpc.client.GrpcChannelFactory[] into your application configuration and use it to create a gRPC channel.
 The default javadoc:org.springframework.grpc.client.GrpcChannelFactory[] implementation can create a "named" channel, which you can then use to extract the configuration to connect to the server.
 For example:
 
@@ -18,20 +18,13 @@ SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channels) {
 }
 ----
 
-then in `application.properties`:
-
-[source,properties]
-----
-spring.grpc.client.channels.local.address=0.0.0.0:9090
-----
-
-There is a default named channel that you can configure as `spring.grpc.client.default-channel.*`, and then it will be used by default if there is no channel with the name specified in the channel creation.
+The "local" channel is just an example name. You can use any name you like for your channels. It is resolved by a `VirtualTargets` implementation that looks up the configuration for the channel and is injected into the channel factory.
 
 == Automatic Client Configuration
 
 The automatic creation of beans for gRPC stubs is switched on by the javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotation.
-A Spring Boot application will have one of these by default, but you can add your own safely if you want to change the defaults, for instance to change the base type of the stubs or to scan a different package.
-Spring gRPC will scan the application packages for gRPC stubs and automatically create bean definitions, as long as the default channel is configured via `spring.grpc.client.default-channel.*` (it needs at least a target URL to work).
+You can add this annotation to change the base type of the stubs or to scan a different package.
+Spring gRPC will scan the application packages for gRPC stubs and automatically create bean definitions.
 
 === Package Scanning
 
@@ -96,56 +89,6 @@ SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channels) {
 }
 ----
 
-=== Shaded Netty Client
-
-The default client implementation uses the Netty client.
-You can switch to a shaded Netty implementation provided by the gRPC team by adding the `grpc-netty-shaded` dependency and excluding the `grpc-netty` dependency.
-
-[source,xml]
-----
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-grpc-client</artifactId>
-	<exclusions>
-		<exclusion>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-netty</artifactId>
-		</exclusion>
-	</exclusions>
-</dependency>
-<dependency>
-	<groupId>io.grpc</groupId>
-	<artifactId>grpc-netty-shaded</artifactId>
-</dependency>
-----
-
-For Gradle users
-
-[source,gradle]
-----
-dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-grpc-client"
-	implementation 'io.grpc:grpc-netty-shaded'
-	modules {
-		module("io.grpc:grpc-netty") {
-			replacedBy("io.grpc:grpc-netty-shaded", "Use Netty shaded instead of regular Netty")
-		}
-	}
-}
-----
-
-[[in-process-channel]]
-== InProcess Channel
-You can communicate with an link:server.adoc#in-process-server[in-process server] (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath.
-
-In this mode, the in-process channel factory is auto-configured in *addition* to the regular channel factories (e.g. Netty).
-However, to prevent users from having to deal with multiple channel factories, a composite channel factory is configured as the primary channel factory bean.
-The composite consults its composed factories to find the first one that supports the channel target.
-
-NOTE: To use the inprocess server the channel target must be set to `in-process:<in-process-name>`
-
-To disable the inprocess channel factory, you can set the `spring.grpc.client.inprocess.enabled` property to false.
-
 == Channel Configuration
 The channel factory provides an API to create channels.
 The channel creation process can be configured as follows.
@@ -192,34 +135,6 @@ SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channelFactory) {
 The above example disables retries for the single created channel only.
 
 WARNING: While the channel builder customizer gives you full access to the native channel builder, you should not call `build` on the customized builder as the channel factory handles the `build` call for you and doing so will create orphaned channels.
-
-== The Local Server Port
-
-If you are running a gRPC server locally as part of your application, you will often want to connect to it in an integration test.
-It can be convenient in that case to use an ephemeral port for the server (`spring.grpc.server.port=0`) and then use the port that is allocated to connect to it.
-You can discover the port that the server is running on by injecting the `@LocalGrpcPort` bean into your test.
-The `@Bean` has to be marked as `@Lazy` to ensure that the port is available when the bean is created (it is only known when the server starts which is part of the startup process).
-
-[source,java]
-----
-@Bean
-@Lazy
-SimpleGrpc.SimpleBlockingStub stub(GrpcChannelFactory channels, @LocalGrpcPort int port) {
-	return SimpleGrpc.newBlockingStub(channels.createChannel("0.0.0.0:" + port));
-}
-----
-
-The channel can be configured via `application.properties` as well, by using the `${local.grpc.port}` property placeholder.
-The `@Bean` where you create the stub must still be `@Lazy` for the same reason as above.
-For example:
-
-[source,properties]
-----
-spring.grpc.client.channels.local.address=0.0.0.0:${local.grpc.port}
-----
-
-You can't use `@LocalGrpcPort` in a bean that creates a stub, unless it is marked `@Lazy`, because it is not available until the server starts.
-You can lazily resolve `local.grpc.port` in the customizer by using the `Environment` when the channel is created, either directly via its API or through placeholders like in the properties file example above.
 
 [[client-interceptor]]
 == Client Interceptors
@@ -303,26 +218,6 @@ Spring gRPC provides an autoconfigured interceptor that can be used to provide o
 == Security
 
 If your remote gRPC server expects requests to be authenticated you will need to configure the client to provide authentication credentials.
-
-=== Mutual TLS
-
-Mutual TLS (mTLS) is a security protocol that requires both the client and the server to present certificates to each other.
-A Spring gRPC client can use mTLS by configuring the client in `application.properties`.
-The mechanism is through the use of https://docs.spring.io/spring-boot/reference/features/ssl.html#features.ssl.bundles[SSL Bundles] (from Spring Boot).
-Here's an example:
-
-[source,properties]
-----
-spring.grpc.client.channels.my-channel.ssl.bundle=sslclient
-spring.grpc.client.channels.my-channel.negotiation-type=TLS
-spring.ssl.bundle.jks.sslclient.keystore.location=classpath:client.jks
-spring.ssl.bundle.jks.sslclient.keystore.password=secret
-spring.ssl.bundle.jks.sslclient.keystore.type=JKS
-spring.ssl.bundle.jks.sslclient.key.password=password
-----
-
-The first two lines configure a channel named `my-channel` so that it has an SSL bundle named `sslclient`.
-The rest is the configuration of the SSL bundle itself, in this case using JKS encoding (other options are available).
 
 === HTTP Headers
 
