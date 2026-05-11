@@ -201,33 +201,7 @@ Instead, the version of the dependency module you are using determines the utili
 It also ensures that you’re using supported and tested versions of the dependencies by default, unless you choose to override them.
 
 **📌 NOTE**\
-The examples below assume you are running inside a Spring Boot application and therefore use `spring-grpc-dependencies`.
-
-If you’re a Maven user, you can use the dependencies by adding the following to your pom.xml file -
-
-```xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.grpc</groupId>
-            <artifactId>spring-grpc-dependencies</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
-```
-
-Gradle users can also use the dependencies by leveraging Gradle (5.0+) native support for declaring dependency constraints using a Maven BOM.
-This is implemented by adding a 'platform' dependency handler method to the dependencies section of your Gradle build script.
-As shown in the snippet below this can then be followed by version-less declarations of the Starter Dependencies for the one or more spring-grpc modules you wish to use, e.g. spring-grpc-openai.
-
-```gradle
-dependencies {
-  implementation platform("org.springframework.grpc:spring-grpc-dependencies:1.1.0-SNAPSHOT")
-}
-```
+The examples below assume you are running inside a Spring Boot application and therefore use `spring-boot-dependencies` either explicitly or implicitly by using the Spring Boot starter parent or Gradle plugin.
 
 You need a Protobuf file that defines your service and messages, and you will need to configure your build tools to compile it into Java sources. This is a standard part of gRPC development (i.e. nothing to do with Spring). We now come to the Spring gRPC features.
 
@@ -259,7 +233,7 @@ Run it from your IDE, or on the command line with `./mvnw spring-boot:run` or `.
 
 ### gRPC Client
 
-To create a simple gRPC client, you can use the Spring Boot starter (see above - it’s the same as for the server). Then you can inject a bean of type `GrpcChannelFactory` and use it to create a gRPC channel. The most common usage of a channel is to create a client that binds to a service, such as the one above. The Protobuf-generated sources in your project will contain the stub classes, and they just need to be bound to a channel. For example, to bind to the `SimpleGrpc` service on a local server:
+To create a simple gRPC client, you can use the Spring Boot client starter (see above - it’s the same as for the server but with the client-specific dependencies). Then you can inject a bean of type `GrpcChannelFactory` and use it to create a gRPC channel. The most common usage of a channel is to create a client that binds to a service, such as the one above. The Protobuf-generated sources in your project will contain the stub classes, and they just need to be bound to a channel. For example, to bind to the `SimpleGrpc` service on a local server:
 
 ```java
 @Bean
