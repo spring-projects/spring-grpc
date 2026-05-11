@@ -132,7 +132,6 @@
 				<groupId>io.github.ascopes</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
 				<configuration>
-					<protoc>${protobuf-java.version}</protoc>
 					<plugins>
 						<plugin kind="binary-maven">
 							<groupId>io.grpc</groupId>
@@ -150,13 +149,6 @@
 						</plugin>
 					</plugins>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 		</plugins>
