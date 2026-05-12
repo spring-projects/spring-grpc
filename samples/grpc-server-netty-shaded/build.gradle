@@ -50,9 +50,3 @@ test {
 	testLogging.showStandardStreams = true
 	outputs.upToDateWhen { false }
 }
-
-protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
-	}
-}
