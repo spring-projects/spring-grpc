@@ -7,7 +7,7 @@ The `Server` is the gRPC server that listens for incoming requests and routes th
 
 == Create a gRPC Service
 
-To create a gRPC server, you need to provide one or more beans of type `BindableService`.
+To create a gRPC server, you need to provide a `GrpcServerFactory` one or more beans of type `BindableService`.
 There are some `BindableServices` available off the shelf that you could include in your application (e.g. the <<reflection-service,gRPC Reflection>> or <<health-service,gRPC Health>> services).
 Very commonly, you will create your own `BindableService` by extending the generated service implementation from your Protobuf file.
 The easiest way to activate it is to simply add a Spring `@Service` annotation to the implementation class and have it picked up by the `@ComponentScan` in your Spring Boot application.
@@ -46,83 +46,19 @@ GrpcServerFactoryCustomizer myServerFactoryCustomizer(ServerServiceDefinitionFil
 
 == Netty Server
 
-If you use the `spring-grpc-spring-boot-starter` dependency on its own, the `Server` is a Netty-based implementation.
-You can configure common features of the server by using the `grpc.server` prefix in `application.properties` or `application.yml`.
-For instance, to set the port to listen on, use `spring.grpc.server.port` (defaults to 9090).
-For more specialized configuration, you can provide a javadoc:org.springframework.grpc.server.ServerBuilderCustomizer[] bean to customize the `ServerBuilder` before it is used to create the server.
+If you use the `NettyGrpcServerFactory`, the server will be a Netty-based implementation.
+You can configure common features of the server by using a javadoc:org.springframework.grpc.server.ServerBuilderCustomizer[] bean to customize the `ServerBuilder` before it is used to create the server.
 
 === Shaded Netty
 
-You can switch to a shaded Netty provided by the gRPC team by adding the `grpc-netty-shaded` dependency and excluding the `grpc-netty` dependency.
-
-[source,xml]
-----
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-grpc-server</artifactId>
-	<exclusions>
-		<exclusion>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-netty</artifactId>
-		</exclusion>
-	</exclusions>
-</dependency>
-<dependency>
-	<groupId>io.grpc</groupId>
-	<artifactId>grpc-netty-shaded</artifactId>
-</dependency>
-----
-
-For Gradle users
-
-[source,gradle]
-----
-dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-grpc-server"
-	implementation 'io.grpc:grpc-netty-shaded'
-	modules {
-		module("io.grpc:grpc-netty") {
-			replacedBy("io.grpc:grpc-netty-shaded", "Use Netty shaded instead of regular Netty")
-		}
-	}
-}
-----
+You can switch to a shaded Netty provided by the gRPC team by adding the `grpc-netty-shaded` dependency and creating a `ShadedNettyGrpcServerFactory` bean in your application context.
 
 == Servlet Server
 
 Any servlet container can be used to run a gRPC server.
-Spring Boot gRPC includes autoconfiguration that configures the server to use the servlet container if it detects that it is in a web application.
 
-To run in this mode you must enable HTTP2 on the server by setting `server.http2.enabled` to `true` and include the required dependencies as follows:
-
-[source,xml]
-----
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-grpc-server</artifactId>
-</dependency>
-<dependency>
-    <groupId>io.grpc</groupId>
-    <artifactId>grpc-servlet-jakarta</artifactId>
-</dependency>
-----
-
-For Gradle users
-
-[source,gradle]
-----
-dependencies {
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-grpc-server"
-    implementation "io.grpc:grpc-servlet-jakarta"
-}
-----
-
-The `spring.grpc.server.*` properties will be ignored in favour of the regular `server.*` properties in this case (with the exception of `spring.grpc.server.max-inbound-message-size`).
+To run in this mode you must enable HTTP2 on the server by setting the container up using its own infrastructure.
+Spring Boot provides auto-configuration for Tomcat and Jetty, and you can use the usual configuration properties to enable HTTP2.
 The servlet that is created is mapped to process HTTP POST requests to the paths defined by the registered services, as `/<service-name>/*`.
 Clients can connect to the server using that path, which is what any gRPC client library will do.
 
@@ -131,13 +67,12 @@ You can still add javadoc:org.springframework.grpc.server.ServerBuilderCustomize
 
 == Native gRPC Server inside a Servlet Container
 The native gRPC server (with netty etc.) will run happily inside a web application, listening on a different port.
-If you want to do that in any Spring Boot application, it should be sufficient *not* to include the `grpc-servlet-jakarta` dependency on your classpath.
-This dependency is only provided by the `spring-grpc-server-web-spring-boot-starter` (or if you include it explicitly yourself), but if you need to be explicit you can set `spring.grpc.server.servlet.enabled=false` in your application configuration.
 
 [[in-process-server]]
 == InProcess Server
 
-You can run an in-process server (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath and specifying the `spring.grpc.server.inprocess.name` property which is used as the identity of the server for clients to connect to.
+You can run an in-process server (i.e. not listening on a network port) by including the `io.grpc.grpc-inprocess` dependency on your classpath and using the javadoc:org.springframework.grpc.server.InProcessGrpcServerFactory[].
+This is useful for testing, but it can also be used in production if you want to run a gRPC server that is only accessible from within the same application (e.g. for internal communication between different modules of the same application).
 
 In this mode, the in-process server factory is auto-configured in *addition* to the regular server factory (e.g. Netty).
 
@@ -177,8 +112,7 @@ ServerInterceptorFilter myInterceptorFilter() {
 }
 ----
 
-A javadoc:org.springframework.grpc.server.InProcessGrpcServerFactory[] picks up the javadoc:org.springframework.grpc.server.service.ServerInterceptorFilter[] automatically.
-Any other server factory will require you to provide a `GrpcServerFactoryCustomizer` in which you can modify the factory by adding a filter, as shown in the following example:
+You will need to provide a `GrpcServerFactoryCustomizer` in which you can modify the factory by adding a filter, as shown in the following example:
 
 [source,java]
 ----
@@ -226,7 +160,7 @@ You can use this option if you want to add a per-service interceptor between glo
 [[reflection-service]]
 == Reflection
 
-Spring gRPC autoconfigures the standard https://grpc.io/docs/guides/reflection/[gRPC Reflection service] which allows clients to browse the metadata of your services and download the Protobuf files.
+Spring gRPC allows you to create an instance of the standard https://grpc.io/docs/guides/reflection/[gRPC Reflection service] which enables clients to browse the metadata of your services and download the Protobuf files.
 
 IMPORTANT: The reflection service resides in the `io.grpc:grpc-services` library which is marked as `optional` by Spring gRPC. You must add this dependency to your application in order for it to be autoconfigured.
 
@@ -235,9 +169,7 @@ include::health.adoc[leveloffset=+1]
 
 == Observability
 
-Spring gRPC provides an autoconfigured interceptor that can be used to provide observability to your gRPC services.
-All you need to do is add Spring Boot actuators to your project, and optionally a bridge to your observability platform of choice (just like https://docs.spring.io/spring-boot/reference/actuator/observability.html[any other Spring Boot application]).
-The `grpc-tomcat` sample in the Spring gRPC repository shows how to do it, and you should see trace logging and metrics when you connect to the server.
+Observability features are provided by Micrometer. Spring Boot has some auto-configuration for Micrometer, and Spring gRPC provides some additional auto-configuration to add gRPC-specific metrics.
 
 == Exception Handling
 
@@ -249,78 +181,23 @@ A javadoc:org.springframework.grpc.server.exception.GrpcExceptionHandler[] can b
 
 If you include `spring-grpc-test` in your project, your gRPC server in a `@SpringBootTest` can be started in-process (i.e. not listening on a network port) by enabling the in-process server.
 All clients that connect to any server via the autoconfigured javadoc:org.springframework.grpc.client.GrpcChannelFactory[] will be able to connect to it.
-You can switch the in-process server on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
-
-The in-process transport is an opt-in feature, so it requires an explicit configuration.
-You can switch it on by setting `spring.grpc.test.inprocess.enabled` to `true` or by adding the `@AutoConfigureInProcessTransport` annotation to your `@SpringBootTest` class.
-There is no need to set `spring.grpc.server.inprocess.name` as that is done automatically.
-Using the annotation is equivalent to setting the "enabled" property to true, and in addition marking the in-process transport as "exclusive", meaning that no other transport will be used.
-
-The `@AutoConfigureInProcessTransport` annotation works even if the test is not a `@SpringBootTest`, so if you only want to test the gRPC server layer you can use `@SpringJUnitConfig` with `@EnableAutoconfiguration` and add the `BindableService` beans that you want to test, either manually or as a `@ComponentScan`.
-Here's an example from the samples:
-
-```java
-@TestPropertySource(properties = { "spring.grpc.client.default-channel.address=localhost:9090" })
-@SpringJUnitConfig(TestConfig.class)
-@AutoConfigureInProcessTransport
-public class GrpcServerSideTests {
-
-	@Autowired
-	private SimpleBlockingStub stub;
-
-	@Test
-	void contextLoads() {
-		// Test the service using the stub...
-	}
-
-	@TestConfiguration
-	@Import({ GrpcServerService.class })
-	@EnableAutoConfiguration
-	static class TestConfig {
-
-	}
-
-}
-```
-
-NOTE: When the in-process server is run in test mode (as opposed to <<in-process-server,running normally>>) it replaces the regular server and channel factories (e.g. Netty).
-All channel target addresses are magically replaced with the in-process server name, so that clients can connect to it without any special configuration (hence the "default-channel" configuration in the example above, which is there purely to trigger automatic stub creation).
-
 
 == Security
 
 === Netty
 
 The netty-based server supports TLS and mTLS out of the box.
-To configure the server you can configure an SSL Bundle in the `application.properties` or `application.yml` file.
-An example would be:
-
-[source,properties]
-----
-spring.grpc.server.ssl.bundle=ssltest
-spring.ssl.bundle.jks.ssltest.keystore.location=classpath:test.jks
-spring.ssl.bundle.jks.ssltest.keystore.password=secret
-spring.ssl.bundle.jks.ssltest.keystore.type=JKS
-spring.ssl.bundle.jks.ssltest.key.password=password
-----
-
-Here we configure a bundle named "ssltest" that uses a JKS keystore, similar to what you do with TLS support for https://docs.spring.io/spring-boot/how-to/webserver.html#howto.webserver.configure-ssl[Spring Boot in other areas].
-It is then applied to the gRPC server using the `spring.grpc.server.ssl.bundle` property.
-To use self-signed certificates, for testing purposes only, you also need to set `spring.grpc.server.ssl.secure=false`.
+To enable it, you need to add the appropriate `KeyManager` and/or `TrustManager` to the server configuration.
+You can do this by creating a javadoc:org.springframework.grpc.server.ServerBuilderCustomizer[] or in the `@Bean` definition for the `NettyGrpcServerFactory` itself.
 
 ==== Declarative Security with Spring Security
 
 If you want to enhance the security of your gRPC server, you can use Spring Security by employing similar mechanisms to those used for regular HTTP security.
-If Spring Security is on the classpath, some autoconfiguration will be automatically added to your project.
-By default, just https://docs.spring.io/spring-boot/reference/web/spring-security.html[like in a servlet application], you will get a `UserDetailsService` from Spring Boot and an `AuthenticationManager` that will authenticate requests using HTTP Basic authentication.
-Basic authentication is enabled by default, as well as "preauthentication" via mTLS.
-Preauthentication works by extracting a user details object from the client's TLS certificate, matching the principal name with the user in the `UserDetailsService` (just like in a normal web application).
+Enable Spring Security as normal, and ensure that there is an `AuthenticationManager` bean in the context.
+Then create a javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] bean that uses the `AuthenticationManager` to authenticate requests, and add it as a global server interceptor (see above).
 You can then use `@Preauthorize` on your `BindableService` beans to enforce authorization rules with roles (more precisely authorities in Spring Security terminology).
 
-You can change the defaults and add your own rules by configuring beans of type `UserDetailsService` and/or javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[].
-In this way you can move the authorization rules to a central place, and you can also add your own authentication mechanisms.
-The javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] can be created from a Spring Security configurer of type javadoc:org.springframework.grpc.server.security.GrpcSecurity[].
-Its usage will be familiar to anyone who has used Spring Security before.
+This pattern will be familiar to anyone who has used Spring Security before.
 Here's an example:
 
 [source,java]
@@ -346,21 +223,7 @@ We also enable HTTP Basic authentication and preauthentication (mTLS) (`withDefa
 
 ==== OAuth2 Resource Server
 
-Similar to the way Spring Boot works https://docs.spring.io/spring-boot/reference/web/spring-security.html#web.security.oauth2.server[with normal web applications], if you have the `spring-security-oauth2-resource-server` dependency on the classpath, Spring gRPC will be able to automatically configure an OAuth2 resource server.
-There are 2 choices for the token types, just the same as in Spring Boot, and they are configured with the same application properties and optional custom beans.
-
-For JWT you need to set up either the JWK Set or OIDC Issuer URI.
-The JWK Set URI is set via `spring.security.oauth2.resourceserver.jwt.jwk-set-uri` (it's an endpoint in the authorization server).
-You also need to have the `spring-security-oauth2-jose` dependency on the classpath to handle the JWT decoding.
-
-For opaque tokens, it works exactly the same as with a regular web application, with the same application properties. E.g.
-
-[source,properties]
-----
-spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
-spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
-spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret
-----
+Similar to the way Spring Boot works https://docs.spring.io/spring-boot/reference/web/spring-security.html#web.security.oauth2.server[with normal web applications], if you have the `spring-security-oauth2-resource-server` dependency on the classpath, Spring gRPC will be able to configure an OAuth2 resource server through the javadoc:org.springframework.grpc.server.security.GrpcSecurity[] configurer.
 
 === Servlet
 
@@ -372,11 +235,7 @@ The gRPC response will also contain a `Status` with the appropriate error code a
 For authorization checking, e.g. role-based access control, your `BindableService` beans can be annotated with `@PreAuthorize`.
 
 N.B. if you customize the gRPC server call executors, you will need to ensure that you wrap them in a `DelegatingSecurityContextExecutor` (from Spring Security).
-Spring gRPC handles this for the default configuration.
 
-Spring gRPC will automatically configure the gRPC server interceptors, and https://docs.spring.io/spring-boot/reference/web/spring-security.html[Spring Boot will provide defaults] for an `AuthenticationManager` and a `UserDetailsService`.
-Spring Boot will also provide default configuration for an OAuth2 resource server, if you set the classpath up correctly (following the https://docs.spring.io/spring-boot/reference/web/spring-security.html#web.security.oauth2.server[Spring Boot documentation]) which will be used to validate the token.
-You may still want to provide your own `SecurityFilterChain`, but you can use the defaults just to get started.
 Here's an example with HTTP Basic authentication:
 
 [source,java]
@@ -385,13 +244,12 @@ Here's an example with HTTP Basic authentication:
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	return http.httpBasic(Customizer.withDefaults())
 		.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated())
+		.csrf((csrf) -> csrf.disable())
 		.build();
 }
 ----
 
-By default, CSRF protection is automatically disabled for gRPC requests because it is incompatible with the protocol.
-You can switch off that behaviour and configure your own CSRF protection if you want to by explicitly setting `spring.grpc.server.security.csrf.enabled=true`.
-A servlet application that exposes gRPC endpoints on a different port (with `spring.grpc.server.servlet.enabled=false`) will also not have CSRF protection disabled by default.
+By default, CSRF protection should be disabled for gRPC requests because it is incompatible with the protocol.
 
 ==== Securing Individual Methods
 
