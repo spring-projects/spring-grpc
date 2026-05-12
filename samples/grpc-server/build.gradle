@@ -3,7 +3,7 @@ plugins {
     id 'org.springframework.boot' version '4.1.0-SNAPSHOT'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.graalvm.buildtools.native' version '0.10.3'
-    id 'com.google.protobuf' version '0.9.4'
+    id 'com.google.protobuf' version '0.9.6'
 }
 
 group = 'com.example'
@@ -35,7 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-grpc-server-test'
 
     testRuntimeOnly "io.netty:netty-transport-native-epoll::linux-x86_64"
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -50,17 +50,5 @@ test {
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
-    }
-    plugins {
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {
-                option '@generated=omit'
-            }
-        }
     }
 }
