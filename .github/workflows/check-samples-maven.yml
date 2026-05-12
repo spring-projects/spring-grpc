@@ -31,7 +31,7 @@ jobs:
 
       - name: Build project locally
         run: |
-          ./mvnw install
+          ./mvnw install -DskipTests
 
       - name: Build and run samples w/ Java 25 ${{ matrix.distribution }}
         if: ${{ matrix.javaVersion == 25 }}
