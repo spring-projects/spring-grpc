@@ -44,7 +44,8 @@ public class GrpcClientApplicationTests {
 		static CommonsExecWebServerFactoryBean grpcServer() {
 			return CommonsExecWebServerFactoryBean.builder()
 				.classpath(classpath -> classpath
-					.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.1.0-INTERNAL-SNAPSHOT"))
+					.entries(new MavenClasspathEntry(
+							"org.springframework.grpc:grpc-server-sample:1.1.0-INTERNAL-SNAPSHOT"))
 					.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 					.files("target/test-classes"));
 		}

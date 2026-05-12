@@ -20,7 +20,25 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
+				<repository>
+					<id>spring-libs-snapshot</id>
+					<name>Spring Snapshot Repository</name>
+					<url>https://repo.spring.io/artifactory/libs-snapshot-local</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
 			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-libs-snapshot</id>
+					<name>Spring Snapshot Repository</name>
+					<url>https://repo.spring.io/artifactory/libs-snapshot-local</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
 		</profile>
 		<profile>
 			<id>release</id>

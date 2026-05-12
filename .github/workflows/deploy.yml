@@ -33,13 +33,13 @@ jobs:
       env:
         COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+        COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+        COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         deploy_repository_url: ${{ secrets.COMMERCIAL_ARTIFACTORY_URL }}
         spring_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
         spring_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
         central_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
         central_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
-        COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-        COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         signing_key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
       run: |

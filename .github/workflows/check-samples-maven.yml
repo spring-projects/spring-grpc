@@ -30,11 +30,21 @@ jobs:
           cache: maven
 
       - name: Build project locally
+        env:
+          COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
+          COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         run: |
           ./mvnw install -DskipTests
 
       - name: Build and run samples w/ Java 25 ${{ matrix.distribution }}
         if: ${{ matrix.javaVersion == 25 }}
+        env:
+          COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
+          COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         run: |
           cd samples
           ../mvnw clean install \
@@ -48,6 +58,11 @@ jobs:
 
       - name: Build and run samples w/ Java ${{ matrix.javaVersion }} ${{ matrix.distribution }}
         if: ${{ matrix.javaVersion != 25 }}
+        env:
+          COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
+          COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         run: |
           cd samples
           ../mvnw clean install \
