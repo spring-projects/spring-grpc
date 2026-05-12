@@ -1,59 +1,59 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.1.0-SNAPSHOT'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.graalvm.buildtools.native' version '0.10.3'
-    id 'com.google.protobuf' version '0.9.6'
+	id 'java'
+	id 'org.springframework.boot' version '4.1.0-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.graalvm.buildtools.native' version '0.10.3'
+	id 'com.google.protobuf' version '0.9.6'
 }
 
 group = 'com.example'
 version = '1.1.0-SNAPSHOT'
 
 def toolchainVersion() {
-    if (project.hasProperty('testToolchain')) {
-        return project.property('testToolchain').toString().toInteger()
-    }
-    return 17
+	if (project.hasProperty('testToolchain')) {
+		return project.property('testToolchain').toString().toInteger()
+	}
+	return 17
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(toolchainVersion())
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(toolchainVersion())
+	}
 }
 
 processTestAot {
-    enabled = false
+	enabled = false
 }
 
 repositories {
 	mavenLocal()
-    mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.0-SNAPSHOT'
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	testImplementation 'org.springframework.experimental.boot:spring-boot-testjars-maven:0.4.0.0'
 
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
-    useJUnitPlatform()
-    testLogging.showStandardStreams = true
-    outputs.upToDateWhen { false }
+	useJUnitPlatform()
+	testLogging.showStandardStreams = true
+	outputs.upToDateWhen { false }
 }
 
 protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
-    }
+	protoc {
+		artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
+	}
 }
