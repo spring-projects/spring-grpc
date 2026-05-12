@@ -189,24 +189,26 @@ public class OAuth2ResourceServerConfigurer
 		}
 
 		public OpaqueTokenConfigurer introspectionUri(String introspectionUri) {
-			Assert.notNull(introspectionUri, "introspectionUri cannot be null");
 			this.introspectionUri = introspectionUri;
-			this.introspector = () -> SpringOpaqueTokenIntrospector.withIntrospectionUri(this.introspectionUri)
-				.clientId(this.clientId)
-				.clientSecret(this.clientSecret)
-				.build();
+			this.introspector = () -> {
+				Assert.notNull(this.introspectionUri, "introspectionUri cannot be null");
+				return SpringOpaqueTokenIntrospector.withIntrospectionUri(this.introspectionUri).build();
+			};
 			return this;
 		}
 
 		public OpaqueTokenConfigurer introspectionClientCredentials(String clientId, String clientSecret) {
-			Assert.notNull(clientId, "clientId cannot be null");
-			Assert.notNull(clientSecret, "clientSecret cannot be null");
 			this.clientId = clientId;
 			this.clientSecret = clientSecret;
-			this.introspector = () -> SpringOpaqueTokenIntrospector.withIntrospectionUri(this.introspectionUri)
-				.clientId(this.clientId)
-				.clientSecret(this.clientSecret)
-				.build();
+			this.introspector = () -> {
+				Assert.notNull(this.clientId, "clientId cannot be null");
+				Assert.notNull(this.clientSecret, "clientSecret cannot be null");
+				Assert.notNull(this.introspectionUri, "introspectionUri cannot be null");
+				return SpringOpaqueTokenIntrospector.withIntrospectionUri(this.introspectionUri)
+					.clientId(this.clientId)
+					.clientSecret(this.clientSecret)
+					.build();
+			};
 			return this;
 		}
 
