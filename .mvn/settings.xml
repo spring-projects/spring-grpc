@@ -20,20 +20,12 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
-				<repository>
-					<id>spring-libs-snapshot</id>
-					<name>Spring Snapshot Repository</name>
-					<url>https://repo.spring.io/artifactory/libs-snapshot-local</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
 					<id>spring-libs-snapshot</id>
 					<name>Spring Snapshot Repository</name>
-					<url>https://repo.spring.io/artifactory/libs-snapshot-local</url>
+					<url>${env.COMMERCIAL_SNAPSHOT_REPO_URL}</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -63,13 +55,13 @@
 		</server>
 		<server>
 			<id>spring-commercial-snapshot</id>
-			<username>${env.COMMERCIAL_ARTIFACTORY_RO_USERNAME}</username>
-			<password>${env.COMMERCIAL_ARTIFACTORY_RO_PASSWORD}</password>
+			<username>${env.COMMERCIAL_ARTIFACTORY_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_PASSWORD}</password>
 		</server>
 		<server>
 			<id>spring-commercial-release</id>
-			<username>${env.COMMERCIAL_ARTIFACTORY_RO_USERNAME}</username>
-			<password>${env.COMMERCIAL_ARTIFACTORY_RO_PASSWORD}</password>
+			<username>${env.COMMERCIAL_ARTIFACTORY_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_PASSWORD}</password>
 		</server>
 		<server>
 			<id>repo.spring.io</id>
@@ -83,18 +75,18 @@
 		</server>
 		<server>
 			<id>spring-libs-snapshots</id>
-			<username>${env.spring_username}</username>
-			<password>${env.spring_password}</password>
+			<username>${env.COMMERCIAL_ARTIFACTORY_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_PASSWORD}</password>
 		</server>
 		<server>
 			<id>spring-libs-releases</id>
-			<username>${env.spring_username}</username>
-			<password>${env.spring_password}</password>
+			<username>${env.COMMERCIAL_ARTIFACTORY_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_PASSWORD}</password>
 		</server>
 		<server>
 			<id>spring-libs-plugins</id>
-			<username>${env.spring_username}</username>
-			<password>${env.spring_password}</password>
+			<username>${env.COMMERCIAL_ARTIFACTORY_USERNAME}</username>
+			<password>${env.COMMERCIAL_ARTIFACTORY_PASSWORD}</password>
 		</server>
 	</servers>
 </settings>

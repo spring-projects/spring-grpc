@@ -48,11 +48,11 @@
 		<repository>
 			<id>central</id>
 			<name>Nexus Release Repository</name>
-			<url>${env.deploy_repository_url}</url>
+			<url>${env.release_repository_url}</url>
 		</repository>
 		<snapshotRepository>
 			<id>repo.spring.io</id>
-			<url>${env.deploy_repository_url}</url>
+			<url>${env.snapshot_repository_url}</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -266,6 +266,43 @@
 	</build>
 
 	<profiles>
+		<profile>
+			<id>artifactory</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jfrog.buildinfo</groupId>
+						<artifactId>artifactory-maven-plugin</artifactId>
+						<version>3.6.2</version>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<id>deploy-to-artifactory</id>
+								<goals>
+									<goal>publish</goal>
+								</goals>
+								<configuration>
+									<publisher>
+										<contextUrl>${env.COMMERCIAL_ARTIFACTORY_URL}</contextUrl>
+										<username>${env.COMMERCIAL_ARTIFACTORY_USERNAME}</username>
+										<password>${env.COMMERCIAL_ARTIFACTORY_PASSWORD}</password>
+										<repoKey>spring-enterprise-maven-prod-local</repoKey>
+										<snapshotRepoKey>spring-enterprise-maven-dev-local</snapshotRepoKey>
+									</publisher>
+									<buildInfo>
+										<buildName>spring-grpc-commercial-${project.version}</buildName>
+										<project>spring</project>
+									</buildInfo>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>license</id>
 			<activation>
@@ -489,7 +526,7 @@
 			<distributionManagement>
 				<repository>
 					<id>repo.spring.io</id>
-					<url>${env.deploy_repository_url}</url>
+					<url>${env.release_repository_url}</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -500,16 +537,6 @@
 			<id>central</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.sonatype.central</groupId>
-						<artifactId>central-publishing-maven-plugin</artifactId>
-						<version>0.8.0</version>
-						<extensions>true</extensions>
-						<configuration>
-							<publishingServerId>central</publishingServerId>
-							<autoPublish>true</autoPublish>
-						</configuration>
-					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>

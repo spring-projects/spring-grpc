@@ -18,7 +18,7 @@ jobs:
   build:
     name: Build and Deploy On Push
 
-    runs-on: ubuntu-latest
+    runs-on: 'ubuntu22-2-8'
     if: ${{ github.repository == 'spring-projects/spring-grpc-commercial' }}
 
     steps:
@@ -33,9 +33,13 @@ jobs:
       env:
         COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
-        COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-        COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        deploy_repository_url: ${{ secrets.COMMERCIAL_ARTIFACTORY_URL }}
+        COMMERCIAL_ARTIFACTORY_RO_USERNAME: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+        COMMERCIAL_ARTIFACTORY_RO_PASSWORD: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
+        COMMERCIAL_ARTIFACTORY_USERNAME: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
+        COMMERCIAL_ARTIFACTORY_PASSWORD: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+        COMMERCIAL_ARTIFACTORY_URL: ${{ secrets.COMMERCIAL_ARTIFACTORY_URL }}
+        release_repository_url: ${{ secrets.COMMERCIAL_ARTIFACTORY_URL }}/artifactory/spring-enterprise-maven-prod-local
+        snapshot_repository_url: ${{ secrets.COMMERCIAL_ARTIFACTORY_URL }}/artifactory/spring-enterprise-maven-dev-local
         spring_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
         spring_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
         central_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
@@ -45,4 +49,4 @@ jobs:
       run: |
           echo "${signing_key}" > private.asc
           gpg --import --batch --no-tty private.asc
-          ./mvnw -B install
+          ./mvnw -B deploy

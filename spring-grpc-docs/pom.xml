@@ -13,13 +13,15 @@
 	<description>Spring gRPC documentation</description>
 
 	<properties>
-		<!-- Node for frontend-maven-plugin (Antora/downdoc). Sync engines.node in package.json when bumping. -->
+		<!-- Node for frontend-maven-plugin (Antora/downdoc). Sync engines.node in package.json when
+		bumping. -->
 		<nodejs.docs.version>v24.15.0</nodejs.docs.version>
 		<maven-exec-plugin.version>3.4.1</maven-exec-plugin.version>
 		<maven-frontend-plugin.version>1.15.1</maven-frontend-plugin.version>
 		<maven-gem-plugin.version>3.0.3</maven-gem-plugin.version>
 		<jruby.version>9.4.6.0</jruby.version>
 		<disable.checkstyle.checks>true</disable.checkstyle.checks>
+		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 	<!-- Dependencies used to build the config props doc generator -->
 	<dependencies>
@@ -50,7 +52,8 @@
 				<version>${antora.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<!-- npm + Antora CLI versions: package.json only (https://docs.antora.org/maven-plugin/latest/packages/). -->
+					<!-- npm + Antora CLI versions: package.json only
+					(https://docs.antora.org/maven-plugin/latest/packages/). -->
 					<playbookFile>src/main/antora/antora-playbook.yml</playbookFile>
 					<nodeVersion>${nodejs.docs.version}</nodeVersion>
 					<nodeInstallDirectory>${project.basedir}</nodeInstallDirectory>
@@ -74,10 +77,10 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
+				<groupId>org.jfrog.buildinfo</groupId>
+				<artifactId>artifactory-maven-plugin</artifactId>
 				<configuration>
-					<skip>true</skip>
+					<publishArtifacts>false</publishArtifacts>
 				</configuration>
 			</plugin>
 			<plugin>

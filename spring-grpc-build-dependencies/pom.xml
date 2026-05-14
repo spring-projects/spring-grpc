@@ -29,11 +29,11 @@
 		<repository>
 			<id>central</id>
 			<name>Nexus Release Repository</name>
-			<url>${env.deploy_repository_url}</url>
+			<url>${env.release_repository_url}</url>
 		</repository>
 		<snapshotRepository>
 			<id>repo.spring.io</id>
-			<url>${env.deploy_repository_url}</url>
+			<url>${env.snapshot_repository_url}</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -163,7 +163,7 @@
 			<distributionManagement>
 				<repository>
 					<id>repo.spring.io</id>
-					<url>${env.deploy_repository_url}</url>
+					<url>${env.release_repository_url}</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -175,7 +175,7 @@
 			<distributionManagement>
 				<repository>
 					<id>repo.spring.io</id>
-					<url>${env.deploy_repository_url}</url>
+					<url>${env.release_repository_url}</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -186,16 +186,6 @@
 			<id>central</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.sonatype.central</groupId>
-						<artifactId>central-publishing-maven-plugin</artifactId>
-						<version>0.8.0</version>
-						<extensions>true</extensions>
-						<configuration>
-							<publishingServerId>central</publishingServerId>
-							<autoPublish>true</autoPublish>
-						</configuration>
-					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>

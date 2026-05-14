@@ -1,0 +1,26 @@
+name: Create Release Bundle
+on:
+  workflow_dispatch:
+    inputs:
+      build-number:
+        description: 'Number of the build to use to create the bundle'
+        required: true
+        type: string
+      version:
+        description: 'Version to bundle'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  create-release-bundle:
+    runs-on: 'ubuntu22-2-8'
+    steps:
+      - name: Create Bundle
+        shell: bash
+        run: |
+          curl -s -u "${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}:${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}" \
+            -X POST -H "X-JFrog-Signing-Key-Name: packagesKey" -H "Content-Type: application/json" \
+            "https://usw1.packages.broadcom.com/lifecycle/api/v2/release_bundle?project=spring" \
+            -d '{"release_bundle_name": "TNZ-spring-grpc-commercial", "release_bundle_version": "${{ inputs.version }}", "skip_docker_manifest_resolution": true, "source_type": "builds", "source": {"builds": [ {"build_repository": "spring-build-info", "build_name": "spring-grpc-commercial-${{ inputs.version }}", "build_number": "${{ inputs.build-number }}", "include_dependencies": false}]}}' | \
+            jq -e 'if has("repository_key") then . else halt_error end'
