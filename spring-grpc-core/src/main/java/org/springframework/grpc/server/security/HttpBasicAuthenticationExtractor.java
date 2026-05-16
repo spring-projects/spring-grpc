@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.grpc.internal.GrpcHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -42,7 +43,7 @@ public class HttpBasicAuthenticationExtractor implements GrpcAuthenticationExtra
 
 	@Override
 	public @Nullable Authentication extract(Metadata headers, Attributes attributes, MethodDescriptor<?, ?> method) {
-		String auth = headers.get(GrpcSecurity.AUTHORIZATION_KEY);
+		String auth = headers.get(GrpcHeaders.AUTHORIZATION_KEY);
 		if (auth == null) {
 			return null;
 		}
