@@ -18,7 +18,7 @@ package org.springframework.grpc.client.interceptor.security;
 
 import java.util.function.Supplier;
 
-import org.springframework.grpc.server.security.GrpcSecurity;
+import org.springframework.grpc.internal.GrpcHeaders;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -49,7 +49,7 @@ public class BearerTokenAuthenticationInterceptor implements ClientInterceptor {
 			CallOptions callOptions, Channel next) {
 		return new SimpleForwardingClientCall<>(next.newCall(method, callOptions)) {
 			public void start(ClientCall.Listener<RespT> responseListener, io.grpc.Metadata headers) {
-				headers.put(GrpcSecurity.AUTHORIZATION_KEY,
+				headers.put(GrpcHeaders.AUTHORIZATION_KEY,
 						"Bearer " + BearerTokenAuthenticationInterceptor.this.token.get());
 				super.start(responseListener, headers);
 			}
