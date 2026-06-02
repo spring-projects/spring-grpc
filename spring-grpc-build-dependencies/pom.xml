@@ -50,10 +50,10 @@
 
 	<properties>
 		<google-common-protos.version>2.63.2</google-common-protos.version>
-		<grpc.version>1.79.0</grpc.version>
+		<grpc.version>1.81.0</grpc.version>
 		<grpc-kotlin.version>1.5.0</grpc-kotlin.version>
 		<jspecify.version>1.0.0</jspecify.version>
-		<protobuf-java.version>4.34.0</protobuf-java.version>
+		<protobuf-java.version>4.35.0</protobuf-java.version>
 		<spring-framework.version>7.0.8-SNAPSHOT</spring-framework.version>
 		<spring-security.version>7.1.0-SNAPSHOT</spring-security.version>
 		<micrometer.version>1.17.0-SNAPSHOT</micrometer.version>
