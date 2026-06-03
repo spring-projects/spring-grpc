@@ -18,7 +18,6 @@ import org.springframework.experimental.boot.server.exec.CommonsExecWebServerFac
 import org.springframework.experimental.boot.server.exec.MavenClasspathEntry;
 import org.springframework.experimental.boot.test.context.DynamicProperty;
 import org.springframework.experimental.boot.test.context.EnableDynamicProperty;
-import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
 import org.springframework.test.annotation.DirtiesContext;
@@ -26,7 +25,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
-@ImportGrpcClients
 public class DefaultDeadlineSetupTests {
 
 	@Nested
