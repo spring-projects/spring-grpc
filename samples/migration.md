@@ -1,6 +1,6 @@
-## Migration Guide: Spring gRPC 1.0.x to 1.1.0
+## Migration Guide: Spring gRPC 1.0.x to 1.1.1-SNAPSHOT
 
-This is an autommatically generated migration giode specificially for the samples in this project. There is a generic hand written guide that might also help you migrate in a [Wiki page](https://github.com/spring-projects/spring-grpc/wiki/Spring-gRPC-1.1-Migration-Guide). The headline change is that Spring gRPC 1.1.0 autoconfiguration ships as part of Spring Boot 4.1.0. The starter artifacts have moved from the `org.springframework.grpc` group into Spring Boot itself.
+This is an autommatically generated migration giode specificially for the samples in this project. There is a generic hand written guide that might also help you migrate in a [Wiki page](https://github.com/spring-projects/spring-grpc/wiki/Spring-gRPC-1.1-Migration-Guide). The headline change is that Spring gRPC 1.1.1-SNAPSHOT autoconfiguration ships as part of Spring Boot 4.1.0. The starter artifacts have moved from the `org.springframework.grpc` group into Spring Boot itself.
 
 ### 1. Upgrade Spring Boot
 
@@ -54,7 +54,7 @@ Affected samples: all samples.
 
 All starters have moved from `org.springframework.grpc` into `org.springframework.boot`.
 
-| 1.0.x artifact | 1.1.0 artifact |
+| 1.0.x artifact | 1.1.1-SNAPSHOT artifact |
 |---|---|
 | `org.springframework.grpc:spring-grpc-spring-boot-starter` | `org.springframework.boot:spring-boot-starter-grpc-server` |
 | `org.springframework.grpc:spring-grpc-client-spring-boot-starter` | `org.springframework.boot:spring-boot-starter-grpc-client` |
@@ -184,7 +184,7 @@ Affected samples: grpc-server/pom.xml, grpc-reactive/pom.xml.
 
 The `spring.grpc.client` namespace has changed. The key pattern moves from `default-channel`/`channels` to `channel`, and `address` becomes target.
 
-| 1.0.x property | 1.1.0 property |
+| 1.0.x property | 1.1.1-SNAPSHOT property |
 |---|---|
 | `spring.grpc.client.default-channel.address=...` | `spring.grpc.client.channel.default.target=...` |
 | `spring.grpc.client.channels.<name>.address=...` | `spring.grpc.client.channel.<name>.target=...` |
@@ -197,7 +197,7 @@ Affected samples: grpc-client/application.properties, grpc-server/GrpcServerInte
 
 ### 8. Rename server properties
 
-| 1.0.x property | 1.1.0 property |
+| 1.0.x property | 1.1.1-SNAPSHOT property |
 |---|---|
 | `spring.grpc.server.host=<ip>` | `spring.grpc.server.address=<ip>` |
 | `spring.grpc.server.address=unix:<path>` | `spring.grpc.server.netty.domain-socket-path=<path>` |
@@ -210,7 +210,7 @@ Also, the `local.grpc.port` placeholder used in test properties is now `local.gr
 
 ### 9. Update test annotations
 
-| 1.0.x | 1.1.0 |
+| 1.0.x | 1.1.1-SNAPSHOT |
 |---|---|
 | `@AutoConfigureInProcessTransport` | `@AutoConfigureTestGrpcTransport` |
 | `@LocalGrpcPort` | `@LocalGrpcServerPort` |

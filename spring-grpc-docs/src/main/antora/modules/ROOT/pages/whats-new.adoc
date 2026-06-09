@@ -2,10 +2,10 @@
 
 :page-section-summary-toc: 1
 
-[[what-s-new-in-1.1.0-since-1-0-0]]
-== What's New in 1.1.0 Since 1.0.0
+[[what-s-new-in-1.1.1-SNAPSHOT-since-1-0-0]]
+== What's New in 1.1.1-SNAPSHOT Since 1.0.0
 
-This section covers the changes made from version 1.0.0 to version 1.1.0.
+This section covers the changes made from version 1.0.0 to version 1.1.1-SNAPSHOT.
 
 * Spring Boot autoconfiguration and starters were moved to Spring Boot - see the https://github.com/spring-projects/spring-grpc/wiki/Spring-gRPC-1.1-Migration-Guide[migration guide] for more details
 
