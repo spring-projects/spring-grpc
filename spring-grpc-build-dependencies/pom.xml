@@ -49,7 +49,6 @@
 	</licenses>
 
 	<properties>
-		<google-common-protos.version>2.63.2</google-common-protos.version>
 		<grpc.version>1.81.0</grpc.version>
 		<grpc-kotlin.version>1.5.0</grpc-kotlin.version>
 		<jspecify.version>1.0.0</jspecify.version>
@@ -122,11 +121,6 @@
 				<version>${protobuf-java.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.google.api.grpc</groupId>
-				<artifactId>proto-google-common-protos</artifactId>
-				<version>${google-common-protos.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
