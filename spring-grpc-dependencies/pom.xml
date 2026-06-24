@@ -6,7 +6,7 @@
 
 	<groupId>org.springframework.grpc</groupId>
 	<artifactId>spring-grpc-dependencies</artifactId>
-	<version>1.1.0-INTERNAL-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring gRPC (Bill of Materials)</name>
@@ -126,33 +126,6 @@
 					</snapshots>
 				</repository>
 			</distributionManagement>
-		</profile>
-		<profile>
-			<id>central</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<gpgArguments>
-								<arg>--batch</arg>
-								<arg>--pinentry-mode=loopback</arg>
-							</gpgArguments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 

@@ -14,7 +14,7 @@
 				</repository>
 				<repository>
 					<id>spring-commercial-snapshot</id>
-					<name>Spring Commercial Snapshot Repository</name>
+					<name>Spring Commercial Repository</name>
 					<url>${env.COMMERCIAL_SNAPSHOT_REPO_URL}</url>
 					<snapshots>
 						<enabled>true</enabled>
@@ -24,7 +24,7 @@
 			<pluginRepositories>
 				<pluginRepository>
 					<id>spring-libs-snapshot</id>
-					<name>Spring Snapshot Repository</name>
+					<name>Spring Repository</name>
 					<url>${env.COMMERCIAL_SNAPSHOT_REPO_URL}</url>
 					<snapshots>
 						<enabled>true</enabled>
@@ -40,7 +40,7 @@
 				</pluginRepository>
 				<pluginRepository>
 					<id>spring-commercial-snapshot</id>
-					<name>Spring Commercial Snapshot Repository</name>
+					<name>Spring Commercial Repository</name>
 					<url>${env.COMMERCIAL_SNAPSHOT_REPO_URL}</url>
 					<snapshots>
 						<enabled>true</enabled>

@@ -36,7 +36,7 @@ public class DefaultDeadlineSetupTests {
 	class Deadline {
 
 		static boolean serverJarAvailable() {
-			return new File("../grpc-server/target/grpc-server-sample-1.1.0-INTERNAL-SNAPSHOT.jar").exists();
+			return new File("../grpc-server/target/grpc-server-sample-1.1.1-SNAPSHOT.jar").exists();
 		}
 
 		@Test
@@ -54,7 +54,7 @@ public class DefaultDeadlineSetupTests {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
 						.entries(new MavenClasspathEntry(
-								"org.springframework.grpc:grpc-server-sample:1.1.0-INTERNAL-SNAPSHOT"))
+								"org.springframework.grpc:grpc-server-sample:1.1.1-SNAPSHOT"))
 						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}
@@ -85,7 +85,7 @@ public class DefaultDeadlineSetupTests {
 	class WithoutDeadline {
 
 		static boolean serverJarAvailable() {
-			return new File("../grpc-server/target/grpc-server-sample-1.1.0-INTERNAL-SNAPSHOT.jar").exists();
+			return new File("../grpc-server/target/grpc-server-sample-1.1.1-SNAPSHOT.jar").exists();
 		}
 
 		@Test
@@ -103,7 +103,7 @@ public class DefaultDeadlineSetupTests {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
 						.entries(new MavenClasspathEntry(
-								"org.springframework.grpc:grpc-server-sample:1.1.0-INTERNAL-SNAPSHOT"))
+								"org.springframework.grpc:grpc-server-sample:1.1.1-SNAPSHOT"))
 						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}

@@ -149,13 +149,13 @@ More details on what is going on in the next section.
 
 You should follow the steps in each of the following section according to your needs.
 
-### Add Milestone and Snapshot Repositories
+### Add Milestone and Repositories
 
 If you prefer to add the dependency snippets by hand, follow the directions in the following sections.
 
-To use the Milestone and Snapshot version, you need to add references to the Spring Milestone and/or Snapshot repositories in your build file.
+To use the Milestone and version, you need to add references to the Spring Milestone and/or repositories in your build file.
 
-For Maven, add the following repository definitions as needed (if you are using snapshots or milestones):
+For Maven, add the following repository definitions as needed (if you are usings or milestones):
 
 ```xml
   <repositories>
@@ -169,7 +169,7 @@ For Maven, add the following repository definitions as needed (if you are using 
     </repository>
     <repository>
       <id>spring-snapshots</id>
-      <name>Spring Snapshots</name>
+      <name>Springs</name>
       <url>https://repo.spring.io/snapshot</url>
       <releases>
         <enabled>false</enabled>
@@ -211,7 +211,7 @@ If you’re a Maven user, you can use the dependencies by adding the following t
         <dependency>
             <groupId>org.springframework.grpc</groupId>
             <artifactId>spring-grpc-dependencies</artifactId>
-            <version>1.1.0-INTERNAL-SNAPSHOT</version>
+            <version>1.1.1-SNAPSHOT</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -225,7 +225,7 @@ As shown in the snippet below this can then be followed by version-less declarat
 
 ```gradle
 dependencies {
-  implementation platform("org.springframework.grpc:spring-grpc-dependencies:1.1.0-INTERNAL-SNAPSHOT")
+  implementation platform("org.springframework.grpc:spring-grpc-dependencies:1.1.1-SNAPSHOT")
 }
 ```
 
