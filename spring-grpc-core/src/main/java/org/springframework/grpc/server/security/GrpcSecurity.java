@@ -62,18 +62,6 @@ public final class GrpcSecurity
 		extends AbstractConfiguredSecurityBuilder<AuthenticationProcessInterceptor, GrpcSecurity> {
 
 	/**
-	 * A constant key used for storing and retrieving the "Authorization" header from gRPC
-	 * metadata. This key is used to handle authorization information in gRPC requests.
-	 *
-	 * <p>
-	 * The key is defined with the name "Authorization" and uses the ASCII string
-	 * marshaller for encoding and decoding the header value.
-	 * </p>
-	 */
-	public static final Metadata.Key<String> AUTHORIZATION_KEY = Metadata.Key.of("Authorization",
-			Metadata.ASCII_STRING_MARSHALLER);
-
-	/**
 	 * The order value for the context filter in the gRPC security framework. This
 	 * constant defines the position of the context filter in the filter chain. A lower
 	 * value indicates higher precedence.

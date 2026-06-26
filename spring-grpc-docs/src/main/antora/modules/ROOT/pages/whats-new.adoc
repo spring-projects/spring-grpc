@@ -2,7 +2,7 @@
 
 :page-section-summary-toc: 1
 
-[[what-s-new-in-1.1.1-SNAPSHOTsince-1-0-0]]
+[[what-s-new-in-1.1.0-since-1-0-0]]
 == What's New in 1.1.0 Since 1.0.0
 
 This section covers the changes made from version 1.0.0 to version 1.1.0.

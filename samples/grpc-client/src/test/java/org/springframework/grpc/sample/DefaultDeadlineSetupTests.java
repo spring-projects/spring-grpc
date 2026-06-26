@@ -18,7 +18,6 @@ import org.springframework.experimental.boot.server.exec.CommonsExecWebServerFac
 import org.springframework.experimental.boot.server.exec.MavenClasspathEntry;
 import org.springframework.experimental.boot.test.context.DynamicProperty;
 import org.springframework.experimental.boot.test.context.EnableDynamicProperty;
-import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
 import org.springframework.test.annotation.DirtiesContext;
@@ -26,7 +25,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
-@ImportGrpcClients
 public class DefaultDeadlineSetupTests {
 
 	@Nested
@@ -53,8 +51,12 @@ public class DefaultDeadlineSetupTests {
 			static CommonsExecWebServerFactoryBean grpcServer() {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
+<<<<<<< HEAD
 						.entries(new MavenClasspathEntry(
 								"org.springframework.grpc:grpc-server-sample:1.1.1-SNAPSHOT"))
+=======
+						.entries(new MavenClasspathEntry("org.springframework.grpc:grpc-server-sample:1.1.1-SNAPSHOT"))
+>>>>>>> main
 						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}
