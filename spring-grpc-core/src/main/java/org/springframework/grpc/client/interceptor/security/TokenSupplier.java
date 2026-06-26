@@ -16,6 +16,9 @@
 
 package org.springframework.grpc.client.interceptor.security;
 
+/*
+ * Supplies a token for use in a gRPC call. This is used by the TokenInterceptor to add a token to the call metadata.
+ */
 public interface TokenSupplier {
 
 	String token();
