@@ -22,12 +22,10 @@ import org.springframework.experimental.boot.test.context.OAuth2ClientProviderIs
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.client.interceptor.security.BearerTokenAuthenticationInterceptor;
+import org.springframework.grpc.client.interceptor.security.ClientCredentialsTokenSupplier;
 import org.springframework.grpc.sample.proto.HelloReply;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
-import org.springframework.security.oauth2.client.endpoint.OAuth2ClientCredentialsGrantRequest;
-import org.springframework.security.oauth2.client.endpoint.RestClientClientCredentialsTokenResponseClient;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -118,8 +116,6 @@ public class GrpcServerApplicationTests {
 	@ImportGrpcClients(target = "secure", prefix = "secure", types = { SimpleGrpc.SimpleBlockingStub.class })
 	static class ExtraConfiguration {
 
-		private String token;
-
 		@Bean
 		@OAuth2ClientProviderIssuerUri
 		static CommonsExecWebServerFactoryBean authServer() {
@@ -132,19 +128,8 @@ public class GrpcServerApplicationTests {
 		@Bean
 		GrpcChannelBuilderCustomizer<?> stubs(ObjectProvider<ClientRegistrationRepository> context) {
 			return GrpcChannelBuilderCustomizer.matching("secure",
-					builder -> builder.intercept(new BearerTokenAuthenticationInterceptor(() -> token(context))));
-		}
-
-		private String token(ObjectProvider<ClientRegistrationRepository> context) {
-			if (this.token == null) { // ... plus we could check for expiry
-				RestClientClientCredentialsTokenResponseClient creds = new RestClientClientCredentialsTokenResponseClient();
-				ClientRegistrationRepository registry = context.getObject();
-				ClientRegistration reg = registry.findByRegistrationId("spring");
-				this.token = creds.getTokenResponse(new OAuth2ClientCredentialsGrantRequest(reg))
-					.getAccessToken()
-					.getTokenValue();
-			}
-			return this.token;
+					builder -> builder.intercept(new BearerTokenAuthenticationInterceptor(
+							new ClientCredentialsTokenSupplier(context.getObject(), () -> "spring"))));
 		}
 
 	}

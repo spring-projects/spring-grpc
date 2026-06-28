@@ -19,13 +19,10 @@ import org.springframework.experimental.boot.test.context.OAuth2ClientProviderIs
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.ImportGrpcClients;
 import org.springframework.grpc.client.interceptor.security.BearerTokenAuthenticationInterceptor;
+import org.springframework.grpc.client.interceptor.security.ClientCredentialsTokenSupplier;
 import org.springframework.grpc.sample.proto.HelloReply;
 import org.springframework.grpc.sample.proto.HelloRequest;
 import org.springframework.grpc.sample.proto.SimpleGrpc;
-import org.springframework.security.oauth2.client.endpoint.OAuth2ClientCredentialsGrantRequest;
-import org.springframework.security.oauth2.client.endpoint.RestClientClientCredentialsTokenResponseClient;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -33,7 +30,7 @@ import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "debug=true", "spring.grpc.server.port=0",
+		properties = { "spring.grpc.server.port=0",
 				"spring.grpc.client.channel.default.target=0.0.0.0:${local.grpc.server.port}",
 				"spring.grpc.client.channel.stub.target=0.0.0.0:${local.grpc.server.port}",
 				"spring.grpc.client.channel.secure.target=0.0.0.0:${local.grpc.server.port}" })
@@ -76,8 +73,6 @@ public class GrpcServerApplicationTests {
 	@ImportGrpcClients(target = "secure", prefix = "secure", types = { SimpleGrpc.SimpleBlockingStub.class })
 	static class ExtraConfiguration {
 
-		private String token;
-
 		@Bean
 		@OAuth2ClientProviderIssuerUri
 		static CommonsExecWebServerFactoryBean authServer() {
@@ -90,19 +85,9 @@ public class GrpcServerApplicationTests {
 		@Bean
 		GrpcChannelBuilderCustomizer<?> stubs(ObjectProvider<ReactiveClientRegistrationRepository> context) {
 			return GrpcChannelBuilderCustomizer.matching("secure",
-					builder -> builder.intercept(new BearerTokenAuthenticationInterceptor(() -> token(context))));
-		}
-
-		private String token(ObjectProvider<ReactiveClientRegistrationRepository> context) {
-			if (this.token == null) { // ... plus we could check for expiry
-				RestClientClientCredentialsTokenResponseClient creds = new RestClientClientCredentialsTokenResponseClient();
-				ReactiveClientRegistrationRepository registry = context.getObject();
-				ClientRegistration reg = registry.findByRegistrationId("spring").block();
-				this.token = creds.getTokenResponse(new OAuth2ClientCredentialsGrantRequest(reg))
-					.getAccessToken()
-					.getTokenValue();
-			}
-			return this.token;
+					builder -> builder
+						.intercept(new BearerTokenAuthenticationInterceptor(new ClientCredentialsTokenSupplier(
+								id -> context.getObject().findByRegistrationId(id).block(), () -> "spring"))));
 		}
 
 	}

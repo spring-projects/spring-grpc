@@ -37,11 +37,20 @@ public class BearerTokenAuthenticationInterceptor implements ClientInterceptor {
 	private final Supplier<String> token;
 
 	public BearerTokenAuthenticationInterceptor(String token) {
-		this(() -> token);
+		this(new TokenSupplier() {
+			@Override
+			public String token() {
+				return token;
+			}
+		});
 	}
 
 	public BearerTokenAuthenticationInterceptor(Supplier<String> token) {
 		this.token = token;
+	}
+
+	public BearerTokenAuthenticationInterceptor(TokenSupplier token) {
+		this.token = () -> token.token();
 	}
 
 	@Override
