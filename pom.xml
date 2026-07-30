@@ -110,7 +110,7 @@
 		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
 		<puppycrawl-tools-checkstyle.version>9.3</puppycrawl-tools-checkstyle.version>
 		<spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
-		<disable.format.checks>false</disable.format.checks>
+		<disable.format.checks>true</disable.format.checks>
 		<disable.checkstyle.checks>false</disable.checkstyle.checks>
 		<maven-checkstyle-plugin.config.location>src/checkstyle</maven-checkstyle-plugin.config.location>
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>

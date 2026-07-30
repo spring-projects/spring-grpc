@@ -1,0 +1,33 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+name: Deploy Jars
+on:
+  push:
+    branches:
+      - 'main-internal'
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Deploy On Push
+
+    runs-on: "ubuntu22-2-8"
+    if: ${{ github.repository == 'spring-projects/spring-grpc-commercial' }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'liberica'
+        cache: maven
+    - name: Deploy with Maven
+      env:
+        spring_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
+        spring_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+        snapshot_repository_url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+      run: |
+          ./mvnw -B deploy -s .mvn/settings.xml
