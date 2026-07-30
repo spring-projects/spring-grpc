@@ -12,7 +12,7 @@
     "@asciidoctor/tabs": "^1.0.0-beta.6",
     "@springio/antora-extensions": "^1.14.11",
     "@springio/asciidoctor-extensions": "^1.0.0-alpha.18",
-    "downdoc": "^1.1.1-SNAPSHOTstable"
+    "downdoc": "^1.1.1-INTERNAL-SNAPSHOTstable"
   },
   "scripts": {
     "build": "antora --stacktrace generate --to-dir `pwd`/target/antora/site --url https://docs.spring.io --log-level=debug src/main/antora/antora-playbook.yml"
