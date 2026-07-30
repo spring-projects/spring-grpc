@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '1.1.1-INTERNAL-SNAPSHOT'
+version = '1.1.1'
 
 java {
 	toolchain {

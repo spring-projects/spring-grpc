@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>org.springframework.grpc</groupId>
 	<artifactId>grpc-oauth2-sample</artifactId>
-	<version>1.1.1-INTERNAL-SNAPSHOT</version>
+	<version>1.1.1</version>
 	<name>Spring gRPC OAuth2 Server Sample</name>
 	<description>Demo project for Spring gRPC</description>
 	<url />
@@ -29,7 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
-		<spring-grpc.version>1.1.1-INTERNAL-SNAPSHOT</spring-grpc.version>
+		<spring-grpc.version>1.1.1</spring-grpc.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 	</properties>
 	<dependencies>

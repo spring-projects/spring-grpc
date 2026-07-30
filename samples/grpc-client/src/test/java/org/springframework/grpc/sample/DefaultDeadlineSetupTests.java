@@ -34,7 +34,7 @@ public class DefaultDeadlineSetupTests {
 	class Deadline {
 
 		static boolean serverJarAvailable() {
-			return new File("../grpc-server/target/grpc-server-sample-1.1.1-INTERNAL-SNAPSHOT.jar").exists();
+			return new File("../grpc-server/target/grpc-server-sample-1.1.1.jar").exists();
 		}
 
 		@Test
@@ -52,7 +52,7 @@ public class DefaultDeadlineSetupTests {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
 						.entries(new MavenClasspathEntry(
-								"org.springframework.grpc:grpc-server-sample:1.1.1-INTERNAL-SNAPSHOT"))
+								"org.springframework.grpc:grpc-server-sample:1.1.1"))
 						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}
@@ -78,12 +78,12 @@ public class DefaultDeadlineSetupTests {
 
 	@Nested
 	@SpringBootTest(properties = "spring.grpc.client.channel.default.default.deadline=1s")
-	@DirtiesContext1.1.1-INTERNAL-SNAPSHOT
+	@DirtiesContext1.1.1
 	@EnabledIf("serverJarAvailable")
 	class WithoutDeadline {
 
 		static boolean serverJarAvailable() {
-			return new File("../grpc-server/target/grpc-server-sample-1.1.1-INTERNAL-SNAPSHOT.jar").exists();
+			return new File("../grpc-server/target/grpc-server-sample-1.1.1.jar").exists();
 		}
 
 		@Test
@@ -95,13 +95,13 @@ public class DefaultDeadlineSetupTests {
 		@EnableDynamicProperty
 		static class ExtraConfiguration {
 
-			@Bean1.1.1-INTERNAL-SNAPSHOT
+			@Bean1.1.1
 			@DynamicProperty(name = "launched.grpc.port", value = "port")
 			static CommonsExecWebServerFactoryBean grpcServer() {
 				return CommonsExecWebServerFactoryBean.builder()
 					.classpath(classpath -> classpath
 						.entries(new MavenClasspathEntry(
-								"org.springframework.grpc:grpc-server-sample:1.1.1-INTERNAL-SNAPSHOT"))
+								"org.springframework.grpc:grpc-server-sample:1.1.1"))
 						.entries(MavenClasspathEntry.springBootDependency("spring-boot-web-server"))
 						.files("target/test-classes"));
 			}
