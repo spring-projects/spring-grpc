@@ -49,14 +49,14 @@
 	</licenses>
 
 	<properties>
-		<grpc.version>1.81.0</grpc.version>
+		<grpc.version>1.83.1</grpc.version>
 		<grpc-kotlin.version>1.5.0</grpc-kotlin.version>
 		<jspecify.version>1.0.0</jspecify.version>
-		<protobuf-java.version>4.35.0</protobuf-java.version>
+		<protobuf-java.version>4.35.1</protobuf-java.version>
 		<spring-framework.version>7.0.8</spring-framework.version>
 		<spring-security.version>7.1.0</spring-security.version>
 		<micrometer.version>1.17.0</micrometer.version>
-		<netty.version>4.2.15.Final</netty.version>
+		<netty.version>4.2.16.Final</netty.version>
 		<spring-javaformat-maven-plugin.version>0.0.43</spring-javaformat-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 	</properties>
