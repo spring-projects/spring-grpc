@@ -4,4 +4,4 @@ runs:
   steps:
     - name: Build Release
       shell: bash
-      run:  ./mvnw -DaltDeploymentRepository=local::file:deployment-repository --settings .mvn/release-settings.xml --activate-profiles releaseTrain --no-transfer-progress --batch-mode clean deploy -DskipTests
+      run:  ./mvnw -DaltDeploymentRepository=local::file:deployment-repository --settings .mvn/release-settings.xml --activate-profiles releaseTrain --no-transfer-progress --batch-mode --projects '!spring-grpc-docs' clean deploy -DskipTests
