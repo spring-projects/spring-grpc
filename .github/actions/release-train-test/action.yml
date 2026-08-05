@@ -4,4 +4,4 @@ runs:
   steps:
     - name: Test Release
       shell: bash
-      run:  ./mvnw --settings .mvn/release-settings.xml --activate-profiles releaseTrain --no-transfer-progress --batch-mode clean verify
+      run:  ./mvnw --settings .mvn/release-settings.xml --activate-profiles releaseTrain --no-transfer-progress --batch-mode --projects '!spring-grpc-docs' clean verify
