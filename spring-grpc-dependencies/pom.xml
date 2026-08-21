@@ -29,11 +29,11 @@
 		<repository>
 			<id>central</id>
 			<name>Nexus Release Repository</name>
-			<url>${env.release_repository_url}</url>
+			<url>https://central.sonatype.com</url>
 		</repository>
 		<snapshotRepository>
 			<id>repo.spring.io</id>
-			<url>${env.snapshot_repository_url}</url>
+			<url>https://repo.spring.io/libs-snapshot-local</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -108,7 +108,7 @@
 			<distributionManagement>
 				<repository>
 					<id>repo.spring.io</id>
-					<url>${env.release_repository_url}</url>
+					<url>https://repo.spring.io/libs-staging-local</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -120,7 +120,7 @@
 			<distributionManagement>
 				<repository>
 					<id>repo.spring.io</id>
-					<url>${env.release_repository_url}</url>
+					<url>https://repo.spring.io/libs-milestone-local</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>

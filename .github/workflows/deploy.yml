@@ -4,7 +4,8 @@ name: Deploy Jars
 on:
   push:
     branches:
-      - 'main-internal'
+      - 'main'
+      - '1.0.x'
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
@@ -13,8 +14,8 @@ jobs:
   build:
     name: Build and Deploy On Push
 
-    runs-on: "ubuntu22-2-8"
-    if: ${{ github.repository == 'spring-projects/spring-grpc-commercial' }}
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'spring-projects/spring-grpc' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -26,8 +27,11 @@ jobs:
         cache: maven
     - name: Deploy with Maven
       env:
-        spring_username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
-        spring_password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
-        snapshot_repository_url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+        spring_username: ${{ secrets.ARTIFACTORY_USERNAME }}
+        spring_password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        sonatype_username: ${{ secrets.OSSRH_S01_TOKEN_USERNAME }}
+        sonatype_password: ${{ secrets.OSSRH_S01_TOKEN_PASSWORD }}
+        central_username: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+        central_password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
       run: |
           ./mvnw -B deploy -s .mvn/settings.xml
