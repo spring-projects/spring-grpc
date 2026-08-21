@@ -225,6 +225,79 @@ We also enable HTTP Basic authentication and preauthentication (mTLS) (`withDefa
 
 Similar to the way Spring Boot works https://docs.spring.io/spring-boot/reference/web/spring-security.html#web.security.oauth2.server[with normal web applications], if you have the `spring-security-oauth2-resource-server` dependency on the classpath, Spring gRPC will be able to configure an OAuth2 resource server through the javadoc:org.springframework.grpc.server.security.GrpcSecurity[] configurer.
 
+Both token formats are supported, and in either case the token is read from the `Authorization` metadata entry of the gRPC call by the javadoc:org.springframework.grpc.server.security.BearerTokenAuthenticationExtractor[].
+
+For JWTs, use `jwt()` and supply a `JwtDecoder` (or rely on one in the application context, e.g. from the `spring.security.oauth2.resourceserver.jwt.*` properties):
+
+[source,java]
+----
+@Bean
+@GlobalServerInterceptor
+AuthenticationProcessInterceptor jwtSecurityFilterChain(GrpcSecurity grpc) throws Exception {
+	return grpc
+			.authorizeRequests(requests -> requests
+					.methods("Simple/StreamHello").hasAuthority("SCOPE_profile")
+					.methods("grpc.*/*").permitAll()
+					.allRequests().authenticated())
+			.oauth2ResourceServer(resourceServer -> resourceServer.jwt(withDefaults()))
+			.build();
+}
+----
+
+For opaque tokens, use `opaqueToken()` and point it at an introspection endpoint (https://datatracker.ietf.org/doc/html/rfc7662[RFC 7662]).
+The token is validated on each call by an `OpaqueTokenIntrospector`:
+
+[source,java]
+----
+@Bean
+@GlobalServerInterceptor
+AuthenticationProcessInterceptor opaqueTokenSecurityFilterChain(GrpcSecurity grpc) throws Exception {
+	return grpc
+			.authorizeRequests(requests -> requests
+					.methods("grpc.*/*").permitAll()
+					.allRequests().authenticated())
+			.oauth2ResourceServer(resourceServer -> resourceServer
+					.opaqueToken(opaqueToken -> opaqueToken
+							.introspectionUri("https://authserver.example.com/oauth2/introspect")
+							.introspectionClientCredentials("client", "secret")))
+			.build();
+}
+----
+
+Instead of an introspection URI you can supply your own `OpaqueTokenIntrospector` via `introspector()`, or leave the configurer empty and expose one as a bean.
+An `OpaqueTokenAuthenticationConverter` (set with `authenticationConverter()`, or a bean of that type) controls how the introspection response is mapped to an `Authentication`.
+
+NOTE: `jwt()` takes precedence if both are configured, so pick one per interceptor.
+
+==== Custom Credentials
+
+Authentication is extracted from the call by a javadoc:org.springframework.grpc.server.security.GrpcAuthenticationExtractor[], which reads the request `Metadata`, the transport `Attributes` and the `MethodDescriptor` being invoked.
+If your credentials do not arrive in the `Authorization` metadata entry, implement that interface and register it with `authenticationExtractor()`:
+
+[source,java]
+----
+static final Metadata.Key<String> SESSION_KEY = Metadata.Key.of("x-session-token",
+		Metadata.ASCII_STRING_MARSHALLER);
+
+@Bean
+@GlobalServerInterceptor
+AuthenticationProcessInterceptor customSecurityFilterChain(GrpcSecurity grpc) throws Exception {
+	return grpc
+			.authorizeRequests(requests -> requests
+					.methods("grpc.*/*").permitAll()
+					.allRequests().authenticated())
+			.authenticationExtractor((headers, attributes, method) -> {
+				String token = headers.get(SESSION_KEY);
+				return (token != null) ? new BearerTokenAuthenticationToken(token) : null;
+			})
+			.build();
+}
+----
+
+The `AuthenticationManager` still has to be able to authenticate whatever token you return, so pair the extractor with a matching `AuthenticationProvider`.
+
+Extractors are applied in order and the first non-`null` `Authentication` wins, so a custom extractor can coexist with the built-in ones.
+
 === Servlet
 
 The servlet-based server supports any security configuration that the servlet container supports, including Spring Security.

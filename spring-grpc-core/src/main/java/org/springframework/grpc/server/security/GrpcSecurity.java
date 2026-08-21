@@ -33,15 +33,11 @@ import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
 
-import io.grpc.Attributes;
 import io.grpc.Context;
-import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
 import io.micrometer.observation.ObservationRegistry;
 
 /**
@@ -72,6 +68,8 @@ public final class GrpcSecurity
 	 * Key for the SecurityContext in the gRPC Context.
 	 */
 	public static Context.Key<SecurityContext> SECURITY_CONTEXT_KEY = Context.key("spring-security-context");
+
+	private static final GrpcAuthenticationExtractor NO_CREDENTIALS = (headers, attributes, method) -> null;
 
 	private @Nullable AuthenticationManager authenticationManager;
 
@@ -116,8 +114,10 @@ public final class GrpcSecurity
 			}
 		}
 		this.authenticationExtractors.sort(AnnotationAwareOrderComparator.INSTANCE);
-		return new AuthenticationProcessInterceptor(getSharedObject(AuthenticationManager.class),
-				new CompositeAuthenticationExtractor(this.authenticationExtractors), this.authorizationManager);
+		GrpcAuthenticationExtractor extractor = this.authenticationExtractors.isEmpty() ? NO_CREDENTIALS
+				: new DelegatingGrpcAuthenticationExtractor(this.authenticationExtractors);
+		return new AuthenticationProcessInterceptor(getSharedObject(AuthenticationManager.class), extractor,
+				this.authorizationManager);
 	}
 
 	private AuthenticationManager getAuthenticationManager() {
@@ -186,28 +186,6 @@ public final class GrpcSecurity
 
 	private AuthenticationManagerBuilder getAuthenticationRegistry() {
 		return getSharedObject(AuthenticationManagerBuilder.class);
-	}
-
-	private static class CompositeAuthenticationExtractor implements GrpcAuthenticationExtractor {
-
-		private final List<GrpcAuthenticationExtractor> extractors;
-
-		CompositeAuthenticationExtractor(List<GrpcAuthenticationExtractor> extractors) {
-			this.extractors = extractors;
-		}
-
-		@Override
-		public @Nullable Authentication extract(Metadata headers, Attributes attributes,
-				MethodDescriptor<?, ?> method) {
-			for (GrpcAuthenticationExtractor extractor : this.extractors) {
-				Authentication authentication = extractor.extract(headers, attributes, method);
-				if (authentication != null) {
-					return authentication;
-				}
-			}
-			return null;
-		}
-
 	}
 
 }
