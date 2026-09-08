@@ -22,6 +22,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -52,6 +58,43 @@ public class GrpcExceptionHandlerInterceptorTests {
 	void testNullStatusHandled() {
 		assertThat(new FallbackHandler(exception -> null).handleException(new RuntimeException("Test exception")))
 			.isNotNull();
+	}
+
+	@Test
+	void unknownExceptionIsLoggedWhenNoHandlerMatches() {
+		java.util.logging.Logger logger = java.util.logging.Logger
+			.getLogger("org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor$FallbackHandler");
+		List<LogRecord> records = new ArrayList<>();
+		Handler handler = new Handler() {
+			@Override
+			public void publish(LogRecord record) {
+				records.add(record);
+			}
+
+			@Override
+			public void flush() {
+			}
+
+			@Override
+			public void close() {
+			}
+		};
+		Level previousLevel = logger.getLevel();
+		boolean useParentHandlers = logger.getUseParentHandlers();
+		logger.setLevel(Level.ALL);
+		logger.setUseParentHandlers(false);
+		logger.addHandler(handler);
+		try {
+			new FallbackHandler(exception -> null).handleException(new RuntimeException("Test exception"));
+		}
+		finally {
+			logger.removeHandler(handler);
+			logger.setUseParentHandlers(useParentHandlers);
+			logger.setLevel(previousLevel);
+		}
+		assertThat(records).anySatisfy((record) -> {
+			assertThat(record.getMessage()).isEqualTo("Unknown exception");
+		});
 	}
 
 	@Test
