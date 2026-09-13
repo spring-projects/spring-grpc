@@ -75,6 +75,18 @@ Once the fix is released, you will need to create a new, related ticket with a f
 
 You can contribute a source code change by submitting a pull request.
 
+Before opening the pull request, verify the patch locally:
+
+```shell
+./mvnw spring-javaformat:apply
+./mvnw test
+git diff --check
+```
+
+Keep the patch focused on the related ticket, and include the ticket number in the pull request
+description. If you are working from a fork, push the branch to the fork and target
+`spring-projects/spring-grpc:main` when creating the pull request.
+
 1. You must have the right to submit code changes. Spring gRPC follows [Developer Certificate of Origin (DCO)](https://developercertificate.org/) rules. Commit messages must contain a `Signed-off-by` line. Git even has a `-s` command line option to append this automatically to your commit message:
 
    ```
