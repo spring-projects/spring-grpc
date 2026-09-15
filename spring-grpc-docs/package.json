@@ -3,7 +3,7 @@
     "node": "24.15.0"
   },
   "name": "docs",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "dependencies": {
     "@antora/atlas-extension": "^1.0.0-alpha.5",
     "@antora/cli": "^3.2.0-alpha.11",
@@ -12,7 +12,7 @@
     "@asciidoctor/tabs": "^1.0.0-beta.6",
     "@springio/antora-extensions": "^1.14.11",
     "@springio/asciidoctor-extensions": "^1.0.0-alpha.18",
-    "downdoc": "^1.1.1stable"
+    "downdoc": "^1.1.0-stable"
   },
   "scripts": {
     "build": "antora --stacktrace generate --to-dir `pwd`/target/antora/site --url https://docs.spring.io --log-level=debug src/main/antora/antora-playbook.yml"
