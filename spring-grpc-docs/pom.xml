@@ -13,7 +13,8 @@
 	<description>Spring gRPC documentation</description>
 
 	<properties>
-		<!-- Node for frontend-maven-plugin (Antora/downdoc). Sync engines.node in package.json when bumping. -->
+		<!-- Node for frontend-maven-plugin (Antora/downdoc). Sync engines.node in package.json when
+		bumping. -->
 		<nodejs.docs.version>v24.15.0</nodejs.docs.version>
 		<maven-exec-plugin.version>3.4.1</maven-exec-plugin.version>
 		<maven-frontend-plugin.version>1.15.1</maven-frontend-plugin.version>
@@ -50,7 +51,8 @@
 				<version>${antora.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<!-- npm + Antora CLI versions: package.json only (https://docs.antora.org/maven-plugin/latest/packages/). -->
+					<!-- npm + Antora CLI versions: package.json only
+					(https://docs.antora.org/maven-plugin/latest/packages/). -->
 					<playbookFile>src/main/antora/antora-playbook.yml</playbookFile>
 					<nodeVersion>${nodejs.docs.version}</nodeVersion>
 					<nodeInstallDirectory>${project.basedir}</nodeInstallDirectory>
@@ -121,52 +123,64 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>${maven-frontend-plugin.version}</version>
-				<executions>
-					<execution>
-						<?m2e ignore?>
-						<id>install node and npm</id>
-						<goals>
-							<goal>install-node-and-npm</goal>
-						</goals>
-						<phase>generate-resources</phase>
-					</execution>
-					<execution>
-						<?m2e ignore?>
-						<id>generate-readme</id>
-						<goals>
-							<goal>npx</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<arguments>downdoc ${project.build.directory}/README.adoc -o
-								${project.parent.basedir}/README.md</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<?m2e ignore?>
-						<id>generate-contributing</id>
-						<goals>
-							<goal>npx</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<arguments>downdoc ${project.build.directory}/CONTRIBUTING.adoc -o
-								${project.parent.basedir}/CONTRIBUTING.md</arguments>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<!-- Match Node version used by org.antora:antora-maven-plugin -->
-					<nodeVersion>${nodejs.docs.version}</nodeVersion>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 	<profiles>
+		<profile>
+			<id>online</id>
+			<activation>
+				<property>
+					<name>!env.npm_config_offline</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
+						<version>${maven-frontend-plugin.version}</version>
+						<executions>
+							<execution>
+								<?m2e ignore?>
+								<id>install node and npm</id>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+								<phase>generate-resources</phase>
+							</execution>
+							<execution>
+								<?m2e ignore?>
+								<id>generate-readme</id>
+								<goals>
+									<goal>npx</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<arguments>downdoc ${project.build.directory}/README.adoc -o
+										${project.parent.basedir}/README.md</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<?m2e ignore?>
+								<id>generate-contributing</id>
+								<goals>
+									<goal>npx</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<arguments>downdoc ${project.build.directory}/CONTRIBUTING.adoc
+										-o ${project.parent.basedir}/CONTRIBUTING.md</arguments>
+								</configuration>
+							</execution>
+						</executions>
+						<configuration>
+							<!-- Match Node version used by org.antora:antora-maven-plugin -->
+							<nodeVersion>${nodejs.docs.version}</nodeVersion>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>javadoc</id>
 			<build>
