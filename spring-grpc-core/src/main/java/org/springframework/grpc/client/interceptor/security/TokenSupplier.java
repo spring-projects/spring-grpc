@@ -16,10 +16,17 @@
 
 package org.springframework.grpc.client.interceptor.security;
 
+import java.util.function.Supplier;
+
 /*
  * Supplies a token for use in a gRPC call. This is used by the TokenInterceptor to add a token to the call metadata.
  */
-public interface TokenSupplier {
+public interface TokenSupplier extends Supplier<String> {
+
+	@Override
+	default String get() {
+		return token();
+	}
 
 	String token();
 
