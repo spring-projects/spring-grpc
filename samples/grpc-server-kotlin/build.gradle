@@ -55,22 +55,14 @@ test {
 }
 
 protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
-	}
 	plugins {
-		grpc {
-			artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
-		}
+		grpc {}
 		grpckt {
 			artifact = "io.grpc:protoc-gen-grpc-kotlin:${dependencyManagement.importedProperties['grpc-kotlin.version']}:jdk8@jar"
 		}
 	}
 	generateProtoTasks {
 		all()*.plugins {
-			grpc {
-				option '@generated=omit'
-			}
 			grpckt {
 				outputSubDir = "kotlin"
 			}

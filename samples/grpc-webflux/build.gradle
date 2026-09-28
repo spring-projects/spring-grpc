@@ -51,9 +51,7 @@ test {
 
 protobuf {
 	plugins {
-		grpc {
-			artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
-		}
+		grpc {}
 	}
 }
 

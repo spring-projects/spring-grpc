@@ -99,7 +99,7 @@ Affected samples: grpc-tomcat, grpc-tomcat-secure.
 
 ### 5. Update the Gradle Protobuf plugin configuration
 
-Spring Boot now manages `protoc` and the gRPC codegen plugin versions. In Gradle, remove the `protoc` artifact declaration and (for plain Java) the entire `protobuf { ... }` block. You only need to keep the block if you require additional code generators (e.g. Kotlin, Reactor gRPC).
+Spring Boot now manages `protoc` and the gRPC codegen plugin versions. In Gradle, remove the `protoc` artifact declaration and (for plain Java) the entire `protobuf { ... }` block. For Spring Boot 4.1.0 you only need to keep the block if you require additional code generators (e.g. Kotlin, Reactor gRPC). In 4.1.1 you have to keep an empty `plugins` declaration for plain Java if you want the service stubs to be generated.
 
 **Before:**
 ```groovy
@@ -120,7 +120,17 @@ protobuf {
 }
 ```
 
-**After (plain Java — just delete the block).**
+**After (plain Java Boot 4.1.0 — just delete the block).**
+
+**After (plain Java Boot 4.1.1 — keep an empty plugins declaration).**
+
+```groovy
+protobuf {
+    plugins {
+        grpc {}
+    }
+}
+```
 
 **After (Kotlin — keep plugin declarations but drop `protoc`):**
 ```groovy

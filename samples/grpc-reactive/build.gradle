@@ -52,22 +52,14 @@ test {
 }
 
 protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc:${dependencyManagement.importedProperties['protobuf-java.version']}"
-	}
 	plugins {
-		grpc {
-			artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
-		}
+		grpc {}
 		reactor {
 			artifact = "com.salesforce.servicelibs:reactor-grpc:1.2.4"
 		}
 	}
 	generateProtoTasks {
 		all()*.plugins {
-			grpc {
-				option '@generated=omit'
-			}
 			reactor {}
 		}
 	}
