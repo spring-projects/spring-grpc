@@ -30,6 +30,7 @@ repositories {
 }
 
 def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.2-SNAPSHOT'
+ext['spring-framework.version'] = '7.0.10-SNAPSHOT'
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
