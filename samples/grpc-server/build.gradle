@@ -2,8 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.2-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.graalvm.buildtools.native' version '0.10.3'
-	id 'com.google.protobuf' version '0.9.6'
+	id 'org.graalvm.buildtools.native' version '1.1.8'
+	id 'com.google.protobuf' version '0.10.0'
 }
 
 group = 'com.example'
@@ -39,6 +39,14 @@ dependencies {
 
 	testRuntimeOnly "io.netty:netty-transport-native-epoll::linux-x86_64"
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+protobuf {
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
+		}
+	}
 }
 
 test {
