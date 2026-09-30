@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 public final class MultiValueObserver<T> implements StreamObserver<T> {
+
 	private Sinks.Many<T> sink = Sinks.many().unicast().onBackpressureBuffer();
 
 	@Override
@@ -40,4 +41,5 @@ public final class MultiValueObserver<T> implements StreamObserver<T> {
 	public Flux<T> getValue() {
 		return this.sink.asFlux();
 	}
+
 }

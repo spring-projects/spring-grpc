@@ -145,7 +145,7 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<arguments>downdoc ${project.build.directory}/README.adoc -o
+							<arguments>--no-offline downdoc ${project.build.directory}/README.adoc -o
 								${project.parent.basedir}/README.md</arguments>
 						</configuration>
 					</execution>
@@ -157,7 +157,7 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<arguments>downdoc ${project.build.directory}/CONTRIBUTING.adoc -o
+							<arguments>--no-offline downdoc ${project.build.directory}/CONTRIBUTING.adoc -o
 								${project.parent.basedir}/CONTRIBUTING.md</arguments>
 						</configuration>
 					</execution>

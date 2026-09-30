@@ -18,7 +18,9 @@ package org.springframework.grpc.sample;
 import io.grpc.stub.StreamObserver;
 
 public final class SingleValueObserver<T> implements StreamObserver<T> {
+
 	private T value;
+
 	private Throwable exception;
 
 	@Override
@@ -44,4 +46,5 @@ public final class SingleValueObserver<T> implements StreamObserver<T> {
 	public T getValue() {
 		return this.value;
 	}
+
 }

@@ -2,7 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.2-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.google.protobuf' version '0.9.6'
+	id 'com.google.protobuf' version '0.10.0'
 	id 'org.jetbrains.kotlin.jvm' version '2.2.21'
 	id 'org.jetbrains.kotlin.plugin.spring' version '2.2.21'
 }
@@ -56,18 +56,13 @@ test {
 
 protobuf {
 	plugins {
-		grpc {
-			artifact = "io.grpc:protoc-gen-grpc-java:${dependencyManagement.importedProperties['grpc.version']}"
-		}
+		grpc {}
 		grpckt {
 			artifact = "io.grpc:protoc-gen-grpc-kotlin:${dependencyManagement.importedProperties['grpc-kotlin.version']}:jdk8@jar"
 		}
 	}
 	generateProtoTasks {
 		all()*.plugins {
-			grpc {
-				option '@generated=omit'
-			}
 			grpckt {
 				outputSubDir = "kotlin"
 			}
