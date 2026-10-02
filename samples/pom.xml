@@ -32,6 +32,7 @@
 		<module>grpc-tomcat-secure</module>
 		<module>grpc-webflux</module>
 		<module>grpc-webflux-secure</module>
+		<module>grpc-transcoding</module>
 	</modules>
 
 	<build>
