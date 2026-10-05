@@ -8,12 +8,27 @@ jobs:
     name: Check Samples project
     if: ${{ github.repository == 'spring-projects/spring-grpc' }}
     strategy:
+      fail-fast: false
       matrix:
         include:
+          # latest stable: Spring Boot 4.1.1 pins Spring gRPC 1.1.1
           - javaVersion: 25
             distribution: 'liberica'
+            bootVersion: '4.1.1'
+            springGrpcVersion: '1.1.1'
           - javaVersion: 17
             distribution: 'temurin'
+            bootVersion: '4.1.1'
+            springGrpcVersion: '1.1.1'
+          # latest snapshot
+          - javaVersion: 25
+            distribution: 'liberica'
+            bootVersion: '4.1.2-SNAPSHOT'
+            springGrpcVersion: '1.1.2-SNAPSHOT'
+          - javaVersion: 17
+            distribution: 'temurin'
+            bootVersion: '4.1.2-SNAPSHOT'
+            springGrpcVersion: '1.1.2-SNAPSHOT'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +46,8 @@ jobs:
           ./gradlew clean build \
             -x :grpc-server-kotlin:build \
             -PtestToolchain=25 \
+            -PbootVersion=${{ matrix.bootVersion }} \
+            -PspringGrpcVersion=${{ matrix.springGrpcVersion }} \
             --rerun-tasks --no-build-cache \
             build
 
@@ -47,6 +64,8 @@ jobs:
           cd samples
           ./gradlew :grpc-server-kotlin:build \
             -PtestToolchain=24 \
+            -PbootVersion=${{ matrix.bootVersion }} \
+            -PspringGrpcVersion=${{ matrix.springGrpcVersion }} \
             --rerun-tasks --no-build-cache
 
       - name: Build and run samples w/ Java ${{ matrix.javaVersion }} ${{ matrix.distribution }}
@@ -55,6 +74,8 @@ jobs:
           cd samples
           ./gradlew clean build \
             -PtestToolchain="${{ matrix.javaVersion }}" \
+            -PbootVersion=${{ matrix.bootVersion }} \
+            -PspringGrpcVersion=${{ matrix.springGrpcVersion }} \
             --rerun-tasks --no-build-cache
 
       - name: Upload Build Reports (Java ${{ matrix.javaVersion }} ${{ matrix.distribution }})
