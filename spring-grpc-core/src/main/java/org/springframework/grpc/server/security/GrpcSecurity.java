@@ -58,11 +58,15 @@ public final class GrpcSecurity
 		extends AbstractConfiguredSecurityBuilder<AuthenticationProcessInterceptor, GrpcSecurity> {
 
 	/**
-	 * The order value for the context filter in the gRPC security framework. This
-	 * constant defines the position of the context filter in the filter chain. A lower
-	 * value indicates higher precedence.
+	 * Order of {@link SecurityContextServerInterceptor}. Kept just inside
+	 * {@link org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor}
+	 * (order {@code 1}) and Micrometer's observation interceptor (typically order
+	 * {@code 0}) so authentication failures are mapped by
+	 * {@link SecurityGrpcExceptionHandler} and recorded on {@code grpc.server} metrics. A
+	 * lower value indicates higher precedence (outer interceptor).
+	 * @see AuthenticationProcessInterceptor
 	 */
-	public static final int CONTEXT_FILTER_ORDER = 0;
+	public static final int CONTEXT_FILTER_ORDER = 3;
 
 	/**
 	 * Key for the SecurityContext in the gRPC Context.

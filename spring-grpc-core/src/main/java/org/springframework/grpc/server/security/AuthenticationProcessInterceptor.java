@@ -55,7 +55,10 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 
 	@Override
 	public int getOrder() {
-		return GrpcSecurity.CONTEXT_FILTER_ORDER - 10;
+		// Just outside SecurityContextServerInterceptor, still inside
+		// GrpcExceptionHandlerInterceptor so BadCredentialsException /
+		// AccessDeniedException are mapped by SecurityGrpcExceptionHandler.
+		return GrpcSecurity.CONTEXT_FILTER_ORDER - 1;
 	}
 
 	public AuthenticationProcessInterceptor(AuthenticationManager authenticationManager,
