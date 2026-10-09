@@ -28,6 +28,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.core.Authentication;
 
 import com.google.protobuf.Empty;
 import io.grpc.CallOptions;
@@ -71,14 +74,29 @@ class AuthenticationProcessInterceptorExceptionHandlerTests {
 		.build();
 
 	@Test
-	void authenticationInterceptorOrderIsInsideExceptionHandler() {
+	void securityOrdersStayCoupledInsideExceptionHandler() {
+		assertThat(GrpcSecurity.AUTHENTICATION_PROCESS_ORDER).isEqualTo(GrpcExceptionHandlerInterceptor.ORDER + 1);
+		assertThat(GrpcSecurity.CONTEXT_FILTER_ORDER).isEqualTo(GrpcSecurity.AUTHENTICATION_PROCESS_ORDER + 1);
+
 		AuthenticationProcessInterceptor auth = unauthenticatedInterceptor();
+		assertThat(auth.getOrder()).isEqualTo(GrpcSecurity.AUTHENTICATION_PROCESS_ORDER);
 		assertThat(auth.getOrder()).isGreaterThan(GrpcExceptionHandlerInterceptor.ORDER);
-		assertThat(new SecurityContextServerInterceptor().getOrder()).isGreaterThan(auth.getOrder());
+		assertThat(new SecurityContextServerInterceptor().getOrder()).isEqualTo(GrpcSecurity.CONTEXT_FILTER_ORDER)
+			.isGreaterThan(auth.getOrder());
 	}
 
 	@Test
 	void unauthenticatedCallMapsToUnauthenticatedAndObservationStatus() throws Exception {
+		assertMappedStatusAndObservation(unauthenticatedInterceptor(), Status.Code.UNAUTHENTICATED, "UNAUTHENTICATED");
+	}
+
+	@Test
+	void accessDeniedCallMapsToPermissionDeniedAndObservationStatus() throws Exception {
+		assertMappedStatusAndObservation(accessDeniedInterceptor(), Status.Code.PERMISSION_DENIED, "PERMISSION_DENIED");
+	}
+
+	private static void assertMappedStatusAndObservation(AuthenticationProcessInterceptor authInterceptor,
+			Status.Code expectedCode, String expectedStatusTag) throws Exception {
 		MeterRegistry meterRegistry = new SimpleMeterRegistry();
 		ObservationRegistry observationRegistry = ObservationRegistry.create();
 		observationRegistry.observationConfig().observationHandler(new DefaultMeterObservationHandler(meterRegistry));
@@ -87,7 +105,6 @@ class AuthenticationProcessInterceptorExceptionHandlerTests {
 				observationRegistry);
 		GrpcExceptionHandlerInterceptor exceptionInterceptor = new GrpcExceptionHandlerInterceptor(
 				new SecurityGrpcExceptionHandler());
-		AuthenticationProcessInterceptor authInterceptor = unauthenticatedInterceptor();
 
 		ServerCallHandler<Empty, Empty> handler = (call, headers) -> {
 			call.request(1);
@@ -111,6 +128,10 @@ class AuthenticationProcessInterceptorExceptionHandlerTests {
 		interceptors.add(exceptionInterceptor);
 		interceptors.add(new OrderedObservationInterceptor(observationInterceptor));
 		AnnotationAwareOrderComparator.sort(interceptors);
+		assertThat(interceptors.get(0)).isInstanceOf(OrderedObservationInterceptor.class);
+		assertThat(interceptors.get(1)).isInstanceOf(GrpcExceptionHandlerInterceptor.class);
+		assertThat(interceptors.get(2)).isInstanceOf(AuthenticationProcessInterceptor.class);
+
 		ServerServiceDefinition intercepted = ServerInterceptors.interceptForward(service, interceptors);
 
 		String serverName = InProcessServerBuilder.generateName();
@@ -126,14 +147,14 @@ class AuthenticationProcessInterceptorExceptionHandlerTests {
 					() -> ClientCalls.blockingUnaryCall(channel, METHOD, options, Empty.getDefaultInstance()))
 				.isInstanceOf(StatusRuntimeException.class)
 				.extracting(ex -> ((StatusRuntimeException) ex).getStatus().getCode())
-				.isEqualTo(Status.Code.UNAUTHENTICATED);
+				.isEqualTo(expectedCode);
 
 			String meters = meterRegistry.getMeters()
 				.stream()
 				.map(meter -> meter.getId().toString())
 				.collect(Collectors.joining(", "));
-			Timer byStatus = meterRegistry.find("grpc.server").tag("grpc.status", "UNAUTHENTICATED").timer();
-			Timer byStatusCode = meterRegistry.find("grpc.server").tag("grpc.status_code", "UNAUTHENTICATED").timer();
+			Timer byStatus = meterRegistry.find("grpc.server").tag("grpc.status", expectedStatusTag).timer();
+			Timer byStatusCode = meterRegistry.find("grpc.server").tag("grpc.status_code", expectedStatusTag).timer();
 			assertThat(byStatus != null || byStatusCode != null).as("meters=%s", meters).isTrue();
 		}
 		finally {
@@ -148,6 +169,12 @@ class AuthenticationProcessInterceptorExceptionHandlerTests {
 		return new AuthenticationProcessInterceptor((authentication) -> {
 			throw new AssertionError("extractor returned no credentials");
 		}, (headers, attributes, method) -> null, null);
+	}
+
+	private static AuthenticationProcessInterceptor accessDeniedInterceptor() {
+		Authentication user = UsernamePasswordAuthenticationToken.authenticated("user", "n/a", List.of());
+		return new AuthenticationProcessInterceptor((authentication) -> authentication,
+				(headers, attributes, method) -> user, (authentication, context) -> new AuthorizationDecision(false));
 	}
 
 	/**
