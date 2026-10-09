@@ -1,0 +1,168 @@
+[[transcoding]]
+= HTTP/JSON Transcoding
+
+Spring gRPC provides a transcoding module that auto-exposes unary gRPC services as HTTP/JSON endpoints, derived from `google.api.http` annotations on your proto definitions.
+HTTP-served calls route through the in-process gRPC server, so server interceptors and exception handling (`@GrpcExceptionHandler`) execute for transcoded calls as well as native gRPC calls.
+The incoming HTTP request context is not automatically equivalent to native gRPC metadata.
+
+NOTE: This feature is a proof of concept in v1 and supports a subset of the `google.api.http` specification.
+
+== How it works
+
+At build time, a JVM-based protoc plugin reads the `google.api.http` annotations from your `.proto` files and generates one `@RestController` per gRPC service.
+At runtime, these controllers bridge HTTP requests into the existing gRPC services through an in-process gRPC channel, without a network socket.
+This means the entire gRPC interceptor chain (`@GrpcSecurity`, `@GrpcExceptionHandler`, custom `ServerInterceptor`s) applies uniformly to HTTP-served calls.
+
+== Setup
+
+=== 1. Add the dependency
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.springframework.grpc</groupId>
+    <artifactId>spring-grpc-transcoding</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-grpc-client</artifactId>
+</dependency>
+----
+
+The client starter provides the `GrpcChannelFactory` used to create, customize and manage the internal in-process channel.
+
+You also need the `google.api.http` proto definitions on the protoc classpath:
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.google.api.grpc</groupId>
+    <artifactId>proto-google-common-protos</artifactId>
+</dependency>
+----
+
+=== 2. Configure the protoc plugin
+
+The `spring-grpc-transcoding` JAR is itself the protoc plugin (its main class is `org.springframework.grpc.transcoding.codegen.TranscodingProtocPlugin`).
+Register it as a `jvm-maven` plugin in the `protobuf-maven-plugin`:
+
+[source,xml]
+----
+<plugin>
+    <groupId>io.github.ascopes</groupId>
+    <artifactId>protobuf-maven-plugin</artifactId>
+    <configuration>
+        <protoc kind="binary-maven">
+            <version>${protobuf-java.version}</version>
+        </protoc>
+        <plugins>
+            <plugin kind="binary-maven">
+                <groupId>io.grpc</groupId>
+                <artifactId>protoc-gen-grpc-java</artifactId>
+                <version>${grpc-java.version}</version>
+            </plugin>
+            <plugin kind="jvm-maven">
+                <groupId>org.springframework.grpc</groupId>
+                <artifactId>spring-grpc-transcoding</artifactId>
+                <version>${spring-grpc.version}</version>
+            </plugin>
+        </plugins>
+    </configuration>
+</plugin>
+----
+
+=== 3. Annotate your proto
+
+[source,proto]
+----
+syntax = "proto3";
+option java_multiple_files = true;
+import "google/api/annotations.proto";
+
+service Simple {
+    rpc SayHello(HelloRequest) returns (HelloReply) {
+        option (google.api.http) = { get: "/v1/hello/{name}" };
+    }
+}
+
+message HelloRequest { string name = 1; }
+message HelloReply { string message = 1; }
+----
+
+=== 4. Import the Spring configuration
+
+Transcoding is explicitly enabled by importing `GrpcTranscodingConfiguration`:
+
+[source,java]
+----
+@SpringBootApplication
+@Import(GrpcTranscodingConfiguration.class)
+public class GrpcServerApplication { ... }
+----
+
+This is ordinary Spring configuration, not Spring Boot auto-configuration.
+It registers the transcoding channel and protobuf JSON converter.
+Applications that need to replace this infrastructure should omit the convenience configuration.
+They can configure the channel and converter beans directly.
+
+Generated controllers are placed in the protobuf `java_package` and use ordinary Spring component scanning.
+Ensure that package is beneath your application's scan root, or include it explicitly with `@ComponentScan`.
+
+=== 5. Configure the in-process server
+
+The transcoding channel targets the in-process gRPC server by name, so both sides must agree on the name:
+
+[source,properties]
+----
+spring.grpc.server.inprocess.name=grpc-transcoding
+----
+
+== Supported HttpRule subset (v1)
+
+The initial version provides a strict, explicitly documented subset of `google.api.http`:
+
+* *RPC type*: unary RPCs
+* *Verbs*: `get`, `post`, `put`, `delete`
+* *Java layout*: `java_multiple_files = true`
+* *Path variables*: simple top-level singular string fields such as `{name}` and `{id}`
+* *Body*: no request body, or `body: "*"`
+* *Query parameters*: top-level singular string fields not bound by the path, when the rule has no request body
+* *Response*: the entire protobuf response message
+
+With `body: "*"`, the JSON body supplies request fields that are not bound by the path.
+Path values take precedence if the body also contains those fields.
+Query parameters do not contribute to the protobuf request when `body: "*"` is used.
+Query parameter names use the protobuf JSON name (`json_name`, or its derived lower-camel-case name).
+A singular query parameter supplied more than once is rejected with HTTP 400.
+
+An annotated method outside this subset fails protobuf code generation with a diagnostic identifying the protobuf file, service, method and unsupported rule element.
+The plugin does not silently skip the annotated method or generate a route with changed semantics.
+Methods without `google.api.http` annotations remain gRPC-only and do not produce an error.
+
+The following features are not supported in v1:
+
+* `patch` and custom verbs
+* Named-field `body`, such as `body: "book"`
+* Nested or constrained path templates, such as `{book.name}` or `{name=publishers/*/books/*}`
+* `additional_bindings`
+* `response_body`
+* Annotated streaming RPCs
+* Non-string, repeated, map, message or group path/query fields
+* Multipart / binary uploads
+* `HttpBody` responses
+
+== Error handling
+
+The module does not define an HTTP error response contract.
+Errors from the gRPC server propagate from generated controller methods as `StatusRuntimeException`.
+Applications can translate those exceptions into their preferred HTTP status and body with normal Spring MVC exception handling such as `@RestControllerAdvice`.
+
+== Configuration properties
+
+[cols="1,3,2", options="header"]
+|===
+|Property |Default |Description
+|`spring.grpc.transcoding.in-process-name` |`grpc-transcoding` |The in-process server name to connect to (must match the server config)
+|===
+
+Importing `GrpcTranscodingConfiguration` enables transcoding; omitting the import disables it.
