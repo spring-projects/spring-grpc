@@ -49,19 +49,26 @@ import io.grpc.StatusException;
  * {@code ObservationGrpcServerCall#close}, so mapped status codes appear on
  * {@code grpc.server} metrics instead of falling back to {@code UNKNOWN}.
  *
+ * <p>
+ * Interceptors that throw from {@code interceptCall} (notably authentication) must use an
+ * order {@code > ORDER} so those exceptions stay inside this handler. Spring Security's
+ * gRPC orders are defined relative to this constant.
+ *
  * @author Dave Syer
  * @author Andrey Litvitski
  * @author Yinghuai Fu
  * @see ServerInterceptor
  * @see GrpcExceptionHandler
  * @see <a href="https://github.com/spring-projects/spring-grpc/issues/438">gh-438</a>
+ * @see <a href="https://github.com/spring-projects/spring-grpc/issues/440">gh-440</a>
  */
 @Order(GrpcExceptionHandlerInterceptor.ORDER)
 public class GrpcExceptionHandlerInterceptor implements ServerInterceptor, Ordered {
 
 	/**
 	 * Order used so this interceptor sits just inside Micrometer's gRPC server
-	 * observation interceptor ({@code @Order(0)}) when both are present.
+	 * observation interceptor ({@code @Order(0)}) when both are present. Security
+	 * interceptors derive their orders from this value.
 	 */
 	public static final int ORDER = 1;
 
