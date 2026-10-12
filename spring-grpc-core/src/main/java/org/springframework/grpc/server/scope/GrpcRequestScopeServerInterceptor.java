@@ -30,9 +30,7 @@ import io.grpc.ServerInterceptor;
 public class GrpcRequestScopeServerInterceptor implements ServerInterceptor {
 
 	@Override
-	public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-			ServerCall<ReqT, RespT> call,
-			Metadata headers,
+	public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 			ServerCallHandler<ReqT, RespT> next) {
 		ServerCall.Listener<ReqT> delegate = next.startCall(call, headers);
 		return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegate) {
