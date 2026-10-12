@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ObservationAuthenticationManager;
@@ -58,11 +59,20 @@ public final class GrpcSecurity
 		extends AbstractConfiguredSecurityBuilder<AuthenticationProcessInterceptor, GrpcSecurity> {
 
 	/**
-	 * The order value for the context filter in the gRPC security framework. This
-	 * constant defines the position of the context filter in the filter chain. A lower
-	 * value indicates higher precedence.
+	 * Order of {@link AuthenticationProcessInterceptor}. Derived from
+	 * {@link GrpcExceptionHandlerInterceptor#ORDER} so moving the exception handler
+	 * cannot leave authentication outside it again (see gh-438 / gh-440).
 	 */
-	public static final int CONTEXT_FILTER_ORDER = 0;
+	public static final int AUTHENTICATION_PROCESS_ORDER = GrpcExceptionHandlerInterceptor.ORDER + 1;
+
+	/**
+	 * Order of {@link SecurityContextServerInterceptor}. Always
+	 * {@link #AUTHENTICATION_PROCESS_ORDER}{@code + 1}, so the stack stays observation →
+	 * exception handler → authentication → security context. A lower value indicates
+	 * higher precedence (outer interceptor).
+	 * @see AuthenticationProcessInterceptor
+	 */
+	public static final int CONTEXT_FILTER_ORDER = AUTHENTICATION_PROCESS_ORDER + 1;
 
 	/**
 	 * Key for the SecurityContext in the gRPC Context.

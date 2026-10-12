@@ -43,13 +43,34 @@ import io.grpc.StatusException;
  * A fallback mechanism is used to return UNKNOWN in case the {@link GrpcExceptionHandler}
  * returns a null.
  *
+ * <p>
+ * Ordered just inside Micrometer's {@code ObservationGrpcServerInterceptor} (typically
+ * {@code @Order(0)}). Closing the exception-handled call then goes through
+ * {@code ObservationGrpcServerCall#close}, so mapped status codes appear on
+ * {@code grpc.server} metrics instead of falling back to {@code UNKNOWN}.
+ *
+ * <p>
+ * Interceptors that throw from {@code interceptCall} (notably authentication) must use an
+ * order {@code > ORDER} so those exceptions stay inside this handler. Spring Security's
+ * gRPC orders are defined relative to this constant.
+ *
  * @author Dave Syer
  * @author Andrey Litvitski
+ * @author Yinghuai Fu
  * @see ServerInterceptor
  * @see GrpcExceptionHandler
+ * @see <a href="https://github.com/spring-projects/spring-grpc/issues/438">gh-438</a>
+ * @see <a href="https://github.com/spring-projects/spring-grpc/issues/440">gh-440</a>
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
+@Order(GrpcExceptionHandlerInterceptor.ORDER)
+public class GrpcExceptionHandlerInterceptor implements ServerInterceptor, Ordered {
+
+	/**
+	 * Order used so this interceptor sits just inside Micrometer's gRPC server
+	 * observation interceptor ({@code @Order(0)}) when both are present. Security
+	 * interceptors derive their orders from this value.
+	 */
+	public static final int ORDER = 1;
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -57,6 +78,11 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor {
 
 	public GrpcExceptionHandlerInterceptor(GrpcExceptionHandler exceptionHandler) {
 		this.exceptionHandler = exceptionHandler;
+	}
+
+	@Override
+	public int getOrder() {
+		return ORDER;
 	}
 
 	/**

@@ -55,7 +55,7 @@ public class AuthenticationProcessInterceptor implements ServerInterceptor, Orde
 
 	@Override
 	public int getOrder() {
-		return GrpcSecurity.CONTEXT_FILTER_ORDER - 10;
+		return GrpcSecurity.AUTHENTICATION_PROCESS_ORDER;
 	}
 
 	public AuthenticationProcessInterceptor(AuthenticationManager authenticationManager,

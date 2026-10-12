@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.1.2-SNAPSHOT'
+	id 'org.springframework.boot' version "$bootVersion"
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'org.graalvm.buildtools.native' version '1.1.8'
 	id 'com.google.protobuf' version '0.10.0'
@@ -29,7 +29,7 @@ repositories {
 	maven { url 'https://repo.spring.io/snapshot' }
 }
 
-def springGrpcVersion = project.properties['springGrpcVersion'] ?: '1.1.2-SNAPSHOT'
+if (project.hasProperty('springGrpcVersion')) ext['spring-grpc.version'] = project.property('springGrpcVersion')
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
