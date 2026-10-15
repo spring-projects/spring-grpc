@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import io.grpc.Metadata;
 import io.grpc.Status;
@@ -38,6 +39,7 @@ import io.grpc.StatusRuntimeException;
  * methods in {@link GrpcAdvice @GrpcAdvice} beans.
  *
  * @author Oleksandr Shevchenko
+ * @author Jialin Chen
  * @see GrpcAdvice
  * @see GrpcExceptionHandler
  */
@@ -168,6 +170,7 @@ public class GrpcAdviceExceptionHandler implements org.springframework.grpc.serv
 	private Object invokeMappedMethodSafely(Method mappedMethod, Object instanceOfMappedMethod,
 			Object[] instancedParams) throws Throwable {
 		try {
+			ReflectionUtils.makeAccessible(mappedMethod);
 			return mappedMethod.invoke(instanceOfMappedMethod, instancedParams);
 		}
 		catch (InvocationTargetException ex) {

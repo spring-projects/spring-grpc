@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.grpc.server.advice.support.AdviceVisibilitySamples;
 
 import io.grpc.Metadata;
 import io.grpc.Status;
@@ -36,8 +37,31 @@ import io.grpc.StatusRuntimeException;
  * Tests for {@link GrpcAdviceExceptionHandler}.
  *
  * @author Oleksandr Shevchenko
+ * @author Jialin Chen
  */
 class GrpcAdviceExceptionHandlerTests {
+
+	@Test
+	void handlesExceptionInPublicAdviceFromAnotherPackage() {
+		assertAdviceHandlesException(AdviceVisibilitySamples.PublicAdvice.class);
+	}
+
+	@Test
+	void handlesExceptionInPackagePrivateAdviceFromAnotherPackage() {
+		assertAdviceHandlesException(AdviceVisibilitySamples.packagePrivateAdviceType());
+	}
+
+	private void assertAdviceHandlesException(Class<?> adviceType) {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(adviceType,
+				GrpcAdviceDiscoverer.class, GrpcExceptionHandlerMethodResolver.class,
+				GrpcAdviceExceptionHandler.class)) {
+			GrpcAdviceExceptionHandler handler = context.getBean(GrpcAdviceExceptionHandler.class);
+			StatusException result = handler.handleException(new IllegalArgumentException("bad argument"));
+			assertThat(result).isNotNull();
+			assertThat(result.getStatus().getCode()).isEqualTo(Status.Code.INVALID_ARGUMENT);
+			assertThat(result.getStatus().getDescription()).isEqualTo("bad argument");
+		}
+	}
 
 	@Test
 	void handlesExceptionWithMappedHandler() {
