@@ -24,11 +24,11 @@ jobs:
           - javaVersion: 25
             distribution: 'liberica'
             bootVersion: '4.1.2-SNAPSHOT'
-            springGrpcVersion: '1.1.2-SNAPSHOT'
+            springGrpcVersion: '1.1.3-SNAPSHOT'
           - javaVersion: 17
             distribution: 'temurin'
             bootVersion: '4.1.2-SNAPSHOT'
-            springGrpcVersion: '1.1.2-SNAPSHOT'
+            springGrpcVersion: '1.1.3-SNAPSHOT'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
