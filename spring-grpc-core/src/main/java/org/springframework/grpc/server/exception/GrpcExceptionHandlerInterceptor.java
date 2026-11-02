@@ -46,6 +46,7 @@ import io.grpc.StatusException;
  * @author Dave Syer
  * @author Andrey Litvitski
  * @author Yinghuai Fu
+ * @author WooSeung Kim
  * @see ServerInterceptor
  * @see GrpcExceptionHandler
  * @see <a href="https://github.com/spring-projects/spring-grpc/issues/438">gh-438</a>
@@ -109,6 +110,15 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 		return result != null ? result : new Metadata();
 	}
 
+	private static StatusException statusException(Throwable exception) {
+		Metadata trailers = new Metadata();
+		Metadata thrown = Status.trailersFromThrowable(exception);
+		if (thrown != null) {
+			trailers.merge(thrown);
+		}
+		return Status.fromThrowable(exception).asException(trailers);
+	}
+
 	static class ExceptionHandlerListener<ReqT, RespT> extends SimpleForwardingServerCallListener<ReqT> {
 
 		private final Log logger = LogFactory.getLog(getClass());
@@ -167,7 +177,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 
 		private void handle(Throwable t) {
 			this.exception = t;
-			StatusException statusEx = Status.fromThrowable(t).asException();
+			StatusException statusEx = statusException(t);
 			try {
 				statusEx = this.exceptionHandler.handleException(t);
 			}
@@ -175,7 +185,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 				this.logger.trace("Handler unable to handle exception", t);
 			}
 			if (statusEx == null) {
-				statusEx = Status.fromThrowable(t).asException();
+				statusEx = statusException(t);
 			}
 			try {
 				this.call.close(statusEx.getStatus(), headers(statusEx));
@@ -204,7 +214,7 @@ public class GrpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 				if (logger.isDebugEnabled()) {
 					logger.error("Unknown exception", exception);
 				}
-				return Status.fromThrowable(exception).asException();
+				return statusException(exception);
 			}
 			return status;
 		}
