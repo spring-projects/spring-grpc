@@ -26,7 +26,7 @@ We use the https://github.com/spring-io/spring-javaformat[Spring JavaFormat] pro
 The code can also be formatted from your IDE when the formatter plugin https://github.com/spring-projects/spring-grpc/wiki/Working-with-the-Code#install-the-spring-formatter-plugin[has been installed].
 ====
 
-== Contributing a New GRPC Features
+== Contributing a New gRPC Feature
 
 To contribute a new feature, adhere to the following steps:
 

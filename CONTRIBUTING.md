@@ -24,7 +24,7 @@ We use the [Spring JavaFormat](https://github.com/spring-io/spring-javaformat) p
 The code can also be formatted from your IDE when the formatter plugin [has been installed](https://github.com/spring-projects/spring-grpc/wiki/Working-with-the-Code#install-the-spring-formatter-plugin).
 </dd></dl>
 
-## Contributing a New GRPC Features
+## Contributing a New gRPC Feature
 
 To contribute a new feature, adhere to the following steps:
 
