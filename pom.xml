@@ -121,6 +121,20 @@
 	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<!-- Include license and notice files in all jars (and source jars) -->
+				<directory>${maven.multiModuleProjectDirectory}</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>LICENSE.txt</include>
+					<include>NOTICE.txt</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>io.spring.javaformat</groupId>
@@ -167,6 +181,7 @@
 								config_loc=${maven-checkstyle-plugin.config.location}
 							</propertyExpansion>
 							<skip>${disable.checkstyle.checks}</skip>
+							<includeResources>false</includeResources>
 							<includeTestSourceDirectory>
 								${maven-checkstyle-plugin.includeTestSourceDirectory}</includeTestSourceDirectory>
 							<failsOnError>${maven-checkstyle-plugin.failsOnError}</failsOnError>
@@ -289,19 +304,8 @@
 						<configuration>
 							<licenseSets>
 								<licenseSet>
-									<inlineHeader>
-										<!-- @formatter:off --> Copyright 2023 - present the original author or
-										authors. Licensed under the Apache License, Version 2.0 (the
-										"License"); you may not use this file except in compliance
-										with the License. You may obtain a copy of the License at
-										https://www.apache.org/licenses/LICENSE-2.0 Unless required
-										by applicable law or agreed to in writing, software
-										distributed under the License is distributed on an "AS IS"
-										BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-										express or implied. See the License for the specific
-										language governing permissions and limitations under the
-										License. <!-- @formatter:on -->
-									</inlineHeader>
+									<inlineHeader>Copyright and licensing information for this source code can be found in the NOTICE and
+LICENSE files in the root directory of this repository.</inlineHeader>
 									<excludes>
 										<exclude>**/.antlr/**</exclude>
 										<exclude>**/aot.factories</exclude>

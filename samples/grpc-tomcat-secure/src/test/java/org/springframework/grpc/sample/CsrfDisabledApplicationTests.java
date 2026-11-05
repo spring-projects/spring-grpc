@@ -1,3 +1,8 @@
+/*
+ * Copyright and licensing information for this source code can be found in the NOTICE and
+ * LICENSE files in the root directory of this repository.
+ */
+
 package org.springframework.grpc.sample;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
