@@ -19,6 +19,7 @@
 		<module>spring-grpc-core</module>
 		<module>spring-grpc-dependencies</module>
 		<module>spring-grpc-docs</module>
+		<module>spring-grpc-transcoding</module>
 		<!--		<module>samples</module>-->
 	</modules>
 
