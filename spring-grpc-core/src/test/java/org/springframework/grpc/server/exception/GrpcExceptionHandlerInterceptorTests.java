@@ -34,6 +34,7 @@ import io.grpc.protobuf.StatusProto;
  *
  * @author Dave Syer
  * @author Andrey Litvitski
+ * @author WooSeung Kim
  */
 public class GrpcExceptionHandlerInterceptorTests {
 
@@ -75,6 +76,76 @@ public class GrpcExceptionHandlerInterceptorTests {
 		Status extracted = StatusProto.fromThrowable(new StatusException(closedStatus, closedTrailers));
 		assertThat(extracted).isNotNull();
 		assertThat(extracted).isEqualTo(statusWithDetails);
+	}
+
+	@Test
+	void propagatesTrailersFromThrownStatusExceptionWhenHandlerReturnsNull() {
+		Status statusWithDetails = statusWithDetails();
+		ServerCall<Empty, Empty> call = unaryCall();
+		ServerCallHandler<Empty, Empty> next = (c, headers) -> new ServerCall.Listener<>() {
+			@Override
+			public void onHalfClose() {
+				throw StatusProto.toStatusRuntimeException(statusWithDetails);
+			}
+		};
+		new GrpcExceptionHandlerInterceptor(ex -> null).interceptCall(call, new Metadata(), next).onHalfClose();
+		assertThat(closedStatus(call)).isEqualTo(statusWithDetails);
+	}
+
+	@Test
+	void propagatesTrailersFromThrownStatusExceptionWhenStartCallThrows() {
+		Status statusWithDetails = statusWithDetails();
+		ServerCall<Empty, Empty> call = unaryCall();
+		ServerCallHandler<Empty, Empty> next = (c, headers) -> {
+			throw StatusProto.toStatusRuntimeException(statusWithDetails);
+		};
+		new GrpcExceptionHandlerInterceptor(ex -> null).interceptCall(call, new Metadata(), next);
+		assertThat(closedStatus(call)).isEqualTo(statusWithDetails);
+	}
+
+	@Test
+	void propagatesTrailersFromThrownStatusExceptionWhenHandlerThrows() {
+		Status statusWithDetails = statusWithDetails();
+		ServerCall<Empty, Empty> call = unaryCall();
+		ServerCallHandler<Empty, Empty> next = (c, headers) -> new ServerCall.Listener<>() {
+			@Override
+			public void onHalfClose() {
+				throw StatusProto.toStatusRuntimeException(statusWithDetails);
+			}
+		};
+		GrpcExceptionHandler handler = ex -> {
+			throw new IllegalStateException("handler failed");
+		};
+		new GrpcExceptionHandlerInterceptor(handler).interceptCall(call, new Metadata(), next).onHalfClose();
+		assertThat(closedStatus(call)).isEqualTo(statusWithDetails);
+	}
+
+	private static Status statusWithDetails() {
+		return Status.newBuilder()
+			.setCode(Code.FAILED_PRECONDITION_VALUE)
+			.setMessage("precondition failed")
+			.addDetails(Any.pack(Empty.getDefaultInstance()))
+			.build();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ServerCall<Empty, Empty> unaryCall() {
+		ServerCall<Empty, Empty> call = mock(ServerCall.class);
+		MethodDescriptor<Empty, Empty> method = MethodDescriptor.<Empty, Empty>newBuilder()
+			.setType(MethodDescriptor.MethodType.UNARY)
+			.setFullMethodName("test/Test")
+			.setRequestMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
+			.setResponseMarshaller(ProtoUtils.marshaller(Empty.getDefaultInstance()))
+			.build();
+		when(call.getMethodDescriptor()).thenReturn(method);
+		return call;
+	}
+
+	private static Status closedStatus(ServerCall<Empty, Empty> call) {
+		ArgumentCaptor<io.grpc.Status> statusCaptor = ArgumentCaptor.forClass(io.grpc.Status.class);
+		ArgumentCaptor<Metadata> trailersCaptor = ArgumentCaptor.forClass(Metadata.class);
+		verify(call, times(1)).close(statusCaptor.capture(), trailersCaptor.capture());
+		return StatusProto.fromThrowable(new StatusException(statusCaptor.getValue(), trailersCaptor.getValue()));
 	}
 
 }
